@@ -17,6 +17,11 @@ const ReservationSchema = new Schema<IReservation>(
       type: Date,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["confirmed", "cancelled"],
+      default: "confirmed",
+    },
   },
   {
     timestamps: true,
@@ -24,17 +29,27 @@ const ReservationSchema = new Schema<IReservation>(
 );
 
 /**
- * Compound unique index: one table can only have one reservation per day.
+ * Compound unique index: one table can only have one CONFIRMED reservation per day.
+ * Uses partialFilterExpression so cancelled reservations don't block new ones.
  * This is the primary concurrency safeguard — even if two requests arrive
  * simultaneously, MongoDB will reject the second insert.
  */
-ReservationSchema.index({ tableId: 1, date: 1 }, { unique: true });
+ReservationSchema.index(
+  { tableId: 1, date: 1 },
+  { unique: true, partialFilterExpression: { status: "confirmed" } }
+);
 
 /**
- * Compound unique index: one user can only have one reservation per day.
- * Prevents a user from booking two desks on the same day.
+ * Compound unique index: one user can only have one CONFIRMED reservation per day.
+ * Uses partialFilterExpression so cancelled reservations don't block new ones.
  */
-ReservationSchema.index({ userId: 1, date: 1 }, { unique: true });
+ReservationSchema.index(
+  { userId: 1, date: 1 },
+  { unique: true, partialFilterExpression: { status: "confirmed" } }
+);
+
+/** Index for querying reservations by date (common access pattern). */
+ReservationSchema.index({ date: 1 });
 
 /**
  * Mongoose model for the Reservation entity.
