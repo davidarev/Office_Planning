@@ -47,6 +47,9 @@ const TableSchema = new Schema<ITable>(
   }
 );
 
+/** Index for filtering active tables (most common query pattern). */
+TableSchema.index({ isActive: 1 });
+
 /**
  * Mongoose model for the Table (desk) entity.
  */
