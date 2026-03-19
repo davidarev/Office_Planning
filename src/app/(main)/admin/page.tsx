@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 /**
- * Admin panel entry point.
- * Protected by role — only admin users can access this page.
- * Full implementation will come in a later phase.
+ * Panel de administración.
+ * Protegido por rol — solo accesible por usuarios con role === "admin".
+ * El middleware ya bloquea el acceso, pero se valida también aquí por seguridad.
  */
 export default async function AdminPage() {
   const session = await auth();

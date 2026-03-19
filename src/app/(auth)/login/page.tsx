@@ -4,10 +4,16 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 
 /**
- * Login page — allows users to request a magic link by email.
+ * Login page — permite al usuario solicitar un magic link por email.
  *
- * This is a client component because it manages form state
- * and triggers the NextAuth signIn flow.
+ * Flujo:
+ * 1. El usuario introduce su email y envía el formulario.
+ * 2. Se llama a signIn("email") de NextAuth.
+ * 3. Si tiene éxito, el usuario ve la pantalla de verificación.
+ * 4. Si el email no está autorizado, NextAuth redirige a /login/error.
+ *
+ * Nota de seguridad: no se revela si el email existe o no en el sistema.
+ * El mensaje de error es genérico para todos los casos de fallo.
  */
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,10 +26,19 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await signIn("email", {
+      const result = await signIn("email", {
         email: email.trim().toLowerCase(),
-        redirectTo: "/login/verify",
+        redirect: false,
       });
+
+      if (result?.error) {
+        setError("Ha ocurrido un error. Inténtalo de nuevo.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Redirigir a la pantalla de verificación
+      window.location.href = "/login/verify";
     } catch {
       setError("Ha ocurrido un error. Inténtalo de nuevo.");
       setIsLoading(false);
