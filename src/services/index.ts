@@ -8,3 +8,8 @@ export {
 } from "./table.service";
 
 export type { TablePublic } from "./table.service";
+
+export {
+  getTableAvailabilityForDate,
+  getTableAvailabilityForRange,
+} from "./availability.service";
