@@ -1,6 +1,8 @@
 export {
   getReservationsForDay,
   getReservationsForRange,
+  createReservation,
+  cancelReservation,
 } from "./reservation.service";
 
 export {
