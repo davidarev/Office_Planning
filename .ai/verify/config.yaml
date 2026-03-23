@@ -1,0 +1,125 @@
+# Configuración de verificación automática — Office Desk Booking
+# Ref: AGENTS.md § 9, § 10
+#
+# Cada suite corresponde a un ticket/tarea y define los checks
+# que deben pasar antes de considerar la tarea completada.
+#
+# Tipos soportados: filesystem, npm_script, json_check, api, playwright, performance, custom
+
+defaults:
+  timeout: 120
+  exit_code: 0
+
+suites:
+  # === Verificaciones globales del proyecto ===
+
+  global_build:
+    description: 'Verifica que el proyecto compila correctamente'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  global_lint:
+    description: 'Verifica que el código pasa el linter'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  global_tests:
+    description: 'Ejecuta todos los tests del proyecto'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: TEST-1
+        name: 'Tests unitarios'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: TEST-2
+        name: 'Tests de integración'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: TEST-3
+        name: 'Tests de API'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  global_structure:
+    description: 'Verifica que la estructura del proyecto cumple el estándar corporativo'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: STRUCT-1
+        name: 'AGENTS.md existe'
+        type: filesystem
+        checks:
+          - path: AGENTS.md
+            must_exist: true
+      - id: STRUCT-2
+        name: 'CLAUDE.md existe'
+        type: filesystem
+        checks:
+          - path: CLAUDE.md
+            must_exist: true
+      - id: STRUCT-3
+        name: 'Directorio de specs existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs
+            must_exist: true
+      - id: STRUCT-4
+        name: 'Config de verify existe'
+        type: filesystem
+        checks:
+          - path: .ai/verify/config.yaml
+            must_exist: true
+      - id: STRUCT-5
+        name: 'Directorio de skills existe'
+        type: filesystem
+        checks:
+          - path: .ai/skills
+            must_exist: true
+      - id: STRUCT-6
+        name: 'Canvas del proyecto existe'
+        type: filesystem
+        checks:
+          - path: office_planning.canvas
+            must_exist: true
+
+  # === Suites por ticket (añadir conforme se implementen) ===
+  # Ejemplo:
+  #
+  # ODP-001_auth_magic_link:
+  #   description: 'Verifica la autenticación por magic link'
+  #   enabled: true
+  #   related_spec: '.ai/specs/ODP-001-spec.md'
+  #   verifications:
+  #     - id: AC-1
+  #       name: 'Usuario autorizado recibe magic link'
+  #       type: npm_script
+  #       command: npm run test:integration -- --grep "magic link"
+  #       expected_result: PASS
+  #       exit_code: 0
+  #       timeout: 120

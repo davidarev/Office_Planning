@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+docs/
 
 # Next.js
 .next/
@@ -29,3 +30,4 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+.obsidian/

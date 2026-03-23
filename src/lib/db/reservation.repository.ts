@@ -152,6 +152,6 @@ export async function markReservationCancelled(
   return Reservation.findByIdAndUpdate(
     id,
     { status: "cancelled" },
-    { new: true }
+    { returnDocument: "after" }
   ).lean<IReservation>();
 }
