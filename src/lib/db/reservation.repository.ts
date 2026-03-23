@@ -14,6 +14,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Reservation } from "@/lib/models";
 import { normalizeDate } from "@/lib/dates";
 import type { IReservation } from "@/domain/types";
+import type { Types } from "mongoose";
 
 /**
  * Returns all confirmed reservations for a specific date.
@@ -94,4 +95,63 @@ export async function getTableReservationByDate(
     date: normalized,
     status: "confirmed",
   }).lean<IReservation>();
+}
+
+/**
+ * Finds a reservation by its database ID (any status).
+ *
+ * @param id - The reservation's ObjectId as a string
+ * @returns The reservation document, or null if not found
+ */
+export async function getReservationById(
+  id: string
+): Promise<IReservation | null> {
+  await connectDB();
+  return Reservation.findById(id).lean<IReservation>();
+}
+
+/**
+ * Inserts a new confirmed reservation into the database.
+ *
+ * Relies on MongoDB unique partial indexes to prevent:
+ * - Two confirmed reservations for the same table on the same day
+ * - Two confirmed reservations for the same user on the same day
+ *
+ * @param userId - The user's ObjectId as a string
+ * @param tableId - The table's ObjectId as a string
+ * @param date - The reservation date (will be normalized to UTC midnight)
+ * @returns The created reservation document
+ * @throws MongoDB duplicate key error (code 11000) on conflict
+ */
+export async function insertReservation(
+  userId: string,
+  tableId: string,
+  date: Date
+): Promise<IReservation> {
+  await connectDB();
+  const doc = await Reservation.create({
+    userId,
+    tableId,
+    date,
+    status: "confirmed",
+  });
+  return doc.toObject() as IReservation;
+}
+
+/**
+ * Marks a reservation as cancelled by setting its status field.
+ * Does not delete the document — cancelled reservations are kept for history.
+ *
+ * @param id - The reservation's ObjectId as a string
+ * @returns The updated reservation document, or null if not found
+ */
+export async function markReservationCancelled(
+  id: string | Types.ObjectId
+): Promise<IReservation | null> {
+  await connectDB();
+  return Reservation.findByIdAndUpdate(
+    id,
+    { status: "cancelled" },
+    { new: true }
+  ).lean<IReservation>();
 }

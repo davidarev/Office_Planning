@@ -14,4 +14,7 @@ export {
   getReservationsByDateRange,
   getUserReservationByDate,
   getTableReservationByDate,
+  getReservationById,
+  insertReservation,
+  markReservationCancelled,
 } from "./reservation.repository";
