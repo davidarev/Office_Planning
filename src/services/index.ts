@@ -1,6 +1,8 @@
 export {
   getReservationsForDay,
   getReservationsForRange,
+  createReservation,
+  cancelReservation,
 } from "./reservation.service";
 
 export {
@@ -8,3 +10,8 @@ export {
 } from "./table.service";
 
 export type { TablePublic } from "./table.service";
+
+export {
+  getTableAvailabilityForDate,
+  getTableAvailabilityForRange,
+} from "./availability.service";

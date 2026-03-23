@@ -70,3 +70,34 @@ export interface TableWithStatus {
   };
   isActive: boolean;
 }
+
+/**
+ * Full availability information for a single desk on a specific day.
+ *
+ * Combines static table data with the computed status and optional
+ * reservation/assignment info for rendering the floor plan.
+ *
+ * Status computation rules (in order of priority):
+ * 1. table.isActive = false → gray
+ * 2. table.type = "blocked" → gray
+ * 3. confirmed reservation exists → red
+ * 4. table.type = "fixed" → red
+ * 5. table.type = "preferential" → yellow
+ * 6. otherwise → green
+ */
+export interface TableAvailability {
+  tableId: string;
+  label: string;
+  type: TableType;
+  position: TablePosition;
+  status: TableStatus;
+  reservation: {
+    _id: string;
+    userId: string;
+    userName: string;
+  } | null;
+  assignedUser: {
+    _id: string;
+    name: string;
+  } | null;
+}
