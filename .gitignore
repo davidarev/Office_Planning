@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-docs/
 
 # Next.js
 .next/
@@ -12,6 +11,11 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*
+
+# Claude Code (local, no versionado)
+CLAUDE.local.md
+.claude/settings.local.json
 
 # Debug
 npm-debug.log*
@@ -30,4 +34,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Obsidian (config local, no versionada)
 .obsidian/
+
+# Test coverage
+coverage/
