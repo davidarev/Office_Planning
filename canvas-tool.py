@@ -84,7 +84,7 @@ COLOR_MAP = {
 
 STATE_TO_COLOR = {v: k for k, v in COLOR_MAP.items()}
 
-TASK_ID_RE = re.compile(r"^##\s+([A-Z]{1,3})-(\d{2})\s+(.*)$", re.MULTILINE)
+TASK_ID_RE = re.compile(r"^##\s+([A-Z]{1,3})-(\d{2,3})\s+(.*)$", re.MULTILINE)
 
 NON_TASK_IDS = {"canvas-errors", "canvas-warnings", "legend"}
 
