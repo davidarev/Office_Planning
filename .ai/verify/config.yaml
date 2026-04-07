@@ -109,6 +109,30 @@ suites:
             must_exist: true
 
   # === Suites por ticket (añadir conforme se implementen) ===
+
+  OP-112_revisar_schema_table:
+    description: 'Auditoría de TableSchema y PositionSchema — solo verificaciones de estructura (sin cambios de código)'
+    enabled: true
+    related_spec: '.ai/specs/OP-112-spec.md'
+    verifications:
+      - id: OP-112-STRUCT-1
+        name: 'table.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/table.model.ts
+            must_exist: true
+      - id: OP-112-STRUCT-2
+        name: 'domain/types/table.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-112-STRUCT-3
+        name: 'Informe de hallazgos OP-110 existe y tiene sección Table'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
