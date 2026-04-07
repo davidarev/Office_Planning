@@ -168,6 +168,24 @@ suites:
           - path: src/domain/types/index.ts
             must_exist: true
 
+  OP-115_documentar_hallazgos:
+    description: 'Verificación del informe consolidado de auditoría OP-110'
+    enabled: true
+    related_spec: '.ai/specs/OP-115-spec.md'
+    verifications:
+      - id: OP-115-STRUCT-1
+        name: 'Informe OP-110-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
+      - id: OP-115-STRUCT-2
+        name: 'Spec OP-110 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-110-spec.md
+            must_exist: true
+
   # === Suites por ticket (añadir conforme se implementen) ===
 
   OP-112_revisar_schema_table:

@@ -2,7 +2,21 @@
 
 ## Resumen ejecutivo
 
-_En construcción. Se irá completando a medida que se finalicen OP-111, OP-112, OP-113 y OP-114._
+La auditoría de los tres schemas Mongoose (User, Table, Reservation) y los tipos de dominio TypeScript concluye que el sistema es **funcionalmente correcto y coherente con README.md**. No hay bugs bloqueantes ni inconsistencias que impidan el funcionamiento actual.
+
+Se identificaron **23 hallazgos** distribuidos en 4 áreas: 5 mejoras y 18 observaciones. Ninguno es bloqueante para producción en el estado actual, pero varios introducen fragilidad que puede manifestarse como bugs en fases posteriores si no se corrigen.
+
+**Áreas de mayor riesgo:**
+- `assignedTo: null` vs `undefined` en ITable/TableSchema — puede causar comparaciones incorrectas silenciosas
+- Ausencia de normalización de fecha en el schema de Reservation — dependencia implícita en capas superiores
+- `TableAvailability.reservation.userId` expone el ID del propietario a todos los usuarios autenticados
+- `next-auth.d.ts` no extiende el tipo `User` de NextAuth — tipado incompleto en callbacks de auth
+
+**Áreas en buen estado:**
+- Índices únicos parciales de Reservation — diseño correcto y sólido para garantías de concurrencia
+- Enum `TableType` y `ReservationStatus` — coherentes con schemas y README
+- `ServiceResult<T>` — patrón bien aplicado con exhaustividad garantizada por TypeScript
+- Documentación JSDoc — consistente y útil en todos los módulos auditados
 
 ---
 
@@ -69,7 +83,26 @@ _En construcción. Se irá completando a medida que se finalicen OP-111, OP-112,
 
 ## Priorización para OP-160
 
-_Se completará cuando todas las subtareas estén finalizadas._
+Orden de prioridad para aplicar correcciones en OP-160, de mayor a menor urgencia:
+
+| Prioridad | ID | Severidad | Acción |
+|-----------|-----|-----------|--------|
+| 1 | H-112-1 | Mejora | Alinear `assignedTo` — `ITable.assignedTo?: Types.ObjectId \| null` o `default: undefined` en schema |
+| 2 | H-113-1 | Mejora | Añadir `set: normalizeDate` en campo `date` de ReservationSchema como defensa en profundidad |
+| 3 | H-114-1 | Mejora | Eliminar `userId` de `TableAvailability.reservation` — solo exponer `userName` |
+| 4 | H-114-2 | Mejora | Extender tipo `User` en `next-auth.d.ts` además de `Session` |
+| 5 | H-111-2 | Mejora | Añadir validación de formato email en UserSchema con `match` |
+| 6 | H-112-3 | Mejora | Añadir `unique: true` en campo `label` de TableSchema |
+| 7 | H-111-6 | Observación | Añadir `required: true` en `role` (UserSchema) |
+| 8 | H-113-4 | Observación | Añadir `required: true` en `status` (ReservationSchema) |
+| 9 | H-112-2 | Observación | Alinear `rotation` — cambiar `TablePosition.rotation?` a `rotation: number` |
+| 10 | H-114-6 | Observación | Eliminar `TableWithStatus` si se confirma que no tiene uso activo |
+| 11 | H-111-3 | Observación | Declarar índice `email` explícitamente con `UserSchema.index(...)` |
+| 12 | H-112-6 | Observación | Validar en servicio que `fixed`/`preferential` tengan `assignedTo` |
+| — | H-111-1, H-111-4, H-111-5 | Observación | Sin acción o documentar como decisión intencional |
+| — | H-112-4, H-112-5, H-112-7 | Observación | Evaluar según patrones de acceso reales |
+| — | H-113-2, H-113-3 | Observación | Evaluar según volumen esperado |
+| — | H-114-3, H-114-4, H-114-5 | Observación | Evaluar en fases posteriores |
 
 ---
 
