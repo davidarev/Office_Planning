@@ -108,6 +108,36 @@ suites:
           - path: office_planning.canvas
             must_exist: true
 
+  OP-113_revisar_schema_reservation:
+    description: 'Auditoría de ReservationSchema — índices únicos parciales, normalización de fechas y coherencia con IReservation'
+    enabled: true
+    related_spec: '.ai/specs/OP-113-spec.md'
+    verifications:
+      - id: OP-113-STRUCT-1
+        name: 'reservation.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/reservation.model.ts
+            must_exist: true
+      - id: OP-113-STRUCT-2
+        name: 'domain/types/reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/reservation.ts
+            must_exist: true
+      - id: OP-113-STRUCT-3
+        name: 'lib/dates.ts (normalización) existe'
+        type: filesystem
+        checks:
+          - path: src/lib/dates.ts
+            must_exist: true
+      - id: OP-113-STRUCT-4
+        name: 'Informe de hallazgos OP-110 existe con sección Reservation'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
+
   # === Suites por ticket (añadir conforme se implementen) ===
 
   OP-112_revisar_schema_table:

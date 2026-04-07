@@ -41,7 +41,14 @@ _En construcción. Se irá completando a medida que se finalicen OP-111, OP-112,
 
 ### Schema Reservation (OP-113)
 
-_Pendiente — OP-113 no iniciada._
+| ID | Severidad | Descripción | Acción propuesta |
+|----|-----------|-------------|-----------------|
+| H-113-1 | Mejora | La normalización de fechas a UTC midnight no se garantiza en el schema (sin `set`), sino que depende de que el servicio/repositorio llame a `normalizeDate()`. Si alguien llama a `insertReservation()` con una fecha no normalizada, el índice único no funcionará correctamente (dos fechas del mismo día con distinta hora serían distintas para MongoDB). | Añadir `set: normalizeDate` en el campo `date` del schema como última línea de defensa, o documentar explícitamente el contrato de que el repositorio solo acepta fechas ya normalizadas. |
+| H-113-2 | Observación | No hay índice simple en `{ userId: 1 }`. El índice compuesto `{ userId: 1, date: 1 }` cubre queries con filtro de fecha, pero una query de "todas las reservas de un usuario" (sin filtro de fecha) no puede aprovechar ese índice de forma óptima. El patrón existe en la API (`/api/reservations/week`). | Evaluar si añadir `ReservationSchema.index({ userId: 1 })` mejora el rendimiento según el volumen esperado. |
+| H-113-3 | Observación | No hay índice simple en `{ tableId: 1 }`. Para queries de historial de una mesa (admin), no hay índice de soporte. El índice compuesto `{ tableId: 1, date: 1 }` cubre el caso con filtro de fecha pero no el historial completo. | Evaluar necesidad según patrones de acceso administrativo. Baja prioridad en esta fase. |
+| H-113-4 | Observación | `status` no tiene `required: true`. Dado que tiene `default: "confirmed"`, nunca quedará vacío, pero la ausencia de `required` es ambigua en lectura del schema (mismo patrón detectado en OP-111 para `role`). | Añadir `required: true` para hacer explícita la intención, coherente con H-111-6. |
+
+**Veredicto OP-113:** El schema es sólido y el diseño de índices únicos parciales es correcto para la garantía de concurrencia. El hallazgo más relevante es H-113-1: la ausencia de normalización de fecha en el schema crea una dependencia implícita en capas superiores. En la práctica actual está cubierta, pero es un punto de fragilidad. El resto son observaciones de índices y consistencia.
 
 ---
 
@@ -64,3 +71,5 @@ _Se completará cuando todas las subtareas estén finalizadas._
 - **H-112-1**: La discrepancia `null` vs `undefined` en `assignedTo` es la más prioritaria del schema Table. Se propone unificar el contrato: o bien `ITable.assignedTo?: Types.ObjectId | null` o bien `default: undefined` en el schema. La primera opción es más explícita y honesta con lo que devuelve Mongo.
 - **H-112-3**: `label` único es una restricción que el README implica pero no exige explícitamente. Se propone añadirla en OP-160 como unicidad a nivel de base de datos.
 - **H-112-6**: La validación de `assignedTo` requerido para `fixed`/`preferential` se recomienda en la capa de servicio, no en el schema, para mantener la separación de responsabilidades.
+- **H-113-1**: Se propone añadir `set: normalizeDate` en el campo `date` del schema como defensa en profundidad. La normalización ya ocurre en el servicio, pero el schema es la última barrera antes de la base de datos. Alternativa: documentar explícitamente el contrato del repositorio.
+- **H-113-4**: Consistente con H-111-6 — campos con `default` deberían declarar también `required: true` para claridad.
