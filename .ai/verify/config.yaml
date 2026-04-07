@@ -186,6 +186,36 @@ suites:
           - path: .ai/specs/OP-110-spec.md
             must_exist: true
 
+  OP-123_revisar_reservation_service:
+    description: 'Auditoría de reservation.service.ts — reglas de negocio, concurrencia, serialización y helpers'
+    enabled: true
+    related_spec: '.ai/specs/OP-123-spec.md'
+    verifications:
+      - id: OP-123-STRUCT-1
+        name: 'reservation.service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/services/reservation.service.ts
+            must_exist: true
+      - id: OP-123-STRUCT-2
+        name: 'lib/dates.ts existe (normalizeDate, isValidDateString)'
+        type: filesystem
+        checks:
+          - path: src/lib/dates.ts
+            must_exist: true
+      - id: OP-123-STRUCT-3
+        name: 'domain/types/reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/reservation.ts
+            must_exist: true
+      - id: OP-123-STRUCT-4
+        name: 'Informe OP-120-findings.md existe con sección reservation.service.ts'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-120-findings.md
+            must_exist: true
+
   # === Suites por ticket (añadir conforme se implementen) ===
 
   OP-112_revisar_schema_table:
