@@ -138,6 +138,36 @@ suites:
           - path: .ai/reports/OP-110-findings.md
             must_exist: true
 
+  OP-114_revisar_tipos_dominio:
+    description: 'Auditoría de tipos de dominio — coherencia con schemas, exposición de datos y next-auth.d.ts'
+    enabled: true
+    related_spec: '.ai/specs/OP-114-spec.md'
+    verifications:
+      - id: OP-114-STRUCT-1
+        name: 'domain/types/user.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/user.ts
+            must_exist: true
+      - id: OP-114-STRUCT-2
+        name: 'domain/types/service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/service.ts
+            must_exist: true
+      - id: OP-114-STRUCT-3
+        name: 'domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-114-STRUCT-4
+        name: 'domain/types/index.ts existe y re-exporta todos los tipos'
+        type: filesystem
+        checks:
+          - path: src/domain/types/index.ts
+            must_exist: true
+
   # === Suites por ticket (añadir conforme se implementen) ===
 
   OP-112_revisar_schema_table:

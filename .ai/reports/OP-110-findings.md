@@ -54,7 +54,16 @@ _En construcción. Se irá completando a medida que se finalicen OP-111, OP-112,
 
 ### Tipos de dominio (OP-114)
 
-_Pendiente — OP-114 no iniciada._
+| ID | Severidad | Descripción | Acción propuesta |
+|----|-----------|-------------|-----------------|
+| H-114-1 | Mejora | `TableAvailability.reservation` incluye `userId: string`, exponiendo el ID del propietario de la reserva a cualquier usuario autenticado que consulte disponibilidad. El README §7 solo requiere mostrar el nombre, no el ID. | Eliminar `userId` de `TableAvailability.reservation` o moverlo a una variante solo para admin. |
+| H-114-2 | Mejora | `next-auth.d.ts` solo extiende `Session`, no el tipo `User` de NextAuth. Los callbacks `jwt` y `session` de NextAuth reciben un parámetro `user` que sin la extensión no tiene tipado correcto para `role`. Puede producir errores silenciosos de tipado en `src/lib/auth.ts`. | Añadir `interface User` en el mismo módulo `"next-auth"` con los campos personalizados. |
+| H-114-3 | Observación | `isActive` no está en la sesión (`next-auth.d.ts`). Para bloquear acceso de usuarios desactivados, hay que consultar la BD en cada request. Si se añade `isActive` al token JWT y se refresca en el callback `session`, se evitaría la consulta extra. | Evaluar en OP-160: añadir `isActive` al token JWT es una mejora de rendimiento y seguridad, pero introduce desfase temporal si el admin desactiva un usuario (hasta que el token expire). |
+| H-114-4 | Observación | `UserPublic` incluye `isActive: boolean`. Para usuarios normales no es sensible, pero expone el estado de activación al propio usuario. Si en el futuro se implementa auto-desactivación, el usuario podría ver que está desactivado antes de que se le comunique. | Observación sin acción inmediata. Documentar como decisión intencional o crear `UserPublicAdmin` con ese campo. |
+| H-114-5 | Observación | Ausencia de tipos DTO para creación/actualización de entidades (`CreateUserDTO`, `CreateTableDTO`, `CreateReservationDTO`). La validación de entrada se hace ad-hoc en las rutas API con comprobaciones inline. | Evaluar si centralizar los DTOs mejoraría la mantenibilidad. No urgente en esta fase. |
+| H-114-6 | Observación | `TableWithStatus` y `TableAvailability` son dos tipos públicos para representaciones enriquecidas de mesa. `TableWithStatus` incluye `reservedBy` pero no `assignedUser` como objeto separado; `TableAvailability` tiene ambos como objetos con `_id` y `name`. No hay evidencia de que `TableWithStatus` se use actualmente. | Verificar si `TableWithStatus` está en uso. Si no, eliminarlo en OP-160 para reducir duplicidad. |
+
+**Veredicto OP-114:** Los tipos de dominio son coherentes con los schemas. El hallazgo más relevante es H-114-1 (exposición de `userId` en disponibilidad pública) que es una mejora de privacidad. H-114-2 (extensión incompleta de NextAuth) puede generar errores silenciosos de tipado en los callbacks de auth. El resto son observaciones de diseño.
 
 ---
 
@@ -73,3 +82,6 @@ _Se completará cuando todas las subtareas estén finalizadas._
 - **H-112-6**: La validación de `assignedTo` requerido para `fixed`/`preferential` se recomienda en la capa de servicio, no en el schema, para mantener la separación de responsabilidades.
 - **H-113-1**: Se propone añadir `set: normalizeDate` en el campo `date` del schema como defensa en profundidad. La normalización ya ocurre en el servicio, pero el schema es la última barrera antes de la base de datos. Alternativa: documentar explícitamente el contrato del repositorio.
 - **H-113-4**: Consistente con H-111-6 — campos con `default` deberían declarar también `required: true` para claridad.
+- **H-114-1**: Eliminar `userId` de `TableAvailability.reservation` — el cliente solo necesita el nombre para mostrar en el plano. El ID del propietario de una reserva no debería ser visible para otros usuarios.
+- **H-114-2**: Extender también el tipo `User` de NextAuth en `next-auth.d.ts` para garantizar tipado correcto en los callbacks de auth.
+- **H-114-6**: Verificar si `TableWithStatus` tiene uso activo antes de decidir si eliminarlo en OP-160.
