@@ -219,3 +219,149 @@
 - El flujo completo magic link (solicitud → verify page → clic en enlace → `signIn` callback → sesión → redirección a `callbackUrl`) es coherente de extremo a extremo. ✅
 - El grupo de rutas `(auth)` está correctamente separado del grupo `(main)`. Las rutas de auth son accesibles sin sesión. No hay rutas de auth que deberían estar protegidas. ✅
 - `window.location.href` en lugar de `router.push()` es una observación de estilo sin impacto de seguridad ni funcional.
+
+---
+
+## Informe consolidado OP-140 (producido por OP-145)
+
+> Este informe es la fuente de trabajo para OP-160. Cada hallazgo tiene ID único `H-140-N`, severidad, fichero, descripción del problema, riesgo real y propuesta de corrección orientativa.
+
+### Resumen ejecutivo
+
+| Total | Bloqueantes | Mejoras | Observaciones |
+|-------|-------------|---------|---------------|
+| 7 | 0 | 3 | 4 |
+
+La capa de autenticación es **funcionalmente correcta y segura** para el caso feliz. No se detectaron vulnerabilidades bloqueantes ni credenciales expuestas. Los hallazgos son mejoras de robustez y observaciones de coherencia interna que deben abordarse antes de producción.
+
+---
+
+### Hallazgos
+
+#### H-140-1 — `session` callback no verifica `isActive`
+- **Severidad**: Mejora
+- **Origen**: OP-142
+- **Fichero**: `src/lib/auth.ts` (línea ~83)
+- **Descripción**: El callback `session` busca el usuario en BD sin filtrar por `isActive: true`. Un usuario desactivado por un administrador después de hacer login mantiene su sesión activa y puede seguir accediendo a la aplicación hasta que la sesión expire.
+- **Riesgo**: Un usuario dado de baja no pierde el acceso de forma inmediata. Con `maxAge` de 90 días, el acceso puede prolongarse hasta 3 meses tras la desactivación; con `updateAge` de 24h, al menos hasta el próximo ciclo de renovación.
+- **Propuesta para OP-160**: Añadir `isActive: true` a la query de `session` callback. Si el usuario está inactivo, devolver la sesión sin enriquecimiento o llamar a `signOut()` para invalidarla activamente.
+
+```ts
+// Antes
+const dbUser = await User.findOne({ email: user.email.toLowerCase() }).lean();
+
+// Después
+const dbUser = await User.findOne({
+  email: user.email.toLowerCase(),
+  isActive: true,
+}).lean();
+```
+
+---
+
+#### H-140-2 — Variables de entorno de email sin validación en arranque
+- **Severidad**: Mejora
+- **Origen**: OP-141
+- **Fichero**: `src/lib/auth.ts` (líneas ~29-38)
+- **Descripción**: Las variables `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD` y `EMAIL_FROM` se pasan directamente a `EmailProvider` sin comprobación de presencia. Si alguna no está definida en el entorno, el proveedor se registra con `undefined`/`NaN` sin error visible en arranque. El fallo ocurre silenciosamente en el primer intento de envío de magic link. En concreto, `Number(undefined)` produce `NaN` para el puerto.
+- **Riesgo**: La aplicación arranca sin errores pero el flujo de autenticación completo falla en el momento de enviar el primer magic link. Difícil de diagnosticar en producción si los logs no son claros.
+- **Propuesta para OP-160**: Añadir validación de variables de entorno de email en tiempo de módulo, similar al patrón de `auth-mongodb-client.ts`. Puede centralizarse en un módulo `src/lib/env-validation.ts` que valide todas las variables requeridas al arrancar.
+
+```ts
+// Al inicio de auth.ts o en env-validation.ts
+const requiredEnvVars = [
+  'EMAIL_SERVER_HOST', 'EMAIL_SERVER_PORT',
+  'EMAIL_SERVER_USER', 'EMAIL_SERVER_PASSWORD', 'EMAIL_FROM',
+];
+for (const key of requiredEnvVars) {
+  if (!process.env[key]) throw new Error(`Missing env var: ${key}`);
+}
+```
+
+---
+
+#### H-140-3 — `requireSession()` sin `try/catch` alrededor de `auth()`
+- **Severidad**: Mejora
+- **Origen**: OP-143
+- **Fichero**: `src/lib/api-auth.ts` (línea ~36)
+- **Descripción**: `requireSession()` no envuelve `await auth()` en un bloque `try/catch`. Si `auth()` lanza una excepción (por ejemplo, la BD cae durante la lectura de la sesión desde el adapter), la excepción se propaga al handler y Next.js responde con un 500 genérico no controlado.
+- **Riesgo**: Un fallo puntual de BD al leer la sesión genera un 500 no gestionado en lugar de una respuesta controlada. No hay fuga de información (Next.js no expone el stack), pero la respuesta es menos precisa que un 503 con mensaje claro.
+- **Propuesta para OP-160**: Envolver `await auth()` en `try/catch` y devolver un `NextResponse` con status 503 o 500 y mensaje genérico controlado.
+
+```ts
+export async function requireSession(): Promise<AuthResult> {
+  let session: Session | null;
+  try {
+    session = await auth();
+  } catch {
+    return {
+      session: null,
+      error: NextResponse.json({ error: "Error de servidor" }, { status: 503 }),
+    };
+  }
+  // ...
+}
+```
+
+---
+
+#### H-140-4 — Inconsistencia tipo/runtime cuando el enriquecimiento de sesión falla
+- **Severidad**: Observación
+- **Origen**: OP-142
+- **Fichero**: `src/lib/auth.ts` (líneas ~79-98), `src/domain/types/next-auth.d.ts`
+- **Descripción**: `next-auth.d.ts` declara `id`, `role` y `name` como no opcionales en `Session.user`. Sin embargo, si el bloque `catch` del callback `session` se activa (fallo de BD durante enriquecimiento), esos campos no se asignan y quedan como `undefined` en runtime. TypeScript no lo detecta porque el tipo ya está declarado como no opcional.
+- **Riesgo**: Código que accede a `session.user.id` o `session.user.role` asume que son `string`/`UserRole` y no comprueba undefined. Si el enriquecimiento falla de forma silenciosa, puede provocar errores en tiempo de ejecución difíciles de trazar. El riesgo es bajo en condiciones normales (el fallo de BD es transitorio), pero es una inconsistencia estructural.
+- **Propuesta para OP-160**: Opción A — marcar `id`, `role` y `name` como opcionales en `next-auth.d.ts` y añadir guards en el código que los consume. Opción B — si el enriquecimiento falla, invalidar la sesión en lugar de devolverla incompleta. La opción B es más segura pero más invasiva.
+
+---
+
+#### H-140-5 — `callbackUrl` sin validación propia en la app
+- **Severidad**: Observación
+- **Origen**: OP-144
+- **Fichero**: `src/app/(auth)/login/page.tsx` (línea ~22)
+- **Descripción**: `callbackUrl` se lee de `useSearchParams()` y se pasa directamente a `signIn("email", { callbackUrl })` sin ninguna validación en la app. La protección contra open redirect recae exclusivamente en NextAuth v5, que valida el `callbackUrl` contra `NEXTAUTH_URL`.
+- **Riesgo**: Si `NEXTAUTH_URL` no está correctamente configurado en producción (o no está definido), la validación del framework puede ser más laxa y permitir redirecciones a orígenes externos. Riesgo bajo si el despliegue es correcto, pero sin capa defensiva propia en la app.
+- **Propuesta para OP-160**: Añadir validación simple en la app que garantice que `callbackUrl` es una ruta relativa (empieza por `/`) antes de pasarlo a `signIn`. Alternativa: documentarlo explícitamente como requisito de despliegue en `NEXTAUTH_URL`.
+
+```ts
+// Validación defensiva simple
+const safeCallbackUrl = callbackUrl?.startsWith('/') ? callbackUrl : '/';
+```
+
+---
+
+#### H-140-6 — `dbUser` null en `session` deja sesión sin enriquecimiento
+- **Severidad**: Observación
+- **Origen**: OP-142
+- **Fichero**: `src/lib/auth.ts` (líneas ~86-91)
+- **Descripción**: Si `dbUser` es `null` (usuario eliminado directamente de BD después de que su sesión quedara almacenada en NextAuth), el callback `session` no asigna `id`, `role` ni `name`. La sesión sigue siendo técnicamente válida en el adapter de NextAuth, pero los campos del dominio están vacíos.
+- **Riesgo**: Muy bajo en una app interna donde los usuarios se desactivan (no se eliminan) — y H-140-1 propone verificar `isActive` que mitigaría también este caso. Sin embargo, un usuario eliminado directamente de BD podría seguir con una sesión de NextAuth válida indefinidamente.
+- **Propuesta para OP-160**: Si `dbUser` es `null` tras la query en el callback `session`, tratar como si `isActive` fuera falso (mismo comportamiento que H-140-1). La corrección de H-140-1 cubre parcialmente este caso si se añade la verificación correcta.
+
+---
+
+#### H-140-7 — `<Suspense>` sin `fallback` en layout de auth
+- **Severidad**: Observación
+- **Origen**: OP-144
+- **Fichero**: `src/app/(auth)/layout.tsx` (línea ~15)
+- **Descripción**: El `<Suspense>` que envuelve los hijos del layout de auth no tiene prop `fallback`. Durante la hidratación SSR→cliente, Next.js renderiza `null` para el subtree suspendido, lo que puede causar un flash de pantalla vacía.
+- **Riesgo**: Sin impacto de seguridad ni funcional. Es una observación de UX: el usuario puede ver un parpadeo antes de que la página se hidrate completamente.
+- **Propuesta para OP-160**: Añadir un `fallback` mínimo, como un spinner o un div vacío con altura fija, para evitar el flash.
+
+```tsx
+<Suspense fallback={<div className="flex-1" />}>{children}</Suspense>
+```
+
+---
+
+### Candidatos revisados — sin hallazgo
+
+Los siguientes puntos identificados en el diseño de specs fueron revisados durante la ejecución y **no generaron hallazgo**:
+
+| Candidato | Resultado | Justificación |
+|---|---|---|
+| Race condition en `getMongoClient()` al crear dos `MongoClient` concurrentes | Sin hallazgo | La promesa se asigna a `cached.promise` antes de `await`, por lo que llamadas concurrentes comparten la misma `Promise`. No hay ventana de doble creación. |
+| `MONGODB_URI` con valor vacío `""` pasa el `if (!MONGODB_URI)` | Sin hallazgo | `""` es falsy en JavaScript — el `if (!MONGODB_URI)` lo detecta y lanza error. |
+| `dbUser.role as UserRole` enmascara `undefined` | Sin hallazgo | El schema Mongoose tiene `default: "user"` y `enum: ["user","admin"]`, garantizando que el campo siempre tiene valor en documentos válidos. El cast es seguro para el estado actual de la BD. |
+| `login/error/page.tsx` no lee `?error=` — ¿es intencional? | Confirmado correcto | La página ignora completamente el parámetro de la URL, evitando reflected XSS. Comportamiento intencional y correcto. |
+| `window.location.href` en lugar de `router.push()` | Sin hallazgo | Funcional, sin impacto de seguridad. Observación de estilo documentada pero no clasificada como hallazgo. |

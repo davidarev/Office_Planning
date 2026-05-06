@@ -433,6 +433,30 @@ suites:
           - path: .ai/reports/OP-130-findings.md
             must_exist: true
 
+  OP-145_documentar_hallazgos_OP-140:
+    description: 'Verificación del informe consolidado de auditoría OP-140 (autenticación y sesiones)'
+    enabled: true
+    related_spec: '.ai/specs/OP-145-spec.md'
+    verifications:
+      - id: OP-145-STRUCT-1
+        name: 'Informe OP-140-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+      - id: OP-145-STRUCT-2
+        name: 'Spec OP-140 existe con sección Informe de hallazgos'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-140-spec.md
+            must_exist: true
+      - id: OP-145-STRUCT-3
+        name: 'Spec OP-145 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-145-spec.md
+            must_exist: true
+
   OP-144_revisar_paginas_auth:
     description: 'Auditoría de páginas de auth (login, verify, error, layout) y handler de NextAuth'
     enabled: true

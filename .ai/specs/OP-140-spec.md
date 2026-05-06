@@ -38,3 +38,18 @@ Revisar la configuración completa de NextAuth, callbacks, adapter MongoDB, fluj
 | OP-143 | Revisar auth-mongodb-client y api-auth |
 | OP-144 | Revisar páginas de auth |
 | OP-145 | Documentar hallazgos OP-140 |
+
+## Informe de hallazgos OP-140
+
+> Informe consolidado producido por OP-145. Fuente de trabajo para OP-160.
+> Detalle completo en `.ai/reports/OP-140-findings.md`.
+
+| ID | Severidad | Origen | Fichero | Descripción |
+|---|---|---|---|---|
+| H-140-1 | Mejora | OP-142 | `src/lib/auth.ts` | `session` callback no verifica `isActive` — usuario desactivado mantiene sesión hasta expiración (máx. 90 días) |
+| H-140-2 | Mejora | OP-141 | `src/lib/auth.ts` | Variables de entorno de email sin validación en arranque — fallo silencioso si no están definidas |
+| H-140-3 | Mejora | OP-143 | `src/lib/api-auth.ts` | `requireSession()` sin `try/catch` alrededor de `auth()` — excepción de BD genera 500 no controlado |
+| H-140-4 | Observación | OP-142 | `src/lib/auth.ts`, `next-auth.d.ts` | Inconsistencia tipo/runtime: `id`, `role`, `name` declarados no opcionales pero pueden ser `undefined` si el enriquecimiento falla |
+| H-140-5 | Observación | OP-144 | `src/app/(auth)/login/page.tsx` | `callbackUrl` sin validación propia — protección de open redirect delegada al framework |
+| H-140-6 | Observación | OP-142 | `src/lib/auth.ts` | `dbUser` null en `session` deja sesión sin enriquecimiento; cubierto parcialmente por H-140-1 |
+| H-140-7 | Observación | OP-144 | `src/app/(auth)/layout.tsx` | `<Suspense>` sin `fallback` — posible flash de pantalla vacía, sin impacto funcional |
