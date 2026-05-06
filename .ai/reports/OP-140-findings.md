@@ -161,3 +161,61 @@
 
 - No hay dependencia circular: `api-auth.ts` importa de `auth.ts`, pero `auth.ts` no importa de `api-auth.ts`. ✅
 - La separación de responsabilidades es clara: `auth-mongodb-client.ts` provee el cliente para el adapter, `api-auth.ts` provee el helper de sesión para los handlers. No genera confusión sobre qué usar en cada contexto.
+
+---
+
+## OP-144 — Páginas de auth (`src/app/(auth)/`)
+
+**Fecha de auditoría**: 2026-05-06
+**Auditor**: Claude Code (IA-asistido)
+
+### AC-1: Formulario de login — normalización, `redirect: false` y mensaje genérico — PASS
+
+- `email.trim().toLowerCase()` aplicado antes de `signIn` — coherente con la normalización en BD (`lowercase: true` en schema). ✅
+- `redirect: false` correcto para manejar el resultado en el cliente antes de redirigir. ✅
+- `result?.error` con optional chaining cubre el caso de `result` siendo `undefined`. ✅
+- Mensaje genérico `"Ha ocurrido un error. Inténtalo de nuevo."` en todos los casos de fallo (tanto `result?.error` como el bloque `catch`). No revela si el email existe. ✅
+- Botón deshabilitado durante `isLoading` — previene envíos múltiples. ✅
+- `type="email"` + `required` — validación de formato mínima en cliente. ✅
+- `"use client"` necesario y correcto por `useState` y `useSearchParams`. ✅
+- `window.location.href = "/login/verify"` tras éxito: navegación completa (no Next.js router). Aceptable en este contexto para salir del estado del formulario, aunque `router.push()` sería más idiomático en Next.js.
+
+### AC-2: `callbackUrl` y riesgo de open redirect — PASS con observación
+
+- `callbackUrl` se lee de `useSearchParams()` y se pasa directamente a `signIn("email", { callbackUrl })` sin validación adicional en la app.
+- NextAuth v5 valida internamente el `callbackUrl` — rechaza URLs de orígenes externos y solo acepta rutas relativas o del mismo origen (`NEXTAUTH_URL`). La protección existe a nivel de framework.
+- **Observación**: la protección de open redirect depende enteramente de que `NEXTAUTH_URL` esté correctamente configurado en producción. Si esta variable no está definida o está mal configurada, la validación del framework puede ser más laxa. La app no añade ninguna capa defensiva propia.
+- **Severidad**: Observación (el riesgo es real pero está mitigado por NextAuth siempre que `NEXTAUTH_URL` esté bien configurado; la recomendación es añadir validación defensiva en la app o documentarlo explícitamente en la configuración de despliegue).
+
+### AC-3: Página de error — no refleja `?error=` ni expone detalles internos — PASS
+
+- `AuthErrorPage` no lee `useSearchParams()` ni renderiza ningún valor de la URL. El parámetro `?error=AccessDenied` es ignorado completamente. Sin riesgo de reflected XSS. ✅
+- Mensaje genérico: menciona "enlace expirado" y "email no autorizado" como causas posibles sin revelar cuál ocurrió. ✅
+- Enlace de vuelta a `/login` presente. ✅
+- Sin referencias a detalles de infraestructura ni mensajes técnicos. ✅
+
+### AC-4: `<Suspense>` en layout — PASS con observación menor
+
+- `<Suspense>{children}</Suspense>` envuelve correctamente a todos los hijos. ✅
+- Necesario porque `login/page.tsx` usa `useSearchParams()` — sin `Suspense` boundary el App Router de Next.js lanza error en SSR. ✅
+- Sin navegación en el layout — correcto para rutas pre-autenticación. El layout no comprueba sesión — correcto, estas rutas son públicas. ✅
+- **Observación menor**: `<Suspense>` sin prop `fallback` — durante la hidratación se renderiza `null`, lo que puede causar un flash de pantalla vacía. No es un error funcional ni de seguridad.
+
+### AC-5: Handler de NextAuth — PASS
+
+- `export const { GET, POST } = handlers` — forma correcta para Next.js App Router con NextAuth v5. ✅
+- Sin lógica adicional en el handler: toda la lógica está en los callbacks de `auth.ts`. ✅
+- JSDoc claro y suficiente. ✅
+
+### AC-6: Hallazgos consolidados para OP-160
+
+| ID | Severidad | Descripción | Fichero |
+|---|---|---|---|
+| H-144-1 | Observación | `callbackUrl` se pasa a NextAuth sin validación propia en la app. La protección de open redirect depende de que `NEXTAUTH_URL` esté correctamente configurado en producción. | `src/app/(auth)/login/page.tsx` |
+| H-144-2 | Observación menor | `<Suspense>` sin `fallback` en el layout — puede causar flash de pantalla vacía durante hidratación. Sin impacto de seguridad. | `src/app/(auth)/layout.tsx` |
+
+### Observaciones adicionales
+
+- El flujo completo magic link (solicitud → verify page → clic en enlace → `signIn` callback → sesión → redirección a `callbackUrl`) es coherente de extremo a extremo. ✅
+- El grupo de rutas `(auth)` está correctamente separado del grupo `(main)`. Las rutas de auth son accesibles sin sesión. No hay rutas de auth que deberían estar protegidas. ✅
+- `window.location.href` en lugar de `router.push()` es una observación de estilo sin impacto de seguridad ni funcional.

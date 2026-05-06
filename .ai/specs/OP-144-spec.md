@@ -75,3 +75,33 @@ Verificar que el flujo completo de UI de autenticación es correcto, seguro y co
 - Todos los AC en PASS
 - Hallazgos registrados para su consolidación en OP-145
 - Sin modificaciones al código fuente
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-06 (CET)
+- Rama: feature/OP-140-implementar-mejoras-seguridad-autenticacion
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS — Formulario normaliza email con `trim().toLowerCase()`, usa `redirect: false`, mensaje genérico en todos los fallos, botón deshabilitado durante carga, `type="email"` + `required`.
+  - AC-2: PASS con observación — NextAuth v5 valida `callbackUrl` internamente. Sin validación adicional en la app. Riesgo mitigado por framework con `NEXTAUTH_URL` correctamente configurado. Hallazgo H-144-1.
+  - AC-3: PASS — Página de error no lee ni renderiza `?error=` de la URL. Sin riesgo de reflected XSS. Mensaje genérico. Enlace de vuelta a `/login`.
+  - AC-4: PASS con observación menor — `<Suspense>` correcto y necesario para `useSearchParams()`. Sin `fallback` causa flash de pantalla vacía (H-144-2, sin impacto de seguridad).
+  - AC-5: PASS — `export const { GET, POST } = handlers` correcto para App Router + NextAuth v5. Sin lógica adicional en el handler.
+  - AC-6: PASS — Hallazgos H-144-1 y H-144-2 registrados en `.ai/reports/OP-140-findings.md`.
+- Ficheros auditados (sin modificaciones):
+  - `src/app/(auth)/login/page.tsx`
+  - `src/app/(auth)/login/verify/page.tsx`
+  - `src/app/(auth)/login/error/page.tsx`
+  - `src/app/(auth)/layout.tsx`
+  - `src/app/api/auth/[...nextauth]/route.ts`
+- Ficheros modificados:
+  - `.ai/reports/OP-140-findings.md` (sección OP-144 añadida)
+- verify:
+  - Comando ejecutado: auditoría estática (tarea de solo lectura, sin cambios de código)
+  - Resultado: PASS — todos los AC verificados manualmente contra el código fuente
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: lectura y análisis de ficheros, redacción del informe de hallazgos y Execution Result
+- Decisiones técnicas:
+  - H-144-1 se clasifica como "Observación" porque NextAuth v5 tiene protección propia contra open redirect; el riesgo solo se materializa si `NEXTAUTH_URL` está mal configurado en producción.
+  - H-144-2 se clasifica como "Observación menor" porque no tiene impacto de seguridad ni funcional — es una mejora de UX.

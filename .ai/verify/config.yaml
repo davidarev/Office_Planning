@@ -433,6 +433,48 @@ suites:
           - path: .ai/reports/OP-130-findings.md
             must_exist: true
 
+  OP-144_revisar_paginas_auth:
+    description: 'Auditoría de páginas de auth (login, verify, error, layout) y handler de NextAuth'
+    enabled: true
+    related_spec: '.ai/specs/OP-144-spec.md'
+    verifications:
+      - id: OP-144-STRUCT-1
+        name: 'src/app/(auth)/login/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-2
+        name: 'src/app/(auth)/login/verify/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/verify/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-3
+        name: 'src/app/(auth)/login/error/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/error/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-4
+        name: 'src/app/(auth)/layout.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/layout.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-5
+        name: 'src/app/api/auth/[...nextauth]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/auth/[...nextauth]/route.ts
+            must_exist: true
+      - id: OP-144-STRUCT-6
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-144'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
   OP-143_revisar_auth_mongodb_client_y_api_auth:
     description: 'Auditoría de auth-mongodb-client.ts (singleton MongoClient) y api-auth.ts (requireSession helper)'
     enabled: true
