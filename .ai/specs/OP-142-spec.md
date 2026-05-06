@@ -67,3 +67,31 @@ Verificar que ambos callbacks implementan correctamente la lógica de autorizaci
 - Todos los AC en PASS
 - Hallazgos registrados para su consolidación en OP-145
 - Sin modificaciones al código fuente
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-06 (CET)
+- Rama: feature/OP-140-implementar-mejoras-seguridad-autenticacion
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS — `signIn` comprueba `user.email`, filtra por `{ email: toLowerCase(), isActive: true }`, mensaje genérico `AccessDenied` sin revelar existencia del email.
+  - AC-2: PASS — `toLowerCase()` e `isActive: true` presentes en la query. Bloque `catch` redirige a error, no devuelve `true`. Uso de `connectDB()` correcto para el modelo `User` del dominio.
+  - AC-3: PASS con observación — `session` enriquece correctamente `id`, `role`, `name`. Si `dbUser` es null (usuario eliminado con sesión activa), los campos quedan sin asignar pero la sesión sigue válida.
+  - AC-4: PASS — Hallazgo H-142-1 documentado: `session` no verifica `isActive`, un usuario desactivado mantiene sesión activa hasta expiración (máx. 90 días). Severidad: Mejora.
+  - AC-5: PASS con observación — Coherencia entre callback y `next-auth.d.ts` correcta en el caso feliz. Si el `catch` se activa, los campos no opcionales declarados pueden ser `undefined` en runtime. Hallazgo H-142-2 documentado.
+  - AC-6: PASS — Hallazgos H-142-1, H-142-2, H-142-3 registrados en `.ai/reports/OP-140-findings.md`.
+- Ficheros auditados (sin modificaciones):
+  - `src/lib/auth.ts`
+  - `src/domain/types/next-auth.d.ts`
+  - `src/lib/models/user.model.ts`
+- Ficheros modificados:
+  - `.ai/reports/OP-140-findings.md` (sección OP-142 añadida)
+- verify:
+  - Comando ejecutado: auditoría estática (tarea de solo lectura, sin cambios de código)
+  - Resultado: PASS — todos los AC verificados manualmente contra el código fuente
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: lectura y análisis de ficheros, redacción del informe de hallazgos y Execution Result
+- Decisiones técnicas:
+  - H-142-1 se clasifica como "Mejora" y no "Bloqueante" porque en una app interna con pocos usuarios la probabilidad de que un usuario desactivado explote activamente la sesión vigente es baja, pero es un gap real que debe corregirse en OP-160.
+  - H-142-2 se clasifica como "Observación" porque el `catch` silenciante es una decisión deliberada documentada en el código: la sesión sigue siendo válida aunque el enriquecimiento falle.

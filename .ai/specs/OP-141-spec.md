@@ -62,3 +62,33 @@ Verificar que la configuración base de NextAuth — adapter, provider, session 
 - Todos los AC en PASS
 - Hallazgos registrados para su consolidación en OP-145
 - Sin modificaciones al código fuente
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-06 (CET)
+- Rama: feature/OP-140-implementar-mejoras-seguridad-autenticacion
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS — `MongoDBAdapter(getMongoClient())` usa `Promise<MongoClient>` nativo, independiente de Mongoose. Singleton correcto con `global.mongoClientCache`.
+  - AC-2: PASS — Todas las variables de entorno referenciadas sin hardcoding. `Number(EMAIL_SERVER_PORT)` correcto. Observación: sin validación defensiva para `NaN` si la variable no está definida.
+  - AC-3: PASS — `strategy: "database"` + MongoDBAdapter garantiza sesión en MongoDB. `maxAge` = 90 días y `updateAge` = 24h son correctos.
+  - AC-4: PASS — `/login`, `/login/verify` y `/login/error` existen en `src/app/(auth)/`. Keys `signIn`, `verifyRequest`, `error` son los correctos para NextAuth v5.
+  - AC-5: PASS — Exportaciones `handlers`, `signIn`, `signOut`, `auth` correctas. Sin credenciales hardcodeadas. JSDoc adecuado.
+  - AC-6: PASS — Hallazgo H-141-1 registrado en `.ai/reports/OP-140-findings.md` con severidad "Mejora".
+- Ficheros auditados (sin modificaciones):
+  - `src/lib/auth.ts`
+  - `src/lib/auth-mongodb-client.ts`
+  - `src/lib/mongodb.ts`
+  - `src/app/(auth)/login/`
+  - `src/app/(auth)/login/verify/`
+  - `src/app/(auth)/login/error/`
+- Ficheros creados:
+  - `.ai/reports/OP-140-findings.md` (hallazgo H-141-1)
+- verify:
+  - Comando ejecutado: auditoría estática (tarea de solo lectura, sin cambios de código)
+  - Resultado: PASS — todos los AC verificados manualmente contra el código fuente
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: lectura y análisis de ficheros, redacción del informe de hallazgos y Execution Result
+- Decisiones técnicas:
+  - El riesgo de `NaN` en `EMAIL_SERVER_PORT` se clasifica como "Mejora" (no bloqueante) porque el fallo ocurriría en el primer envío de email, no en arranque, y es detectado en QA si el entorno de staging está configurado.
