@@ -259,6 +259,42 @@ suites:
         checks:
           - path: .ai/reports/OP-110-findings.md
             must_exist: true
+  OP-131_revisar_endpoints_reservas:
+    description: 'Auditoría de los cuatro endpoints de reservas — autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-131-spec.md'
+    verifications:
+      - id: OP-131-STRUCT-1
+        name: 'api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-2
+        name: 'api/reservations/[id]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/[id]/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-3
+        name: 'api/reservations/week/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/week/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-4
+        name: 'lib/api-auth.ts existe (requireSession)'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-131-STRUCT-5
+        name: 'domain/types/service.ts existe (ServiceErrorCode)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/service.ts
+            must_exist: true
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
