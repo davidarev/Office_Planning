@@ -433,6 +433,36 @@ suites:
           - path: .ai/reports/OP-130-findings.md
             must_exist: true
 
+  OP-142_revisar_callbacks_signin_session:
+    description: 'Auditoría de callbacks signIn y session en src/lib/auth.ts — autorización, isActive, enriquecimiento de sesión y coherencia de tipos'
+    enabled: true
+    related_spec: '.ai/specs/OP-142-spec.md'
+    verifications:
+      - id: OP-142-STRUCT-1
+        name: 'src/lib/auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-142-STRUCT-2
+        name: 'src/domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-142-STRUCT-3
+        name: 'src/lib/models/user.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/user.model.ts
+            must_exist: true
+      - id: OP-142-STRUCT-4
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-142'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
   OP-141_revisar_config_nextauth:
     description: 'Auditoría de src/lib/auth.ts — adapter, provider, session strategy y páginas personalizadas'
     enabled: true
