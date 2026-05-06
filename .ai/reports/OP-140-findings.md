@@ -109,3 +109,55 @@
 | H-142-1 | Mejora | `session` callback no verifica `isActive`. Un usuario desactivado mantiene sesión activa hasta que expire (máx. 90 días). Añadir `isActive: true` a la query de `session`. | `src/lib/auth.ts` |
 | H-142-2 | Observación | Si el enriquecimiento de sesión falla (catch), los campos `id`, `role` y `name` son `undefined` en runtime aunque `next-auth.d.ts` los declara como no opcionales. | `src/lib/auth.ts`, `src/domain/types/next-auth.d.ts` |
 | H-142-3 | Observación | Si `dbUser` es `null` en `session` (usuario eliminado de BD con sesión vigente en NextAuth), la sesión queda sin enriquecimiento. Bajo riesgo en app interna, pero hueco de robustez. | `src/lib/auth.ts` |
+
+---
+
+## OP-143 — `auth-mongodb-client.ts` y `api-auth.ts`
+
+**Fecha de auditoría**: 2026-05-06
+**Auditor**: Claude Code (IA-asistido)
+
+### AC-1: Singleton `getMongoClient()` con `global` cache — PASS
+
+- Patrón `global.mongoClientCache` correcto para Next.js con hot-reload: previene múltiples conexiones en desarrollo y en invocaciones serverless.
+- La función cachea primero la `Promise<MongoClient>` y luego el `MongoClient` resuelto. Llamadas concurrentes antes de resolver comparten la misma promesa — no se crean instancias duplicadas.
+- `cached.client` se evalúa con retorno temprano antes de crear la promesa: evita doble conexión en el caso ya resuelto.
+- `MongoClientCache { client: MongoClient | null; promise: Promise<MongoClient> | null }` cubre los tres estados posibles: sin conectar (ambos null), conectando (solo promise set), conectado (ambos set). ✅
+- Completamente independiente de `connectDB()` — usa `global.mongoClientCache` vs `global.mongooseCache`. Sin riesgo de interferencia. ✅
+
+### AC-2: Validación de `MONGODB_URI` y cast `as string` — PASS
+
+- `if (!MONGODB_URI)` en nivel de módulo detecta tanto `undefined` como string vacío `""` (ambos son falsy). ✅
+- El `throw new Error(...)` en nivel de módulo hace que el servidor falle en arranque si la variable no está configurada — comportamiento deseable y explícito.
+- `MONGODB_URI as string` en `new MongoClient(MONGODB_URI as string)` es seguro: la guarda anterior garantiza que el valor no es `undefined`/vacío en tiempo de ejecución. TypeScript no puede deducirlo por scope, pero el cast es correcto. ✅
+
+### AC-3: `requireSession()` usa `auth()` correctamente — PASS
+
+- `auth()` de NextAuth v5 es la función correcta para obtener la sesión en contextos server-side (API routes, Server Components). ✅
+- `!session?.user?.id` es suficiente: comprueba que la sesión existe, tiene `user` y tiene `id`. Dado que `id` solo se asigna en el `session` callback para usuarios válidos y enriquecidos, su ausencia indica sesión inválida o enriquecimiento fallido.
+- Comportamiento ante H-142-2 (enriquecimiento fallido → `id` undefined): `requireSession()` rechaza la petición con 401. Esto es **fail-secure**: ante duda, deniega. Comportamiento correcto. ✅
+
+### AC-4: Tipo `AuthResult` y status 401 — PASS
+
+- `AuthResult` como discriminated union `{ session: Session; error: null } | { session: null; error: NextResponse }` permite type narrowing limpio con `if (error) return error` — en el bloque siguiente `session` es `Session` (no null). ✅
+- `import type { Session } from "next-auth"` recoge el tipo extendido declarado en `next-auth.d.ts` mediante declaration merging de TypeScript. Los campos `id`, `role`, `name` están disponibles en el tipo `Session` tras el narrowing. ✅
+- Status `401` correcto para sesión ausente/inválida. `403` se reserva para sesión presente sin permisos suficientes (comprobación de rol en los handlers). ✅
+- Mensaje `"No autorizado"` genérico — no revela información interna. ✅
+
+### AC-5: Ausencia de manejo de errores en `auth()` — hallazgo de mejora
+
+- `requireSession()` no tiene bloque `try/catch`. Si `auth()` lanza excepción (p. ej., BD caída durante lectura de sesión desde el adapter), la excepción se propaga al handler y puede generar una respuesta 500 no controlada.
+- En el contexto actual, los handlers tampoco tienen `try/catch` alrededor de `requireSession()`, por lo que la excepción llegaría a Next.js y generaría un error genérico del framework.
+- **Severidad**: Mejora (en producción, un fallo puntual de BD al leer la sesión causaría un 500 en lugar de un 503 o un mensaje controlado).
+- **Recomendación**: envolver `await auth()` en un `try/catch` en `requireSession()` y devolver un `NextResponse` con status 503 o 500 con mensaje controlado.
+
+### AC-6: Hallazgos consolidados para OP-160
+
+| ID | Severidad | Descripción | Fichero |
+|---|---|---|---|
+| H-143-1 | Mejora | `requireSession()` no tiene `try/catch` alrededor de `auth()`. Si la BD falla durante la lectura de sesión, la excepción se propaga sin respuesta controlada (500 no gestionado). | `src/lib/api-auth.ts` |
+
+### Observaciones adicionales
+
+- No hay dependencia circular: `api-auth.ts` importa de `auth.ts`, pero `auth.ts` no importa de `api-auth.ts`. ✅
+- La separación de responsabilidades es clara: `auth-mongodb-client.ts` provee el cliente para el adapter, `api-auth.ts` provee el helper de sesión para los handlers. No genera confusión sobre qué usar en cada contexto.

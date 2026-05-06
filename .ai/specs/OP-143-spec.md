@@ -61,3 +61,30 @@ Verificar que `auth-mongodb-client` implementa correctamente el singleton de `Mo
 - Todos los AC en PASS
 - Hallazgos registrados para su consolidación en OP-145
 - Sin modificaciones al código fuente
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-06 (CET)
+- Rama: feature/OP-140-implementar-mejoras-seguridad-autenticacion
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS — Singleton `global.mongoClientCache` correcto para hot-reload y serverless. Llamadas concurrentes comparten la misma `Promise`. Sin interferencia con `connectDB()`.
+  - AC-2: PASS — `if (!MONGODB_URI)` detecta `undefined` y string vacío. `as string` seguro dado que la guarda anterior garantiza el valor. Fallo explícito en arranque.
+  - AC-3: PASS — `auth()` correcto para server-side en NextAuth v5. `!session?.user?.id` es suficiente y fail-secure ante enriquecimiento fallido (H-142-2).
+  - AC-4: PASS — `AuthResult` discriminated union correcto para type narrowing. `Session` extendido via declaration merging. Status 401 apropiado.
+  - AC-5: PASS — Hallazgo H-143-1 documentado: `requireSession()` sin `try/catch` alrededor de `auth()`. Excepción de BD se propaga al handler como 500 no controlado. Severidad: Mejora.
+  - AC-6: PASS — Hallazgo H-143-1 registrado en `.ai/reports/OP-140-findings.md`.
+- Ficheros auditados (sin modificaciones):
+  - `src/lib/auth-mongodb-client.ts`
+  - `src/lib/api-auth.ts`
+- Ficheros modificados:
+  - `.ai/reports/OP-140-findings.md` (sección OP-143 añadida)
+- verify:
+  - Comando ejecutado: auditoría estática (tarea de solo lectura, sin cambios de código)
+  - Resultado: PASS — todos los AC verificados manualmente contra el código fuente
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: lectura y análisis de ficheros, redacción del informe de hallazgos y Execution Result
+- Decisiones técnicas:
+  - El comportamiento fail-secure de `requireSession()` ante `id` undefined (H-142-2) se considera correcto: ante sesión incompleta, denegar acceso con 401 es más seguro que permitirlo.
+  - H-143-1 se clasifica como "Mejora" y no "Bloqueante" porque Next.js captura excepciones no manejadas en route handlers y devuelve un 500 genérico, por lo que no hay fuga de información — solo una respuesta menos descriptiva.

@@ -433,6 +433,30 @@ suites:
           - path: .ai/reports/OP-130-findings.md
             must_exist: true
 
+  OP-143_revisar_auth_mongodb_client_y_api_auth:
+    description: 'Auditoría de auth-mongodb-client.ts (singleton MongoClient) y api-auth.ts (requireSession helper)'
+    enabled: true
+    related_spec: '.ai/specs/OP-143-spec.md'
+    verifications:
+      - id: OP-143-STRUCT-1
+        name: 'src/lib/auth-mongodb-client.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth-mongodb-client.ts
+            must_exist: true
+      - id: OP-143-STRUCT-2
+        name: 'src/lib/api-auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-143-STRUCT-3
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-143'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
   OP-142_revisar_callbacks_signin_session:
     description: 'Auditoría de callbacks signIn y session en src/lib/auth.ts — autorización, isActive, enriquecimiento de sesión y coherencia de tipos'
     enabled: true
