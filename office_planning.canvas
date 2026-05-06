@@ -7,7 +7,7 @@
 		{"id":"node-op110","type":"text","text":"## OP-110 Auditoría de modelos y tipos de dominio\nRevisar modelos Mongoose, tipos TypeScript, índices y coherencia con README.md","x":30,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op120","type":"text","text":"## OP-120 Auditoría de repositorios y servicios\nValidar capa de acceso a datos y lógica de negocio en servicios","x":340,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op130","type":"text","text":"## OP-130 Auditoría de API routes y seguridad\nRevisar endpoints, validaciones de entrada, autorización y respuestas de error","x":660,"y":50,"width":270,"height":120,"color":"4"},
-		{"id":"node-op140","type":"text","text":"## OP-140 Auditoría de autenticación y sesiones\nVerificar flujo de login, protección de rutas y gestión de sesiones","x":980,"y":50,"width":270,"height":120,"color":"6"},
+		{"id":"node-op140","type":"text","text":"## OP-140 Auditoría de autenticación y sesiones\nVerificar flujo de login, protección de rutas y gestión de sesiones","x":980,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op150","type":"text","text":"## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas","x":1300,"y":50,"width":270,"height":120,"color":"6"},
 		{"id":"node-op160","type":"text","text":"## OP-160 Corrección de deficiencias y deuda técnica\nCorregir problemas detectados en auditorías y resolver deuda técnica pendiente","x":1620,"y":50,"width":270,"height":120,"color":"6"},
 		{"id":"node-op170","type":"text","text":"## OP-170 Merge develop → main y baseline\nIntegrar rama develop en main y establecer baseline estable del proyecto","x":1940,"y":50,"width":270,"height":120,"color":"6"},
@@ -47,11 +47,11 @@
 		{"id":"node-op131","type":"text","text":"## OP-131 Revisar endpoints de reservas\nAuditar GET/POST /api/reservations, DELETE /api/reservations/[id] y GET /api/reservations/week: autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores.","x":660,"y":220,"width":280,"height":140,"color":"4"},
 		{"id":"node-op132","type":"text","text":"## OP-132 Revisar endpoints de disponibilidad\nAuditar GET /api/availability y GET /api/availability/week: autenticación, validación de fechas, límite de rango y manejo de errores.","x":660,"y":380,"width":280,"height":140,"color":"4"},
 		{"id":"node-op133","type":"text","text":"## OP-133 Revisar endpoint de mesas\nAuditar GET /api/tables: autenticación, estructura de respuesta, campos expuestos y manejo de errores.","x":660,"y":540,"width":280,"height":140,"color":"4"},
-		{"id":"11a51b92","type":"text","text":"## OP-141 Revisar configuración de NextAuth\nAuditar adapter, provider, session strategy, maxAge, updateAge y páginas personalizadas en src/lib/auth.ts","x":975,"y":220,"width":280,"height":160,"color":"6"},
-		{"id":"e4e47246","type":"text","text":"## OP-142 Revisar callbacks signIn y session\nAuditar lógica de autorización, acceso a datos, manejo de errores y coherencia de tipos en los callbacks signIn y session de NextAuth","x":975,"y":400,"width":280,"height":160,"color":"6"},
-		{"id":"4051a4cf","type":"text","text":"## OP-143 Revisar auth-mongodb-client y api-auth\nAuditar el singleton MongoClient del adapter y el helper requireSession de API routes","x":975,"y":580,"width":280,"height":160,"color":"6"},
-		{"id":"ad5db9ef","type":"text","text":"## OP-144 Revisar páginas de auth\nAuditar flujo de UI de autenticación: login, verify, error, layout y handler de NextAuth","x":975,"y":760,"width":280,"height":160,"color":"6"},
-		{"id":"c4b8332f","type":"text","text":"## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160","x":975,"y":940,"width":280,"height":160,"color":"6"}
+		{"id":"11a51b92","type":"text","text":"## OP-141 Revisar configuración de NextAuth\nAuditar adapter, provider, session strategy, maxAge, updateAge y páginas personalizadas en src/lib/auth.ts","x":975,"y":220,"width":280,"height":160,"color":"4"},
+		{"id":"e4e47246","type":"text","text":"## OP-142 Revisar callbacks signIn y session\nAuditar lógica de autorización, acceso a datos, manejo de errores y coherencia de tipos en los callbacks signIn y session de NextAuth","x":975,"y":400,"width":280,"height":160,"color":"4"},
+		{"id":"4051a4cf","type":"text","text":"## OP-143 Revisar auth-mongodb-client y api-auth\nAuditar el singleton MongoClient del adapter y el helper requireSession de API routes","x":975,"y":580,"width":280,"height":160,"color":"4"},
+		{"id":"ad5db9ef","type":"text","text":"## OP-144 Revisar páginas de auth\nAuditar flujo de UI de autenticación: login, verify, error, layout y handler de NextAuth","x":975,"y":760,"width":280,"height":160,"color":"4"},
+		{"id":"c4b8332f","type":"text","text":"## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160","x":975,"y":940,"width":280,"height":160,"color":"4"}
 	],
 	"edges":[
 		{"id":"edge-110-120","fromNode":"node-op110","fromSide":"bottom","toNode":"node-op120","toSide":"top"},
