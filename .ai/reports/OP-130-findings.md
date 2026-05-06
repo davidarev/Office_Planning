@@ -57,8 +57,17 @@
 | H-133-05 | Mejora | `TablePublic` incluye `isActive: boolean`. Como `listActiveTables()` ya filtra `isActive: true` en la query, este campo siempre vale `true` en la respuesta — información redundante que aumenta el payload sin aportar valor al cliente. | Eliminar `isActive` de `TablePublic` en OP-161, ya que la respuesta siempre contiene solo mesas activas. |
 | H-133-06 | Observación | Las mesas inactivas se filtran correctamente en el repositorio (`isActive: true`). No aparecen en la respuesta. | — |
 
-### middleware.ts (proxy)
-<!-- Pendiente: OP-134 -->
+### proxy.ts (middleware)
+
+| ID | Severidad | Descripción | Acción sugerida |
+|----|-----------|-------------|-----------------|
+| H-134-01 | Observación | Matcher `/((?!api/\|_next/static\|_next/image\|favicon.ico).*)` excluye correctamente todas las rutas de API y assets estáticos. `/api/auth/*` también queda excluido, lo cual es correcto: NextAuth gestiona sus propias rutas. | — |
+| H-134-02 | Observación | Rutas `/admin` y `/admin/*` protegidas correctamente: sin sesión → redirect a `/login?callbackUrl=<pathname>`; con sesión pero sin rol `admin` → redirect a `/`. El orden de condiciones es correcto. | — |
+| H-134-03 | Observación | `session.user.role` proviene exclusivamente del callback `session` en `auth.ts`, que consulta la BD en cada refresco. El cliente no puede manipularlo. Si el callback falla (bloque catch silencioso), `role` queda `undefined` → condición `!== "admin"` es `true` → redirect a `/`. Comportamiento seguro por defecto. | — |
+| H-134-04 | Observación | Todas las rutas privadas sin sesión (distintas de `/login*` y `/api/*`) redirigen correctamente a `/login?callbackUrl=<pathname>`. La rama final `!isAuthenticated && !isAuthPage` cubre el caso general. | — |
+| H-134-05 | Observación | No existe riesgo de open redirect: `callbackUrl` se construye desde `nextUrl.pathname`, que es siempre una ruta relativa (el objeto URL de Next.js nunca incluye el host en `.pathname`). NextAuth v5 además valida internamente que el callbackUrl sea same-origin. | — |
+| H-134-06 | Observación | `pathname.startsWith("/admin")` capturaría hipotéticamente rutas como `/administrator`. No existe ninguna ruta con ese prefijo en el proyecto actualmente, por lo que no hay impacto. Es una observación de robustez para cuando se añadan nuevas rutas. | En el futuro, si se añaden rutas con prefijo `/admin` que no sean sección de administración, usar `/admin/` en lugar de `/admin` para el check. |
+| H-134-07 | Observación | `/login/verify` y `/login/error` se tratan como `isAuthPage = true` (quedan cubiertas por `startsWith("/login")`). Correcto: son páginas del flujo de autenticación y no deben requerir sesión. | — |
 
 ### Exposición de datos internos (transversal)
 <!-- Pendiente: OP-135 -->
@@ -82,7 +91,7 @@
 | H-133-04 | `api/tables/route.ts` + `services/table.service.ts` | `TablePublic.assignedTo` expone ID de usuario — evaluar si sustituir por booleano `hasAssignedUser`. |
 | H-133-05 | `services/table.service.ts` | `TablePublic.isActive` siempre es `true` — campo redundante, eliminar de la respuesta. |
 
-<!-- Completar con mejoras de OP-131, OP-134, OP-135 -->
+<!-- Completar con mejoras de OP-131, OP-135 -->
 
 ---
 
@@ -93,5 +102,6 @@
 | H-132-03 | `api/availability/route.ts` | No hay restricción de fechas pasadas. Confirmar si es requisito de negocio. |
 | H-132-05 | `api/availability/route.ts` | Respuesta incluye `reservation.userId` y `assignedUser._id`. Evaluar si los IDs son necesarios en la respuesta pública. |
 | H-132-13 | `api/availability/week/route.ts` | No hay restricción de fechas pasadas en rango. Mismo análisis que H-132-03. |
+| H-134-06 | `proxy.ts` | `startsWith("/admin")` capturaría rutas como `/administrator`. Sin impacto actual pero frágil si se añaden nuevas rutas. |
 
-<!-- Completar con observaciones de OP-131, OP-133, OP-134, OP-135 -->
+<!-- Completar con observaciones de OP-131, OP-135 -->
