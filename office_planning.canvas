@@ -414,7 +414,7 @@
 			"y": 700,
 			"width": 280,
 			"height": 140,
-			"color": "2"
+			"color": "4"
 		},
 		{
 			"id": "node-op135",
@@ -424,7 +424,7 @@
 			"y": 860,
 			"width": 280,
 			"height": 140,
-			"color": "6"
+			"color": "2"
 		},
 		{
 			"id": "node-op136",

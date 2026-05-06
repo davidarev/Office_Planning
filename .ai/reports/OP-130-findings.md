@@ -70,7 +70,15 @@
 | H-134-07 | Observación | `/login/verify` y `/login/error` se tratan como `isAuthPage = true` (quedan cubiertas por `startsWith("/login")`). Correcto: son páginas del flujo de autenticación y no deben requerir sesión. | — |
 
 ### Exposición de datos internos (transversal)
-<!-- Pendiente: OP-135 -->
+
+| ID | Severidad | Descripción | Acción sugerida |
+|----|-----------|-------------|-----------------|
+| H-135-01 | Observación | Todos los bloques `catch` en los 6 route handlers usan `catch {}` (sin variable de error). El error capturado es estructuralmente imposible de incluir en la respuesta. Todos devuelven 500 con mensaje genérico. PASS completo. | — |
+| H-135-02 | Observación | No existe ningún `console.log`, `console.error` ni equivalente en ningún fichero de `src/` (excluyendo tests). No hay riesgo de exposición de datos sensibles en logs de producción (Vercel logs). | — |
+| H-135-03 | Observación | Los mensajes de `result.message` del servicio son todos mensajes de negocio amigables. Ninguno contiene detalles técnicos, nombres de colecciones, rutas ni stack traces. | — |
+| H-135-04 | Observación | El error E11000 de MongoDB es interceptado en `reservation.service.ts` antes de llegar al route handler. `getDuplicateKeyMessage` lee `err.message` internamente solo para discriminar entre dos tipos de conflicto (`userId` / `tableId`) y devuelve siempre un mensaje amigable. El mensaje original de MongoDB nunca llega al cliente. | — |
+| H-135-05 | Mejora | `getDuplicateKeyMessage` lee `err.message` del error de MongoDB para discriminar el tipo de conflicto. Si en algún momento MongoDB cambia el formato del mensaje de error (poco probable pero posible tras upgrades mayores), la lógica de discriminación podría fallar y caer en el fallback. Sería más robusto discriminar por el nombre del índice (`keyPattern`) en lugar del mensaje de texto. | En OP-161, evaluar sustituir discriminación por `message.includes()` por inspección de `err.keyPattern` (disponible en errores MongoServerError). |
+| H-135-06 | Observación | El middleware `proxy.ts` no genera respuestas de error directas — solo `NextResponse.redirect`. Las URLs de redirección se construyen con `new URL("/login", nextUrl)` y `pathname` relativo. Sin exposición de datos internos. | — |
 
 ---
 
@@ -91,7 +99,7 @@
 | H-133-04 | `api/tables/route.ts` + `services/table.service.ts` | `TablePublic.assignedTo` expone ID de usuario — evaluar si sustituir por booleano `hasAssignedUser`. |
 | H-133-05 | `services/table.service.ts` | `TablePublic.isActive` siempre es `true` — campo redundante, eliminar de la respuesta. |
 
-<!-- Completar con mejoras de OP-131, OP-135 -->
+| H-135-05 | `services/reservation.service.ts` | `getDuplicateKeyMessage` discrimina el tipo de conflicto E11000 por texto de `err.message` — frágil ante cambios de formato en MongoDB. Evaluar discriminar por `keyPattern`. |
 
 ---
 
@@ -104,4 +112,4 @@
 | H-132-13 | `api/availability/week/route.ts` | No hay restricción de fechas pasadas en rango. Mismo análisis que H-132-03. |
 | H-134-06 | `proxy.ts` | `startsWith("/admin")` capturaría rutas como `/administrator`. Sin impacto actual pero frágil si se añaden nuevas rutas. |
 
-<!-- Completar con observaciones de OP-131, OP-135 -->
+| H-135-02 | `src/app/api/*` + `src/services/*` | Sin `console.log` ni logging de errores en producción — los errores se silencian completamente. Útil para seguridad, pero dificulta el diagnóstico en producción. |

@@ -295,6 +295,30 @@ suites:
           - path: src/domain/types/service.ts
             must_exist: true
 
+  OP-135_verificar_exposicion_datos_internos:
+    description: 'Auditoría transversal de bloques catch, mensajes de error y logging — verificar que no se exponen datos internos'
+    enabled: true
+    related_spec: '.ai/specs/OP-135-spec.md'
+    verifications:
+      - id: OP-135-STRUCT-1
+        name: 'src/app/api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-135-STRUCT-2
+        name: 'src/services/reservation.service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/services/reservation.service.ts
+            must_exist: true
+      - id: OP-135-STRUCT-3
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-135'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
   OP-134_revisar_proxy_middleware:
     description: 'Auditoría de proxy.ts — matcher, reglas de redirección, rol admin y open redirect'
     enabled: true
