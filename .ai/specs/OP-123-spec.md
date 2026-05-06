@@ -76,7 +76,7 @@ Verificar que el servicio implementa correctamente todas las reglas de dominio d
 
 - **Fecha**: 2026-04-07
 - **Rama**: develop
-- **Commit**: pendiente (docs commit)
+- **Commit**: 543d2b4
 - **AI-assisted**: sí (Claude Sonnet 4.6)
 
 ### Estado de criterios de aceptación

@@ -296,12 +296,12 @@ La estrategia se divide en 4 fases (epicas). La Fase 1 es de consolidacion: revi
 
 | ID | Titulo | Descripcion | Dependencias |
 |----|--------|-------------|--------------|
-| OP-410 | Estados de carga, error y vacios | Implementar skeletons/spinners de carga, mensajes de error amigables y estados vacios (sin mesas, sin reservas) en toda la UI. | OP-200, OP-300 |
-| OP-420 | Responsive y adaptacion movil | Asegurar que el plano de mesas, selector de semana y panel admin funcionan correctamente en pantallas pequenas. | OP-200, OP-300 |
+| OP-410 | Estados de carga, error y vacios | Implementar skeletons/spinners de carga, mensajes de error amigables y estados vacios (sin mesas, sin reservas) en toda la UI. | OP-250 |
+| OP-420 | Responsive y adaptacion movil | Asegurar que el plano de mesas, selector de semana y panel admin funcionan correctamente en pantallas pequenas. | OP-250 |
 | OP-430 | Configuracion de email para produccion | Configurar y verificar el envio de magic links con un proveedor de email real. Documentar variables de entorno necesarias. | — |
 | OP-440 | Variables de entorno y despliegue Vercel | Preparar configuracion de entorno para Vercel, documentar el proceso de despliegue, verificar que el build funciona en produccion. | OP-430 |
-| OP-450 | Tests E2E del flujo critico | Anadir tests end-to-end del flujo principal: login → ver plano → reservar → cancelar. Verificar que el MVP funciona de punta a punta. | OP-200 |
-| OP-460 | Revision final de seguridad | Auditoria final de seguridad: rate limiting en endpoints sensibles, headers de seguridad, revision de permisos, datos expuestos en respuestas. | OP-200, OP-300 |
+| OP-450 | Tests E2E del flujo critico | Anadir tests end-to-end del flujo principal: login → ver plano → reservar → cancelar. Verificar que el MVP funciona de punta a punta. | OP-250 |
+| OP-460 | Revision final de seguridad | Auditoria final de seguridad: rate limiting en endpoints sensibles, headers de seguridad, revision de permisos, datos expuestos en respuestas. | OP-250 |
 
 ### Subtareas por historia — Fase 4
 
