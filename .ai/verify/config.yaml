@@ -295,6 +295,36 @@ suites:
           - path: src/domain/types/service.ts
             must_exist: true
 
+  OP-133_revisar_endpoint_mesas:
+    description: 'Auditoría de GET /api/tables — autenticación, estructura de respuesta, campos expuestos y manejo de errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-133-spec.md'
+    verifications:
+      - id: OP-133-STRUCT-1
+        name: 'api/tables/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/tables/route.ts
+            must_exist: true
+      - id: OP-133-STRUCT-2
+        name: 'lib/api-auth.ts existe (requireSession)'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-133-STRUCT-3
+        name: 'services/table.service.ts existe (getTablesWithBasicInfo)'
+        type: filesystem
+        checks:
+          - path: src/services/table.service.ts
+            must_exist: true
+      - id: OP-133-STRUCT-4
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-133'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
   OP-132_revisar_endpoints_disponibilidad:
     description: 'Auditoría de los dos endpoints de disponibilidad — autenticación, validación de fechas, límite de rango y manejo de errores'
     enabled: true

@@ -47,7 +47,15 @@
 <!-- Pendiente: OP-131 -->
 
 ### api/tables/route.ts
-<!-- Pendiente: OP-133 -->
+
+| ID | Severidad | Descripción | Acción sugerida |
+|----|-----------|-------------|-----------------|
+| H-133-01 | Observación | `requireSession()` presente y funcional. Devuelve 401 sin sesión. Sin hallazgos de autenticación. | — |
+| H-133-02 | Observación | El handler no acepta parámetros — sin superficie de inyección. Delegación limpia a `getTablesWithBasicInfo()`. Sin lógica de negocio en el route. | — |
+| H-133-03 | Observación | El bloque `catch` no expone detalles internos. Devuelve 500 con mensaje genérico `"Error al obtener las mesas"`. Correcto. | — |
+| H-133-04 | Mejora | `TablePublic` incluye `assignedTo: string \| null` (ID del usuario asignado). Expone un ID de usuario a cualquier sesión autenticada. La UI solo necesita saber si la mesa tiene usuario asignado, no el ID interno. La relación usuario←→mesa preferente ya está disponible vía `/api/availability`. | Evaluar en OP-161 si `assignedTo` debe omitirse o sustituirse por un campo booleano `hasAssignedUser`. |
+| H-133-05 | Mejora | `TablePublic` incluye `isActive: boolean`. Como `listActiveTables()` ya filtra `isActive: true` en la query, este campo siempre vale `true` en la respuesta — información redundante que aumenta el payload sin aportar valor al cliente. | Eliminar `isActive` de `TablePublic` en OP-161, ya que la respuesta siempre contiene solo mesas activas. |
+| H-133-06 | Observación | Las mesas inactivas se filtran correctamente en el repositorio (`isActive: true`). No aparecen en la respuesta. | — |
 
 ### middleware.ts (proxy)
 <!-- Pendiente: OP-134 -->
@@ -71,8 +79,10 @@
 |----|---------|-------------|
 | H-132-09 | `api/availability/week/route.ts` | Inconsistencia semántica en `MAX_RANGE_DAYS`: la constante dice 14 pero permite 15 días inclusivos. |
 | H-132-10 | `api/availability/week/route.ts` + `api/reservations/week/route.ts` | `MAX_RANGE_DAYS` duplicado en dos ficheros — extraer a constante compartida. |
+| H-133-04 | `api/tables/route.ts` + `services/table.service.ts` | `TablePublic.assignedTo` expone ID de usuario — evaluar si sustituir por booleano `hasAssignedUser`. |
+| H-133-05 | `services/table.service.ts` | `TablePublic.isActive` siempre es `true` — campo redundante, eliminar de la respuesta. |
 
-<!-- Completar con mejoras de OP-131, OP-133, OP-134, OP-135 -->
+<!-- Completar con mejoras de OP-131, OP-134, OP-135 -->
 
 ---
 
