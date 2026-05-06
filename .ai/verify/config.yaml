@@ -295,6 +295,24 @@ suites:
           - path: src/domain/types/service.ts
             must_exist: true
 
+  OP-136_documentar_hallazgos_OP-130:
+    description: 'Verificación del informe consolidado de auditoría OP-130 (API routes y middleware)'
+    enabled: true
+    related_spec: '.ai/specs/OP-136-spec.md'
+    verifications:
+      - id: OP-136-STRUCT-1
+        name: 'Informe OP-130-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+      - id: OP-136-STRUCT-2
+        name: 'Spec OP-136 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-136-spec.md
+            must_exist: true
+
   OP-135_verificar_exposicion_datos_internos:
     description: 'Auditoría transversal de bloques catch, mensajes de error y logging — verificar que no se exponen datos internos'
     enabled: true
