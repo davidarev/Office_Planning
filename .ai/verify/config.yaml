@@ -906,6 +906,36 @@ suites:
         exit_code: 0
         timeout: 180
 
+  OP-172_merge_develop_main:
+    description: 'Verifica que el merge develop → main se realizó correctamente'
+    enabled: true
+    related_spec: '.ai/specs/OP-172-spec.md'
+    verifications:
+      - id: OP-172-STRUCT-1
+        name: 'src/app/api/reservations/route.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-172-STRUCT-2
+        name: 'src/lib/constants.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-172-STRUCT-3
+        name: 'tests/unit/dates.test.ts existe en main'
+        type: filesystem
+        checks:
+          - path: tests/unit/dates.test.ts
+            must_exist: true
+      - id: OP-172-STRUCT-4
+        name: 'AGENTS.md existe en main'
+        type: filesystem
+        checks:
+          - path: AGENTS.md
+            must_exist: true
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:

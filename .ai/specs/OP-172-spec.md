@@ -51,3 +51,25 @@ El merge se hace desde la rama de historia `feature/OP-170-merge-develop-main-ba
 
 - Todos los AC en PASS
 - Spec actualizada con `## Execution Result`
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-07 20:20 (CET)
+- Rama: feature/OP-170-merge-develop-main-baseline → merge commit en `main`
+- Commit merge: 8e9546e
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS – OP-171 completada y en cyan antes del merge
+  - AC-2: PASS – `git log main --oneline` muestra `8e9546e merge(OP-172): fusionar develop → main — baseline v0.1.0` como HEAD
+  - AC-3: PASS – merge con `--no-ff`, sin force push ni reescritura de historia
+  - AC-4: PASS – 65 commits de develop incorporados en main sin conflictos (153 ficheros, 24928 inserciones)
+  - AC-5: PASS – mensaje de merge commit en formato convención del proyecto: `merge(OP-172): fusionar develop → main — baseline v0.1.0`
+- verify:
+  - Estrategia de merge: `ort` (sin conflictos)
+  - Push: `a07f620..8e9546e main -> main` — aceptado sin rechazo
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: ejecución del merge y documentación del Execution Result
+- Decisiones técnicas:
+  - No hubo conflictos: `main` estaba en el commit inicial (`a07f620`), `develop` no tenía historial divergente, merge limpio con estrategia `ort`
+  - El merge incorpora también los 2 commits de specs/canvas de la rama de historia (OP-171–174), ya que fue creada desde `develop` — esto es correcto y esperado
