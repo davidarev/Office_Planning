@@ -12,5 +12,6 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Suspense>{children}</Suspense>;
+  // H-140-7: fallback mínimo para evitar flash de pantalla vacía
+  return <Suspense fallback={<div className="flex-1" />}>{children}</Suspense>;
 }

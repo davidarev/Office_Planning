@@ -33,7 +33,16 @@ export type AuthResult =
  * @returns Object with either a valid session or a 401 error response
  */
 export async function requireSession(): Promise<AuthResult> {
-  const session = await auth();
+  // H-140-3: envolver auth() en try/catch para responder 503 si la BD falla
+  let session: Session | null;
+  try {
+    session = await auth();
+  } catch {
+    return {
+      session: null,
+      error: NextResponse.json({ error: "Error de servidor" }, { status: 503 }),
+    };
+  }
 
   if (!session?.user?.id) {
     return {
