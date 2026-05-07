@@ -1089,6 +1089,25 @@ suites:
         exit_code: 0
         timeout: 60
 
+  OP-215_tests_selector_semana_dia:
+    description: 'Verifica cobertura de tests unitarios de week-selector — getWorkWeeks y getDefaultWorkDay'
+    enabled: true
+    related_spec: '.ai/specs/OP-215-spec.md'
+    verifications:
+      - id: OP-215-STRUCT-1
+        name: 'tests/unit/week-selector.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/week-selector.test.ts
+            must_exist: true
+      - id: OP-215-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
