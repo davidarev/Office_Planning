@@ -1,14 +1,14 @@
 {
 	"nodes":[
-		{"id":"group-fase1","type":"group","x":-20,"y":0,"width":2280,"height":1400,"label":"Fase 1 — Consolidación y auditoría (OP-100)"},
-		{"id":"group-fase3","type":"group","x":-20,"y":1480,"width":2280,"height":910,"label":"Fase 3 — Panel de administración (OP-300)"},
+		{"id":"group-fase3","type":"group","x":-20,"y":1480,"width":2280,"height":1560,"label":"Fase 3 — Panel de administración (OP-300)"},
+		{"id":"group-fase1","type":"group","x":-20,"y":0,"width":2280,"height":1360,"label":"Fase 1 — Consolidación y auditoría (OP-100)"},
 		{"id":"group-fase2","type":"group","x":2480,"y":0,"width":1960,"height":1050,"label":"Fase 2 — Plano interactivo y flujo de reservas (OP-200)"},
 		{"id":"group-fase4","type":"group","x":2480,"y":1480,"width":1960,"height":910,"label":"Fase 4 — Pulido, UX y producción (OP-400)"},
 		{"id":"node-op110","type":"text","text":"## OP-110 Auditoría de modelos y tipos de dominio\nRevisar modelos Mongoose, tipos TypeScript, índices y coherencia con README.md","x":30,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op120","type":"text","text":"## OP-120 Auditoría de repositorios y servicios\nValidar capa de acceso a datos y lógica de negocio en servicios","x":340,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op130","type":"text","text":"## OP-130 Auditoría de API routes y seguridad\nRevisar endpoints, validaciones de entrada, autorización y respuestas de error","x":660,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op140","type":"text","text":"## OP-140 Auditoría de autenticación y sesiones\nVerificar flujo de login, protección de rutas y gestión de sesiones","x":980,"y":50,"width":270,"height":120,"color":"4"},
-		{"id":"node-op150","type":"text","text":"## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas","x":1300,"y":50,"width":270,"height":120,"color":"6"},
+		{"id":"node-op150","type":"text","text":"## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas","x":1300,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op160","type":"text","text":"## OP-160 Corrección de deficiencias y deuda técnica\nCorregir problemas detectados en auditorías y resolver deuda técnica pendiente","x":1620,"y":50,"width":270,"height":120,"color":"6"},
 		{"id":"node-op170","type":"text","text":"## OP-170 Merge develop → main y baseline\nIntegrar rama develop en main y establecer baseline estable del proyecto","x":1940,"y":50,"width":270,"height":120,"color":"6"},
 		{"id":"node-op210","type":"text","text":"## OP-210 Selector de semana y día\nComponente para navegar entre semanas y seleccionar el día activo","x":2520,"y":50,"width":261,"height":120,"color":"6"},
@@ -51,7 +51,13 @@
 		{"id":"e4e47246","type":"text","text":"## OP-142 Revisar callbacks signIn y session\nAuditar lógica de autorización, acceso a datos, manejo de errores y coherencia de tipos en los callbacks signIn y session de NextAuth","x":975,"y":400,"width":280,"height":160,"color":"4"},
 		{"id":"4051a4cf","type":"text","text":"## OP-143 Revisar auth-mongodb-client y api-auth\nAuditar el singleton MongoClient del adapter y el helper requireSession de API routes","x":975,"y":580,"width":280,"height":160,"color":"4"},
 		{"id":"ad5db9ef","type":"text","text":"## OP-144 Revisar páginas de auth\nAuditar flujo de UI de autenticación: login, verify, error, layout y handler de NextAuth","x":975,"y":760,"width":280,"height":160,"color":"4"},
-		{"id":"c4b8332f","type":"text","text":"## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160","x":975,"y":940,"width":280,"height":160,"color":"4"}
+		{"id":"c4b8332f","type":"text","text":"## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160","x":975,"y":940,"width":280,"height":160,"color":"4"},
+		{"id":"d57e4023","type":"text","text":"## OP-154 Identificar gaps de cobertura\nConsolidar lista de escenarios críticos no cubiertos en toda la suite de tests","x":1290,"y":750,"width":280,"height":160,"color":"4"},
+		{"id":"25f45718","type":"text","text":"## OP-155 Corregir tests frágiles o incompletos\nAplicar correcciones a tests dependientes de orden, timing o estado compartido identificados en OP-151 a OP-153","x":1290,"y":930,"width":280,"height":160,"color":"4"},
+		{"id":"491d5ba0","type":"text","text":"## OP-156 Documentar hallazgos OP-150\nConsolidar hallazgos de OP-151 a OP-155 en informe clasificado por severidad","x":1290,"y":1110,"width":280,"height":160,"color":"4"},
+		{"id":"7ec5d49c","type":"text","text":"## OP-151 Revisar tests unitarios\nRevisar calidad, cobertura y assertions de los tests unitarios existentes (dates.test.ts, compute-status.test.ts)","x":1300,"y":220,"width":280,"height":160,"color":"4"},
+		{"id":"267fb76b","type":"text","text":"## OP-153 Revisar tests de API\nRevisar cobertura de escenarios, mocks de sesión y assertions HTTP de los tests de API","x":1295,"y":570,"width":280,"height":160,"color":"4"},
+		{"id":"d62b2444","type":"text","text":"## OP-152 Revisar tests de integración\nRevisar calidad, cobertura y robustez de los tests de integración de servicios y repositorios","x":1295,"y":390,"width":280,"height":160,"color":"4"}
 	],
 	"edges":[
 		{"id":"edge-110-120","fromNode":"node-op110","fromSide":"bottom","toNode":"node-op120","toSide":"top"},
