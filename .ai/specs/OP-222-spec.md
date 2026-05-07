@@ -11,11 +11,26 @@ Los tipos de dominio relevantes están en `src/domain/types/table.ts`:
 - `TableAvailability` — datos completos de una mesa para un día concreto
 - `TablePosition` — coordenadas `x`, `y`, `width`, `height`, `rotation`
 - `TableStatus` — estado visual: `"green" | "yellow" | "red" | "gray"`
+- `cornerExtension?: TablePosition | null` (introducido en OP-221) — segundo
+  rectángulo solidario al principal, presente en mesas esquinadas (MESA 4, MESA 6)
 
 El color por estado y el tooltip de ocupante se implementan en OP-223 y OP-224
 respectivamente. `DeskItem` debe dejar los puntos de extensión claros (prop `status`,
 acceso a `reservation` y `assignedUser`), pero el color concreto y el tooltip son
 responsabilidad de los tickets siguientes.
+
+### Mesas esquinadas
+
+Cuando `table.cornerExtension` es no-null, `DeskItem` renderiza dos rectángulos
+posicionados absolutamente que comparten el mismo evento de click y se comportan como
+una unidad visual:
+
+- Rectángulo principal: `table.position`
+- Rectángulo secundario (saliente): `table.cornerExtension`
+
+Ambos deben heredar el mismo color de fondo (asignado en OP-223) y el mismo cursor.
+La etiqueta y el indicador de ocupante (OP-224) van solo en el rectángulo principal
+para evitar duplicidad visual.
 
 ## Objetivo
 
@@ -25,9 +40,13 @@ Crear el componente `DeskItem` en `src/components/floor-plan/DeskItem.tsx` que:
 2. Se posicione absolutamente dentro del contenedor `FloorPlan` usando `left`, `top`,
    `width` y `height` derivados de `table.position`, expresados en píxeles.
 3. Aplique `rotate` CSS si `table.position.rotation !== 0`.
-4. Muestre la etiqueta (`table.label`) centrada dentro del elemento.
-5. Exponga un prop `onClick?: (table: TableAvailability) => void` para que el ticket
-   de detalle/reserva (OP-230) pueda engancharse sin modificar `DeskItem`.
+4. Cuando `table.cornerExtension` no sea null, renderice un segundo rectángulo
+   solidario al principal con sus propias coordenadas, mismo color de fondo y mismo
+   cursor. Los dos rectángulos se comportan como una unidad de click.
+5. Muestre la etiqueta (`table.label`) centrada dentro del rectángulo principal.
+6. Exponga un prop `onClick?: (table: TableAvailability) => void` que se dispara
+   tanto desde el rectángulo principal como desde la extensión esquinada, para que
+   el ticket de detalle/reserva (OP-230) pueda engancharse sin modificar `DeskItem`.
 
 `FloorPlan` debe actualizarse para usar `DeskItem` en lugar del placeholder.
 
@@ -54,6 +73,10 @@ Crear el componente `DeskItem` en `src/components/floor-plan/DeskItem.tsx` que:
   (p. ej. `min-width: 40px`, `min-height: 40px`) para que la mesa no desaparezca.
 - Mesa sin `onClick`: el elemento no debe tener cursor pointer ni comportamiento
   interactivo hasta que el prop esté presente.
+- `cornerExtension` ausente o `null`: renderizar solo el rectángulo principal —
+  no debe haber un segundo elemento DOM en este caso.
+- `cornerExtension` con `rotation` propia: aplicar la rotación independientemente
+  de la del rectángulo principal (cada rectángulo tiene su propia transformación).
 
 ## Criterios de aceptación
 
@@ -69,6 +92,11 @@ Crear el componente `DeskItem` en `src/components/floor-plan/DeskItem.tsx` que:
   `TableAvailability` completa. Cuando no está presente, no hay cursor pointer.
 - AC-7: `FloorPlan` (OP-221) sustituye los placeholders por `<DeskItem>` y le pasa
   cada `TableAvailability` del array `tables`.
+- AC-8: Cuando `table.cornerExtension` es no-null, `DeskItem` renderiza un segundo
+  rectángulo posicionado según esas coordenadas. Comparte el mismo handler de click
+  y, visualmente, ambos rectángulos forman una sola mesa esquinada.
+- AC-9: Cuando `table.cornerExtension` es `null` o `undefined`, no se renderiza
+  ningún elemento adicional — el DOM contiene un único nodo por mesa.
 
 ## Criterio de done
 
