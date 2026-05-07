@@ -104,3 +104,29 @@ OP-173_verificacion_post_merge:
 
 - Todos los AC en PASS
 - Spec actualizada con `## Execution Result`
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-07 20:21 (CET)
+- Rama: verificación ejecutada sobre `main` (commit `8e9546e`)
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS – 62/62 tests unitarios en `main`
+  - AC-2: PASS – 102/102 tests de integración en `main` (6 suites)
+  - AC-3: PASS – 85/85 tests de API en `main` (6 suites)
+  - AC-4: PASS – 0 errores ESLint en `main` (4 warnings preexistentes, nivel warning)
+  - AC-5: PASS – Build Next.js exitoso en `main`, 13 rutas generadas
+  - AC-6: PASS – Suite `OP-173_verificacion_post_merge` añadida en `.ai/verify/config.yaml`
+  - AC-7: PASS – Resultados idénticos a OP-171: 249/249 tests, 0 errores lint, build OK
+- verify:
+  - `npm run test:unit`: PASS (62/62) — idéntico a OP-171
+  - `npm run test:integration`: PASS (102/102) — idéntico a OP-171
+  - `npm run test:api`: PASS (85/85) — idéntico a OP-171
+  - `npm run lint`: PASS (0 errores; 4 warnings preexistentes) — idéntico a OP-171
+  - `npm run build`: PASS (Turbopack, 13 rutas, TypeScript OK) — idéntico a OP-171
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: ejecución de checks sobre `main` y redacción del Execution Result
+- Decisiones técnicas:
+  - No se detectaron regresiones atribuibles al merge: resultados en `main` son idénticos a los de `develop` en OP-171
+  - `node_modules` estaba presente en `main` (heredado del merge) — no fue necesario `npm install`

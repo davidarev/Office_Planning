@@ -936,6 +936,53 @@ suites:
           - path: AGENTS.md
             must_exist: true
 
+  OP-173_verificacion_post_merge:
+    description: 'Verifica que main pasa la suite completa tras el merge desde develop'
+    enabled: true
+    related_spec: '.ai/specs/OP-173-spec.md'
+    verifications:
+      - id: OP-173-TEST-1
+        name: 'Tests unitarios en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-2
+        name: 'Tests de integración en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-3
+        name: 'Tests de API en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-LINT-1
+        name: 'ESLint sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-173-BUILD-1
+        name: 'Build de Next.js sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-173-STRUCT-1
+        name: 'node_modules instalado en main'
+        type: filesystem
+        checks:
+          - path: node_modules
+            must_exist: true
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
