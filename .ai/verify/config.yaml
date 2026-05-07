@@ -627,6 +627,43 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-162_correcciones_repositorios_y_servicios:
+    description: 'Correcciones a repositorios y servicios — hallazgos H-121-x, H-122-x, H-123-x, H-124-x, H-125-x, H-126-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-162-spec.md'
+    verifications:
+      - id: OP-162-STRUCT-1
+        name: 'reservation.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/reservation.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-2
+        name: 'user.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/user.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-3
+        name: 'table.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/table.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-4
+        name: 'TablePublic en domain/types/table.ts'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-162-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   OP-161_correcciones_modelos_y_tipos:
     description: 'Correcciones a modelos Mongoose y tipos TypeScript — hallazgos H-111-x, H-112-x, H-113-x, H-114-x'
     enabled: true
