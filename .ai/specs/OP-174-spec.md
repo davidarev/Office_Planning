@@ -68,3 +68,25 @@ Historia completada: OP-100 (OP-110 a OP-166).
 
 - Todos los AC en PASS
 - Spec actualizada con `## Execution Result`
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-07 20:24 (CET)
+- Rama: tag creado sobre `main` (commit `8e9546e`)
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS – OP-173 completada y en cyan antes de crear el tag
+  - AC-2: PASS – tag anotado `v0.1.0` creado sobre el merge commit `8e9546e` de `main`
+  - AC-3: PASS – `git show v0.1.0` muestra tagger, fecha, mensaje y commit asociado
+  - AC-4: PASS – `git ls-remote --tags origin` confirma `refs/tags/v0.1.0` → `8e9546e`
+  - AC-5: PASS – `git log main --oneline` muestra el tag `v0.1.0` asociado al merge commit
+- verify:
+  - `git tag -l`: muestra `v0.1.0`
+  - `git show v0.1.0`: tagger David Arévalo, fecha 2026-05-07, apunta a `8e9546e`
+  - `git ls-remote --tags origin`: `refs/tags/v0.1.0` y `refs/tags/v0.1.0^{}` presentes
+  - Push: `* [new tag] v0.1.0 -> v0.1.0` — aceptado sin rechazo
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: creación y publicación del tag, redacción del Execution Result
+- Decisiones técnicas:
+  - El tag se creó directamente sobre el hash `8e9546e` (en lugar de sobre `main` simbólico) para mayor precisión y trazabilidad, garantizando que apunta al merge commit exacto independientemente del estado futuro de la rama

@@ -983,6 +983,24 @@ suites:
           - path: node_modules
             must_exist: true
 
+  OP-174_etiquetar_baseline:
+    description: 'Verifica que el tag v0.1.0 existe y apunta al merge commit de main'
+    enabled: true
+    related_spec: '.ai/specs/OP-174-spec.md'
+    verifications:
+      - id: OP-174-STRUCT-1
+        name: 'Spec OP-174 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-174-spec.md
+            must_exist: true
+      - id: OP-174-STRUCT-2
+        name: 'Spec OP-170 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-170-spec.md
+            must_exist: true
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
