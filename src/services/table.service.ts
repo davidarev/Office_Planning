@@ -23,8 +23,7 @@ function toPublic(table: ITable): TablePublic {
     label: table.label,
     type: table.type,
     position: table.position,
-    assignedTo: table.assignedTo?.toString() ?? null,
-    isActive: table.isActive,
+    hasAssignedUser: table.assignedTo != null,
   };
 }
 

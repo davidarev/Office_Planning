@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/api-auth";
 import { getReservationsForRange } from "@/services";
 import { isValidDateString, normalizeDate } from "@/lib/dates";
-
-/**
- * Maximum allowed range in days for week queries.
- * Two business weeks (14 calendar days) is more than enough.
- */
-const MAX_RANGE_DAYS = 14;
+import { MAX_RANGE_DAYS } from "@/lib/constants";
 
 /**
  * GET /api/reservations/week?start=YYYY-MM-DD&end=YYYY-MM-DD

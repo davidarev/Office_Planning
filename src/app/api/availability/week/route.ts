@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/api-auth";
 import { getTableAvailabilityForRange } from "@/services";
 import { isValidDateString, normalizeDate } from "@/lib/dates";
-
-/**
- * Maximum allowed range in days for availability queries.
- */
-const MAX_RANGE_DAYS = 14;
+import { MAX_RANGE_DAYS } from "@/lib/constants";
 
 /**
  * GET /api/availability/week?start=YYYY-MM-DD&end=YYYY-MM-DD

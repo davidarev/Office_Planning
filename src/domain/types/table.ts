@@ -54,14 +54,17 @@ export interface ITable {
  * Client-safe representation of a table (without computed status).
  * Used by read-only API endpoints that return table metadata before
  * availability computation.
+ *
+ * - `isActive` omitted: always true because listActiveTables() filters inactive desks
+ * - `hasAssignedUser` replaces `assignedTo: string | null` — the UI only needs to
+ *   know whether an assignment exists, not the internal user ID (H-133-04, H-133-05)
  */
 export interface TablePublic {
   _id: string;
   label: string;
   type: TableType;
   position: TablePosition;
-  assignedTo: string | null;
-  isActive: boolean;
+  hasAssignedUser: boolean;
 }
 
 /**

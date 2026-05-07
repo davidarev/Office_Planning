@@ -58,12 +58,14 @@ describe("GET /api/tables", () => {
     const response = await GET();
     const body = await response.json();
 
+    // isActive removed from TablePublic (AC-4, OP-163) — always true, redundant
+    // assignedTo replaced by hasAssignedUser boolean (AC-5, OP-163)
     expect(body[0]).toMatchObject({
       _id: expect.any(String),
       label: "A-01",
       type: "flexible",
       position: { x: 10, y: 20, width: 100, height: 60 },
-      isActive: true,
+      hasAssignedUser: false,
     });
   });
 
