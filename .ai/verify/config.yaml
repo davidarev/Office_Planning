@@ -1045,6 +1045,25 @@ suites:
         exit_code: 0
         timeout: 60
 
+  OP-213_componente_day_selector:
+    description: 'Verifica que el componente DaySelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-213-spec.md'
+    verifications:
+      - id: OP-213-STRUCT-1
+        name: 'src/components/booking/DaySelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DaySelector.tsx
+            must_exist: true
+      - id: OP-213-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
