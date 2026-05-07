@@ -865,6 +865,142 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-171_verificacion_pre_merge:
+    description: 'Verifica que develop pasa la suite completa antes del merge a main'
+    enabled: true
+    related_spec: '.ai/specs/OP-171-spec.md'
+    verifications:
+      - id: OP-171-TEST-1
+        name: 'Tests unitarios en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-2
+        name: 'Tests de integración en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-3
+        name: 'Tests de API en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-LINT-1
+        name: 'ESLint sin errores (pre-merge)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-171-BUILD-1
+        name: 'Build de Next.js sin errores (pre-merge)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-172_merge_develop_main:
+    description: 'Verifica que el merge develop → main se realizó correctamente'
+    enabled: true
+    related_spec: '.ai/specs/OP-172-spec.md'
+    verifications:
+      - id: OP-172-STRUCT-1
+        name: 'src/app/api/reservations/route.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-172-STRUCT-2
+        name: 'src/lib/constants.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-172-STRUCT-3
+        name: 'tests/unit/dates.test.ts existe en main'
+        type: filesystem
+        checks:
+          - path: tests/unit/dates.test.ts
+            must_exist: true
+      - id: OP-172-STRUCT-4
+        name: 'AGENTS.md existe en main'
+        type: filesystem
+        checks:
+          - path: AGENTS.md
+            must_exist: true
+
+  OP-173_verificacion_post_merge:
+    description: 'Verifica que main pasa la suite completa tras el merge desde develop'
+    enabled: true
+    related_spec: '.ai/specs/OP-173-spec.md'
+    verifications:
+      - id: OP-173-TEST-1
+        name: 'Tests unitarios en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-2
+        name: 'Tests de integración en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-3
+        name: 'Tests de API en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-LINT-1
+        name: 'ESLint sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-173-BUILD-1
+        name: 'Build de Next.js sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-173-STRUCT-1
+        name: 'node_modules instalado en main'
+        type: filesystem
+        checks:
+          - path: node_modules
+            must_exist: true
+
+  OP-174_etiquetar_baseline:
+    description: 'Verifica que el tag v0.1.0 existe y apunta al merge commit de main'
+    enabled: true
+    related_spec: '.ai/specs/OP-174-spec.md'
+    verifications:
+      - id: OP-174-STRUCT-1
+        name: 'Spec OP-174 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-174-spec.md
+            must_exist: true
+      - id: OP-174-STRUCT-2
+        name: 'Spec OP-170 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-170-spec.md
+            must_exist: true
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
