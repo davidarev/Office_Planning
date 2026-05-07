@@ -9,7 +9,7 @@ export {
   getTablesWithBasicInfo,
 } from "./table.service";
 
-export type { TablePublic } from "./table.service";
+export type { TablePublic } from "@/domain/types";
 
 export {
   getTableAvailabilityForDate,

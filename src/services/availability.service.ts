@@ -31,8 +31,14 @@ import type {
 } from "@/domain/types";
 
 /**
- * Resolves the user name for a given ObjectId.
+ * Resolves the display name for a single user by their ObjectId string.
  * Returns "Usuario desconocido" if the user is not found.
+ *
+ * Warning: do NOT call this in a loop over multiple users — it issues one
+ * DB query per call (N+1). Use `buildUserNameMap` instead for batch resolution.
+ *
+ * @param userId - The user's ObjectId as a string
+ * @returns The user's display name, or "Usuario desconocido" if not found
  */
 async function resolveUserName(userId: string): Promise<string> {
   const user = await getUserById(userId);
@@ -40,9 +46,13 @@ async function resolveUserName(userId: string): Promise<string> {
 }
 
 /**
- * Builds a lookup map of userId strings that appear in a set of reservations,
- * resolving each to their display name. This avoids N+1 queries when
- * processing multiple tables.
+ * Builds a lookup map of userId strings that appear in a set of reservations
+ * and table assignments, resolving each to their display name in parallel.
+ * This avoids N+1 queries when processing multiple tables.
+ *
+ * @param reservations - The reservations whose user names need to be resolved
+ * @param tables - The tables whose assignedTo user names need to be resolved
+ * @returns A Map from userId string to display name
  */
 async function buildUserNameMap(
   reservations: IReservation[],
@@ -90,6 +100,9 @@ function computeStatus(
   if (reservation) return "red";
 
   // 4. Fixed desk (no reservation, but permanently assigned) → occupied
+  // Note: a fixed desk without assignedTo is a data inconsistency (orphan state).
+  // Correcting that belongs to the write layer (Fase 3). Here we render it red
+  // to be safe — better to show occupied than to allow a booking on a broken desk.
   if (table.type === "fixed") return "red";
 
   // 5. Preferential desk (no reservation) → preferred
@@ -180,7 +193,10 @@ export async function getTableAvailabilityForRange(
     getReservationsByDateRange(normalizedStart, normalizedEnd),
   ]);
 
-  // Index reservations by "tableId:date" for O(1) lookup
+  // Index reservations by "tableId:date" for O(1) lookup.
+  // H-124-2: key format uses toISOString().split("T")[0] (YYYY-MM-DD).
+  // Date normalization in insertReservation (H-121-1) ensures reservation.date
+  // is always UTC midnight, so the key will always match the cursor dateStr.
   const reservationIndex = new Map<string, IReservation>();
   for (const r of reservations) {
     const key = `${r.tableId.toString()}:${r.date.toISOString().split("T")[0]}`;

@@ -51,6 +51,20 @@ export interface ITable {
 }
 
 /**
+ * Client-safe representation of a table (without computed status).
+ * Used by read-only API endpoints that return table metadata before
+ * availability computation.
+ */
+export interface TablePublic {
+  _id: string;
+  label: string;
+  type: TableType;
+  position: TablePosition;
+  assignedTo: string | null;
+  isActive: boolean;
+}
+
+/**
  * Full availability information for a single desk on a specific day.
  *
  * Combines static table data with the computed status and optional

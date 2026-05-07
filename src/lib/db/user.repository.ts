@@ -21,14 +21,18 @@ import type { IUser } from "@/domain/types";
  */
 export async function getUserByEmail(email: string): Promise<IUser | null> {
   await connectDB();
-  return User.findOne({ email: email.toLowerCase() }).lean<IUser>();
+  // H-122-4: schema applies lowercase:true on persist and query — no need to normalize here
+  return User.findOne({ email }).lean<IUser>();
 }
 
 /**
  * Finds a user by their database ID.
  *
+ * Note: returns the user regardless of `isActive` status — the caller
+ * is responsible for checking activity if the use case requires it.
+ *
  * @param id - The MongoDB ObjectId as a string
- * @returns The user document, or null if not found
+ * @returns The user document (any isActive value), or null if not found
  */
 export async function getUserById(id: string): Promise<IUser | null> {
   await connectDB();
