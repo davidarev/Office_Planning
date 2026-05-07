@@ -1,4 +1,4 @@
-# OP-461 — Componente FloorPlan (contenedor)
+# OP-221 — Componente FloorPlan (contenedor)
 
 ## Contexto
 
@@ -13,7 +13,7 @@ placeholder. El contexto de fecha seleccionada ya está disponible a través de
 
 Este componente es el contenedor raíz del plano: define el lienzo (canvas lógico) sobre
 el que se posicionarán las mesas individuales. No renderiza mesas por sí solo — eso lo
-hará `DeskItem` (OP-462).
+hará `DeskItem` (OP-222).
 
 ## Objetivo
 
@@ -33,7 +33,7 @@ Crear el componente `FloorPlan` en `src/components/floor-plan/FloorPlan.tsx` que
 - El componente debe ser `"use client"` ya que consume context.
 - Las dimensiones del plano deben ser configurables via props (`width`, `height`) con
   valores por defecto razonables. Las unidades internas del modelo (`TablePosition`)
-  se mapearán a píxeles o porcentajes en `DeskItem` (OP-462), no aquí.
+  se mapearán a píxeles o porcentajes en `DeskItem` (OP-222), no aquí.
 - No hardcodear datos de mesas. El componente recibe `tables: TableAvailability[]`.
 - No introducir lógica de fetching dentro del componente — eso corresponde a la
   página o a un wrapper de datos (Server Component o `useEffect`).
@@ -56,7 +56,7 @@ Crear el componente `FloorPlan` en `src/components/floor-plan/FloorPlan.tsx` que
   posicionamiento para las mesas hijas.
 - AC-4: Itera sobre `tables` y renderiza un placeholder (`<div>`) por cada mesa,
   posicionado absolutamente según `table.position.x` e `table.position.y` en píxeles.
-  (El componente real `DeskItem` se integrará en OP-462.)
+  (El componente real `DeskItem` se integrará en OP-222.)
 - AC-5: Cuando `tables` está vacío, muestra un mensaje de estado vacío en lugar de
   un contenedor en blanco.
 - AC-6: El componente integra `useDateSelection()` internamente — la fecha seleccionada
