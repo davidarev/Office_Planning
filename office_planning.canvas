@@ -2,7 +2,7 @@
 	"nodes":[
 		{"id":"group-fase3","type":"group","x":-20,"y":1480,"width":2280,"height":1560,"label":"Fase 3 — Panel de administración (OP-300)"},
 		{"id":"group-fase1","type":"group","x":-20,"y":0,"width":2280,"height":1400,"label":"Fase 1 — Consolidación y auditoría (OP-100)"},
-		{"id":"group-fase2","type":"group","x":2480,"y":0,"width":1960,"height":1050,"label":"Fase 2 — Plano interactivo y flujo de reservas (OP-200)"},
+		{"id":"group-fase2","type":"group","x":2480,"y":0,"width":1960,"height":1400,"label":"Fase 2 — Plano interactivo y flujo de reservas (OP-200)"},
 		{"id":"group-fase4","type":"group","x":2480,"y":1480,"width":1960,"height":910,"label":"Fase 4 — Pulido, UX y producción (OP-400)"},
 		{"id":"node-op120","type":"text","text":"## OP-120 Auditoría de repositorios y servicios\nValidar capa de acceso a datos y lógica de negocio en servicios","x":340,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op130","type":"text","text":"## OP-130 Auditoría de API routes y seguridad\nRevisar endpoints, validaciones de entrada, autorización y respuestas de error","x":660,"y":50,"width":270,"height":120,"color":"4"},
@@ -42,7 +42,7 @@
 		{"id":"node-op420","type":"text","text":"## OP-420 Responsive y adaptación móvil\nAdaptar la interfaz para dispositivos móviles y tablets","x":2840,"y":1530,"width":261,"height":120,"color":"6"},
 		{"id":"node-op150","type":"text","text":"## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas","x":1300,"y":50,"width":270,"height":120,"color":"4"},
 		{"id":"node-op160","type":"text","text":"## OP-160 Corrección de deficiencias y deuda técnica\nCorregir problemas detectados en auditorías y resolver deuda técnica pendiente","x":1620,"y":50,"width":270,"height":120,"color":"4"},
-		{"id":"node-op210","type":"text","text":"## OP-210 Selector de semana y día\nComponente para navegar entre semanas y seleccionar el día activo","x":2520,"y":50,"width":261,"height":120,"color":"6"},
+		{"id":"node-op210","type":"text","text":"## OP-210 Selector de semana y día\nComponente para navegar entre semanas y seleccionar el día activo","x":2520,"y":50,"width":261,"height":120,"color":"1"},
 		{"id":"node-op220","type":"text","text":"## OP-220 Componente de plano de mesas\nRenderizar plano interactivo con las mesas y su estado de disponibilidad","x":2840,"y":50,"width":261,"height":120,"color":"6"},
 		{"id":"node-op131","type":"text","text":"## OP-131 Revisar endpoints de reservas\nAuditar GET/POST /api/reservations, DELETE /api/reservations/[id] y GET /api/reservations/week: autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores.","x":660,"y":220,"width":280,"height":140,"color":"4"},
 		{"id":"node-op132","type":"text","text":"## OP-132 Revisar endpoints de disponibilidad\nAuditar GET /api/availability y GET /api/availability/week: autenticación, validación de fechas, límite de rango y manejo de errores.","x":660,"y":380,"width":280,"height":140,"color":"4"},
@@ -67,7 +67,12 @@
 		{"id":"491d5ba0","type":"text","text":"## OP-156 Documentar hallazgos OP-150\nConsolidar hallazgos de OP-151 a OP-155 en informe clasificado por severidad","x":1290,"y":1110,"width":280,"height":160,"color":"4"},
 		{"id":"7ec5d49c","type":"text","text":"## OP-151 Revisar tests unitarios\nRevisar calidad, cobertura y assertions de los tests unitarios existentes (dates.test.ts, compute-status.test.ts)","x":1300,"y":220,"width":280,"height":160,"color":"4"},
 		{"id":"267fb76b","type":"text","text":"## OP-153 Revisar tests de API\nRevisar cobertura de escenarios, mocks de sesión y assertions HTTP de los tests de API","x":1295,"y":570,"width":280,"height":160,"color":"4"},
-		{"id":"d62b2444","type":"text","text":"## OP-152 Revisar tests de integración\nRevisar calidad, cobertura y robustez de los tests de integración de servicios y repositorios","x":1295,"y":390,"width":280,"height":160,"color":"4"}
+		{"id":"d62b2444","type":"text","text":"## OP-152 Revisar tests de integración\nRevisar calidad, cobertura y robustez de los tests de integración de servicios y repositorios","x":1295,"y":390,"width":280,"height":160,"color":"4"},
+		{"id":"df582e1f","type":"text","text":"## OP-211 Lógica de cálculo de semanas\nCrear utilidad week-selector.ts con cálculo de semana actual y siguiente, días laborables y día por defecto","x":2510,"y":190,"width":280,"height":160,"color":"4"},
+		{"id":"7b45f524","type":"text","text":"## OP-212 Componente WeekSelector\nImplementar componente WeekSelector con navegación entre semana actual y siguiente","x":2510,"y":370,"width":280,"height":160,"color":"4"},
+		{"id":"083cfcbd","type":"text","text":"## OP-213 Componente DaySelector\nImplementar componente DaySelector con días laborables y día activo destacado","x":2510,"y":550,"width":280,"height":160,"color":"4"},
+		{"id":"d74ba8b6","type":"text","text":"## OP-214 Estado y contexto de fecha seleccionada\nGestionar estado de fecha seleccionada y exponer vía contexto para otros componentes","x":2500,"y":730,"width":280,"height":160,"color":"4"},
+		{"id":"916df6c5","type":"text","text":"## OP-215 Tests del selector de semana y día\nTests unitarios de lógica de semanas y tests de componente para WeekSelector y DaySelector","x":2500,"y":910,"width":280,"height":160,"color":"4"}
 	],
 	"edges":[
 		{"id":"edge-110-120","fromNode":"node-op110","fromSide":"bottom","toNode":"node-op120","toSide":"top"},

@@ -1001,6 +1001,113 @@ suites:
           - path: .ai/specs/OP-170-spec.md
             must_exist: true
 
+  OP-211_logica_calculo_semanas:
+    description: 'Verifica la lógica de cálculo de semanas laborables — getWorkWeeks y getDefaultWorkDay'
+    enabled: true
+    related_spec: '.ai/specs/OP-211-spec.md'
+    verifications:
+      - id: OP-211-STRUCT-1
+        name: 'src/lib/week-selector.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/week-selector.ts
+            must_exist: true
+      - id: OP-211-STRUCT-2
+        name: 'tests/unit/week-selector.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/week-selector.test.ts
+            must_exist: true
+      - id: OP-211-TEST-1
+        name: 'Tests unitarios de week-selector en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-212_componente_week_selector:
+    description: 'Verifica que el componente WeekSelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-212-spec.md'
+    verifications:
+      - id: OP-212-STRUCT-1
+        name: 'src/components/booking/WeekSelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/WeekSelector.tsx
+            must_exist: true
+      - id: OP-212-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-213_componente_day_selector:
+    description: 'Verifica que el componente DaySelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-213-spec.md'
+    verifications:
+      - id: OP-213-STRUCT-1
+        name: 'src/components/booking/DaySelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DaySelector.tsx
+            must_exist: true
+      - id: OP-213-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-214_estado_contexto_fecha:
+    description: 'Verifica que DateSelectionProvider y el contexto de fecha existen y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-214-spec.md'
+    verifications:
+      - id: OP-214-STRUCT-1
+        name: 'src/context/date-selection.context.ts existe'
+        type: filesystem
+        checks:
+          - path: src/context/date-selection.context.ts
+            must_exist: true
+      - id: OP-214-STRUCT-2
+        name: 'src/components/booking/DateSelectionProvider.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DateSelectionProvider.tsx
+            must_exist: true
+      - id: OP-214-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-215_tests_selector_semana_dia:
+    description: 'Verifica cobertura de tests unitarios de week-selector — getWorkWeeks y getDefaultWorkDay'
+    enabled: true
+    related_spec: '.ai/specs/OP-215-spec.md'
+    verifications:
+      - id: OP-215-STRUCT-1
+        name: 'tests/unit/week-selector.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/week-selector.test.ts
+            must_exist: true
+      - id: OP-215-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
