@@ -96,3 +96,27 @@ OP-171_verificacion_pre_merge:
 
 - Todos los AC en PASS
 - Spec actualizada con `## Execution Result`
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-07 20:15 (CET)
+- Rama: feature/OP-170-merge-develop-main-baseline
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS – 62/62 tests unitarios
+  - AC-2: PASS – 102/102 tests de integración (6 suites)
+  - AC-3: PASS – 85/85 tests de API (6 suites)
+  - AC-4: PASS – 0 errores ESLint (4 warnings de nivel warning, no error-level)
+  - AC-5: PASS – Build Next.js exitoso, 13 rutas generadas
+  - AC-6: PASS – Suite `OP-171_verificacion_pre_merge` añadida en `.ai/verify/config.yaml`
+- verify:
+  - `npm run test:unit`: PASS (62/62)
+  - `npm run test:integration`: PASS (102/102)
+  - `npm run test:api`: PASS (85/85)
+  - `npm run lint`: PASS (0 errores; 4 warnings preexistentes en tests — `Types` unused en 3 ficheros, `table3` unused en 1 fichero)
+  - `npm run build`: PASS (Turbopack, 13 rutas, TypeScript OK)
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: ejecución de checks y redacción del Execution Result
+- Decisiones técnicas:
+  - Los 4 warnings de lint son preexistentes (existían en OP-166) y son de nivel `warning`, no `error` — no bloquean el merge según AC-4 que exige 0 errores de error-level

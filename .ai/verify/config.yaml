@@ -865,6 +865,47 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-171_verificacion_pre_merge:
+    description: 'Verifica que develop pasa la suite completa antes del merge a main'
+    enabled: true
+    related_spec: '.ai/specs/OP-171-spec.md'
+    verifications:
+      - id: OP-171-TEST-1
+        name: 'Tests unitarios en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-2
+        name: 'Tests de integración en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-3
+        name: 'Tests de API en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-LINT-1
+        name: 'ESLint sin errores (pre-merge)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-171-BUILD-1
+        name: 'Build de Next.js sin errores (pre-merge)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
