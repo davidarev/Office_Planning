@@ -627,6 +627,49 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-161_correcciones_modelos_y_tipos:
+    description: 'Correcciones a modelos Mongoose y tipos TypeScript — hallazgos H-111-x, H-112-x, H-113-x, H-114-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-161-spec.md'
+    verifications:
+      - id: OP-161-STRUCT-1
+        name: 'user.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/user.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-2
+        name: 'table.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/table.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-3
+        name: 'reservation.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/reservation.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-4
+        name: 'domain/types/table.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-161-STRUCT-5
+        name: 'domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-161-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
