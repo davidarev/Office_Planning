@@ -145,7 +145,6 @@ export async function getTableAvailabilityForDate(
       reservation: reservation
         ? {
             _id: reservation._id.toString(),
-            userId: reservation.userId.toString(),
             userName: userNames.get(reservation.userId.toString()) ?? "Usuario desconocido",
           }
         : null,
@@ -212,7 +211,6 @@ export async function getTableAvailabilityForRange(
         reservation: reservation
           ? {
               _id: reservation._id.toString(),
-              userId: reservation.userId.toString(),
               userName: userNames.get(reservation.userId.toString()) ?? "Usuario desconocido",
             }
           : null,

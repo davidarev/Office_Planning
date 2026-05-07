@@ -30,7 +30,7 @@ export interface TablePosition {
   y: number;
   width: number;
   height: number;
-  rotation?: number;
+  rotation: number;
 }
 
 /**
@@ -44,31 +44,10 @@ export interface ITable {
   label: string;
   type: TableType;
   position: TablePosition;
-  assignedTo?: Types.ObjectId;
+  assignedTo?: Types.ObjectId | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
-
-/**
- * Client-facing representation of a desk,
- * enriched with computed status for a specific day.
- */
-export interface TableWithStatus {
-  _id: string;
-  label: string;
-  type: TableType;
-  position: TablePosition;
-  status: TableStatus;
-  assignedTo?: {
-    _id: string;
-    name: string;
-  };
-  reservedBy?: {
-    _id: string;
-    name: string;
-  };
-  isActive: boolean;
 }
 
 /**
@@ -93,7 +72,6 @@ export interface TableAvailability {
   status: TableStatus;
   reservation: {
     _id: string;
-    userId: string;
     userName: string;
   } | null;
   assignedUser: {

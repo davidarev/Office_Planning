@@ -109,10 +109,9 @@ describe("GET /api/availability", () => {
     const body = await response.json();
 
     expect(body[0].status).toBe("red");
-    // Verify complete reservation structure (G-15)
+    // Verify complete reservation structure — userId removed per AC-4 (OP-161)
     expect(body[0].reservation).toMatchObject({
       _id: reservation._id.toString(),
-      userId: user._id.toString(),
       userName: "Test User",
     });
   });

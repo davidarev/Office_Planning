@@ -1,5 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose";
 import type { IReservation } from "@/domain/types";
+import { normalizeDate } from "@/lib/dates";
 
 const ReservationSchema = new Schema<IReservation>(
   {
@@ -16,11 +17,13 @@ const ReservationSchema = new Schema<IReservation>(
     date: {
       type: Date,
       required: true,
+      set: (v: Date | string) => normalizeDate(v),
     },
     status: {
       type: String,
       enum: ["confirmed", "cancelled"],
       default: "confirmed",
+      required: true,
     },
   },
   {
