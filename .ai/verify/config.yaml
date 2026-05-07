@@ -1026,6 +1026,25 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-212_componente_week_selector:
+    description: 'Verifica que el componente WeekSelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-212-spec.md'
+    verifications:
+      - id: OP-212-STRUCT-1
+        name: 'src/components/booking/WeekSelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/WeekSelector.tsx
+            must_exist: true
+      - id: OP-212-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
