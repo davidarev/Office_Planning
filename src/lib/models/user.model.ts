@@ -11,14 +11,15 @@ const UserSchema = new Schema<IUser>(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email format is invalid"],
     },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+      required: true,
     },
     isActive: {
       type: Boolean,
@@ -29,6 +30,9 @@ const UserSchema = new Schema<IUser>(
     timestamps: true,
   }
 );
+
+/** H-111-3: explicit unique index declaration (complements unique:true hint in field). */
+UserSchema.index({ email: 1 }, { unique: true });
 
 /**
  * Mongoose model for the User entity.

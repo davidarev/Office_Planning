@@ -24,8 +24,11 @@ export async function listActiveTables(): Promise<ITable[]> {
 /**
  * Finds a table by its database ID.
  *
+ * Note: returns the table regardless of `isActive` status — the caller
+ * is responsible for checking activity if the use case requires it.
+ *
  * @param id - The MongoDB ObjectId as a string
- * @returns The table document, or null if not found
+ * @returns The table document (any isActive value), or null if not found
  */
 export async function getTableById(id: string): Promise<ITable | null> {
   await connectDB();

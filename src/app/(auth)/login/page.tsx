@@ -19,7 +19,9 @@ import { signIn } from "next-auth/react";
  */
 export default function LoginPage() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  // H-140-5: garantizar que callbackUrl es siempre una ruta relativa
+  const raw = searchParams.get("callbackUrl") ?? "/";
+  const callbackUrl = raw.startsWith("/") ? raw : "/";
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);

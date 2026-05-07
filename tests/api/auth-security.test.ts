@@ -356,3 +356,20 @@ describe("repeated operations", () => {
     expect(r2.status).toBe(409);
   });
 });
+
+/* -------------------------------------------------------------------------- */
+/*  H-150-18: Content-Type smoke test                                         */
+/* -------------------------------------------------------------------------- */
+
+describe("Content-Type header — 401 responses (smoke)", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("GET /api/tables 401 returns Content-Type: application/json", async () => {
+    mockUnauthenticated();
+    const response = await GET_TABLES();
+    expect(response.status).toBe(401);
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
+});

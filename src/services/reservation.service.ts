@@ -54,6 +54,9 @@ function toPublic(reservation: IReservation): ReservationPublic {
  * Checks whether a MongoDB error is a duplicate key error (E11000).
  * This error is thrown when a unique index constraint is violated,
  * which is our primary concurrency safeguard for reservations.
+ *
+ * @param err - The caught error value
+ * @returns True if the error is a MongoDB duplicate key error
  */
 function isDuplicateKeyError(err: unknown): boolean {
   return (
@@ -68,6 +71,13 @@ function isDuplicateKeyError(err: unknown): boolean {
  * Determines a user-friendly conflict message from the duplicate key error.
  * MongoDB includes the violated index name in the error message, which
  * lets us distinguish between table-level and user-level conflicts.
+ *
+ * Warning: relies on the MongoDB error message format containing the index field
+ * name ("userId" or "tableId"). If MongoDB changes this format, the fallback
+ * message is returned instead — no silent failure.
+ *
+ * @param err - The caught duplicate key error
+ * @returns A localized, user-facing conflict message
  */
 function getDuplicateKeyMessage(err: unknown): string {
   const message =
@@ -93,6 +103,9 @@ function getDuplicateKeyMessage(err: unknown): string {
 /**
  * Returns all confirmed reservations for a single day.
  *
+ * Note: the `status: "confirmed"` filter is applied at the repository layer —
+ * cancelled reservations are excluded from the result.
+ *
  * @param date - The target date (Date or ISO string)
  * @returns Array of public reservation objects for that day
  */
@@ -106,6 +119,9 @@ export async function getReservationsForDay(
 
 /**
  * Returns all confirmed reservations within an inclusive date range.
+ *
+ * Note: the `status: "confirmed"` filter is applied at the repository layer —
+ * cancelled reservations are excluded from the result.
  *
  * @param start - Start date of the range (inclusive)
  * @param end - End date of the range (inclusive)
@@ -147,6 +163,7 @@ export async function getReservationsForRange(
  * @param tableId - The target table's ID
  * @param date - The reservation date as YYYY-MM-DD string
  * @returns ServiceResult with the created reservation or an error
+ * @throws Re-throws any non-duplicate-key database error for the API layer to handle
  */
 export async function createReservation(
   userId: string,

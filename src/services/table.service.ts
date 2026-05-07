@@ -9,20 +9,7 @@
  */
 
 import { listActiveTables } from "@/lib/db";
-import type { ITable, TableType, TablePosition } from "@/domain/types";
-
-/**
- * Public representation of a table (without computed status).
- * Used in the initial read-only API before status computation exists.
- */
-export interface TablePublic {
-  _id: string;
-  label: string;
-  type: TableType;
-  position: TablePosition;
-  assignedTo: string | null;
-  isActive: boolean;
-}
+import type { ITable, TablePublic } from "@/domain/types";
 
 /**
  * Converts an internal table document to its public representation.
@@ -36,8 +23,7 @@ function toPublic(table: ITable): TablePublic {
     label: table.label,
     type: table.type,
     position: table.position,
-    assignedTo: table.assignedTo?.toString() ?? null,
-    isActive: table.isActive,
+    hasAssignedUser: table.assignedTo != null,
   };
 }
 

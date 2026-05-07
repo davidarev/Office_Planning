@@ -58,6 +58,9 @@ export async function getReservationsByDateRange(
 /**
  * Finds the confirmed reservation for a specific user on a specific date.
  *
+ * Note: if `userId` is a malformed ObjectId string, Mongoose will return null
+ * without throwing — the caller does not need to handle a cast error.
+ *
  * @param userId - The user's ObjectId as a string
  * @param date - The target date (normalized)
  * @returns The reservation document, or null if the user has no reservation that day
@@ -78,6 +81,9 @@ export async function getUserReservationByDate(
 
 /**
  * Finds the confirmed reservation for a specific table on a specific date.
+ *
+ * Note: if `tableId` is a malformed ObjectId string, Mongoose will return null
+ * without throwing — the caller does not need to handle a cast error.
  *
  * @param tableId - The table's ObjectId as a string
  * @param date - The target date (normalized)
@@ -100,8 +106,11 @@ export async function getTableReservationByDate(
 /**
  * Finds a reservation by its database ID (any status).
  *
+ * Note: returns reservations regardless of status — including cancelled ones.
+ * Required by the cancellation flow to detect already-cancelled reservations.
+ *
  * @param id - The reservation's ObjectId as a string
- * @returns The reservation document, or null if not found
+ * @returns The reservation document (any status), or null if not found
  */
 export async function getReservationById(
   id: string
@@ -129,10 +138,12 @@ export async function insertReservation(
   date: Date
 ): Promise<IReservation> {
   await connectDB();
+  // H-121-1: defense-in-depth normalization — ensures UTC midnight regardless of caller
+  const normalizedDate = normalizeDate(date);
   const doc = await Reservation.create({
     userId,
     tableId,
-    date,
+    date: normalizedDate,
     status: "confirmed",
   });
   return doc.toObject() as IReservation;

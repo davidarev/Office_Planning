@@ -22,6 +22,7 @@ const TableSchema = new Schema<ITable>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     type: {
       type: String,

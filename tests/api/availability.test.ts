@@ -109,12 +109,20 @@ describe("GET /api/availability", () => {
     const body = await response.json();
 
     expect(body[0].status).toBe("red");
-    // Verify complete reservation structure (G-15)
+    // Verify complete reservation structure — userId removed per AC-4 (OP-161)
     expect(body[0].reservation).toMatchObject({
       _id: reservation._id.toString(),
-      userId: user._id.toString(),
       userName: "Test User",
     });
+  });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json (smoke)", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET(makeRequest("/api/availability?date=2026-04-01"));
+    expect(response.headers.get("content-type")).toContain("application/json");
   });
 });
 

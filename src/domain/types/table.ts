@@ -30,7 +30,7 @@ export interface TablePosition {
   y: number;
   width: number;
   height: number;
-  rotation?: number;
+  rotation: number;
 }
 
 /**
@@ -44,31 +44,27 @@ export interface ITable {
   label: string;
   type: TableType;
   position: TablePosition;
-  assignedTo?: Types.ObjectId;
+  assignedTo?: Types.ObjectId | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 /**
- * Client-facing representation of a desk,
- * enriched with computed status for a specific day.
+ * Client-safe representation of a table (without computed status).
+ * Used by read-only API endpoints that return table metadata before
+ * availability computation.
+ *
+ * - `isActive` omitted: always true because listActiveTables() filters inactive desks
+ * - `hasAssignedUser` replaces `assignedTo: string | null` — the UI only needs to
+ *   know whether an assignment exists, not the internal user ID (H-133-04, H-133-05)
  */
-export interface TableWithStatus {
+export interface TablePublic {
   _id: string;
   label: string;
   type: TableType;
   position: TablePosition;
-  status: TableStatus;
-  assignedTo?: {
-    _id: string;
-    name: string;
-  };
-  reservedBy?: {
-    _id: string;
-    name: string;
-  };
-  isActive: boolean;
+  hasAssignedUser: boolean;
 }
 
 /**
@@ -93,7 +89,6 @@ export interface TableAvailability {
   status: TableStatus;
   reservation: {
     _id: string;
-    userId: string;
     userName: string;
   } | null;
   assignedUser: {

@@ -6,6 +6,20 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/user.model";
 import type { UserRole } from "@/domain/types";
 
+// H-140-2: validar variables de entorno de email en tiempo de módulo
+if (
+  !process.env.EMAIL_SERVER_HOST ||
+  !process.env.EMAIL_SERVER_USER ||
+  !process.env.EMAIL_SERVER_PASSWORD ||
+  !process.env.EMAIL_FROM ||
+  !process.env.EMAIL_SERVER_PORT ||
+  isNaN(Number(process.env.EMAIL_SERVER_PORT))
+) {
+  throw new Error(
+    "Variables de entorno de email mal configuradas. Revisa EMAIL_SERVER_HOST, EMAIL_SERVER_PORT, EMAIL_SERVER_USER, EMAIL_SERVER_PASSWORD y EMAIL_FROM."
+  );
+}
+
 /**
  * NextAuth.js v5 configuration for magic-link authentication.
  *
@@ -80,8 +94,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user?.email) {
         try {
           await connectDB();
+          // H-140-1: filtrar por isActive para que usuarios desactivados no enriquezcan su sesión
           const dbUser = await User.findOne({
             email: user.email.toLowerCase(),
+            isActive: true,
           }).lean();
 
           if (dbUser) {

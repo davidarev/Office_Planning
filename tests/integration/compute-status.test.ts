@@ -127,9 +127,9 @@ describe("availability enrichment", () => {
     });
     const result = await getTableAvailabilityForDate(DATE);
     expect(result).toHaveLength(1);
+    // userId removed from reservation per AC-4 (OP-161)
     expect(result[0].reservation).toEqual({
       _id: reservation._id.toString(),
-      userId: user._id.toString(),
       userName: "María López",
     });
   });

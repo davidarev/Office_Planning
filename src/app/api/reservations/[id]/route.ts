@@ -2,15 +2,7 @@ import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import { requireSession } from "@/lib/api-auth";
 import { cancelReservation } from "@/services";
-import type { ServiceErrorCode } from "@/domain/types";
-
-/** Maps service error codes to HTTP status codes. */
-const HTTP_STATUS: Record<ServiceErrorCode, number> = {
-  validation: 400,
-  not_found: 404,
-  forbidden: 403,
-  conflict: 409,
-};
+import { HTTP_STATUS } from "@/lib/constants";
 
 /**
  * DELETE /api/reservations/:id

@@ -627,6 +627,244 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-163_correcciones_api_routes_y_middleware:
+    description: 'Correcciones a API routes y middleware — hallazgos H-131-x, H-132-x, H-133-x de OP-130'
+    enabled: true
+    related_spec: '.ai/specs/OP-163-spec.md'
+    verifications:
+      - id: OP-163-STRUCT-1
+        name: 'src/lib/constants.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-163-STRUCT-2
+        name: 'api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-163-STRUCT-3
+        name: 'api/reservations/[id]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/[id]/route.ts
+            must_exist: true
+      - id: OP-163-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-162_correcciones_repositorios_y_servicios:
+    description: 'Correcciones a repositorios y servicios — hallazgos H-121-x, H-122-x, H-123-x, H-124-x, H-125-x, H-126-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-162-spec.md'
+    verifications:
+      - id: OP-162-STRUCT-1
+        name: 'reservation.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/reservation.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-2
+        name: 'user.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/user.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-3
+        name: 'table.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/table.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-4
+        name: 'TablePublic en domain/types/table.ts'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-162-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-161_correcciones_modelos_y_tipos:
+    description: 'Correcciones a modelos Mongoose y tipos TypeScript — hallazgos H-111-x, H-112-x, H-113-x, H-114-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-161-spec.md'
+    verifications:
+      - id: OP-161-STRUCT-1
+        name: 'user.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/user.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-2
+        name: 'table.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/table.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-3
+        name: 'reservation.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/reservation.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-4
+        name: 'domain/types/table.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-161-STRUCT-5
+        name: 'domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-161-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-160_correccion_deuda_tecnica:
+    description: 'Verifica que todas las correcciones de OP-160 (OP-161 a OP-165) están aplicadas y la suite pasa en verde'
+    enabled: true
+    related_spec: '.ai/specs/OP-160-spec.md'
+    verifications:
+      - id: OP-160-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-TEST-2
+        name: 'Tests de integración en verde'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-TEST-3
+        name: 'Tests de API en verde'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-160-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-160-STRUCT-1
+        name: 'src/lib/constants.ts existe (extraído de OP-163)'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-160-STRUCT-2
+        name: 'TablePublic definida en src/domain/types/table.ts (movida de OP-162)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-160-STRUCT-3
+        name: 'next-auth.d.ts existe con extensión de User (OP-161)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+
+  OP-165_correcciones_y_nuevos_tests:
+    description: 'Correcciones y nuevos tests — H-150-18 smoke Content-Type, actualización de contratos OP-161/163'
+    enabled: true
+    related_spec: '.ai/specs/OP-165-spec.md'
+    verifications:
+      - id: OP-165-STRUCT-1
+        name: 'tests/api/tables.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/tables.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-2
+        name: 'tests/api/availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/availability.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-3
+        name: 'tests/api/auth-security.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/auth-security.test.ts
+            must_exist: true
+      - id: OP-165-TEST-1
+        name: 'Suite completa pasa sin regresiones (249/249)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-164_correcciones_autenticacion:
+    description: 'Correcciones a autenticación — hallazgos H-140-1, H-140-2, H-140-3, H-140-5, H-140-7'
+    enabled: true
+    related_spec: '.ai/specs/OP-164-spec.md'
+    verifications:
+      - id: OP-164-STRUCT-1
+        name: 'src/lib/auth.ts existe con isActive en session callback'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-164-STRUCT-2
+        name: 'src/lib/api-auth.ts existe con try/catch en requireSession'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-164-STRUCT-3
+        name: 'src/app/(auth)/login/page.tsx existe con validación callbackUrl'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/page.tsx
+            must_exist: true
+      - id: OP-164-STRUCT-4
+        name: 'src/app/(auth)/layout.tsx existe con Suspense fallback'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/layout.tsx
+            must_exist: true
+      - id: OP-164-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
