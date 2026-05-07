@@ -80,6 +80,11 @@ describe("DELETE /api/reservations/:id", () => {
 
     const body = await response.json();
     expect(body.status).toBe("cancelled");
+    // Verify complete response shape (G-13)
+    expect(body._id).toBe(resId);
+    expect(body.userId).toBe(user._id.toString());
+    expect(body.tableId).toBe(table._id.toString());
+    expect(body.date).toBe("2026-04-01");
   });
 
   it("admin can cancel any reservation (200)", async () => {
@@ -134,5 +139,25 @@ describe("DELETE /api/reservations/:id", () => {
 
     const response = await DELETE(makeDeleteRequest(resId), makeParams(resId));
     expect(response.status).toBe(400);
+  });
+
+  it("admin gets 400 when cancelling an already-cancelled reservation (G-17)", async () => {
+    const owner = await createUser();
+    const admin = await createAdmin();
+    const table = await createTable({ type: "flexible" });
+    const reservation = await createReservation({
+      userId: owner._id,
+      tableId: table._id,
+      date: "2026-04-01",
+      status: "cancelled",
+    });
+    const resId = reservation._id.toString();
+
+    mockAuthenticated(mockSession({ id: admin._id.toString(), role: "admin" }));
+
+    const response = await DELETE(makeDeleteRequest(resId), makeParams(resId));
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
   });
 });

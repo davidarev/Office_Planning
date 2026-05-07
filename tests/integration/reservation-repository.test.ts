@@ -11,6 +11,7 @@
 
 import { describe, it, expect } from "vitest";
 import { Types } from "mongoose";
+import mongoose from "mongoose";
 import {
   insertReservation,
   markReservationCancelled,
@@ -418,5 +419,90 @@ describe("getTableReservationByDate", () => {
 
     const result = await getTableReservationByDate(table._id.toString(), "2026-04-01");
     expect(result).toBeNull();
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*  Partial unique index: same user re-reserves same table after cancel        */
+/* -------------------------------------------------------------------------- */
+
+describe("partial unique index — same user same table re-reservation (G-09)", () => {
+  it("allows same user to re-reserve same table after cancellation (same day)", async () => {
+    const user = await createUser();
+    const table = await createTable();
+    const date = normalizeDate("2026-04-01");
+
+    const r1 = await insertReservation(
+      user._id.toString(),
+      table._id.toString(),
+      date
+    );
+
+    await markReservationCancelled(r1._id);
+
+    // Same user, same table, same day — must succeed after cancel
+    const r2 = await insertReservation(
+      user._id.toString(),
+      table._id.toString(),
+      date
+    );
+    expect(r2.status).toBe("confirmed");
+    expect(r2.userId.toString()).toBe(user._id.toString());
+    expect(r2.tableId.toString()).toBe(table._id.toString());
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*  Index verification (G-08)                                                  */
+/* -------------------------------------------------------------------------- */
+
+describe("reservation collection index verification (G-08)", () => {
+  it("has partial unique index on {tableId, date} for confirmed reservations", async () => {
+    // connectDB() is called implicitly by the first factory in any prior test.
+    // We need the collection to exist — insert one document to trigger index creation.
+    const user = await createUser();
+    const table = await createTable();
+    await createReservation({ userId: user._id, tableId: table._id, date: "2026-04-01" });
+
+    const indexes = await mongoose.connection.collection("reservations").indexes();
+    const tableIndex = indexes.find(
+      (idx) =>
+        idx.key?.tableId === 1 &&
+        idx.key?.date === 1 &&
+        idx.unique === true &&
+        idx.partialFilterExpression?.status === "confirmed"
+    );
+    expect(tableIndex).toBeDefined();
+  });
+
+  it("has partial unique index on {userId, date} for confirmed reservations", async () => {
+    const user = await createUser();
+    const table = await createTable();
+    await createReservation({ userId: user._id, tableId: table._id, date: "2026-04-02" });
+
+    const indexes = await mongoose.connection.collection("reservations").indexes();
+    const userIndex = indexes.find(
+      (idx) =>
+        idx.key?.userId === 1 &&
+        idx.key?.date === 1 &&
+        idx.unique === true &&
+        idx.partialFilterExpression?.status === "confirmed"
+    );
+    expect(userIndex).toBeDefined();
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*  getReservationsByDateRange — inverted range (G-10)                         */
+/* -------------------------------------------------------------------------- */
+
+describe("getReservationsByDateRange — edge cases (G-10)", () => {
+  it("returns empty array when start > end (inverted range)", async () => {
+    const user = await createUser();
+    const table = await createTable();
+    await createReservation({ userId: user._id, tableId: table._id, date: "2026-04-03" });
+
+    const results = await getReservationsByDateRange("2026-04-05", "2026-04-01");
+    expect(results).toEqual([]);
   });
 });

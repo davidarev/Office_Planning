@@ -74,6 +74,28 @@ describe("GET /api/reservations", () => {
     expect(body).toHaveLength(1);
     expect(body[0].date).toBe("2026-04-01");
     expect(body[0].status).toBe("confirmed");
+    // Verify serialized types (G-13)
+    expect(typeof body[0]._id).toBe("string");
+    expect(typeof body[0].userId).toBe("string");
+    expect(typeof body[0].tableId).toBe("string");
+    expect(/^\d{4}-\d{2}-\d{2}$/.test(body[0].date)).toBe(true);
+  });
+
+  it("excludes cancelled reservations (G-12)", async () => {
+    const user = await createUser();
+    const table1 = await createTable();
+    const table2 = await createTable();
+    await createReservation({ userId: user._id, tableId: table1._id, date: "2026-04-01" });
+    await createReservation({ userId: user._id, tableId: table2._id, date: "2026-04-01", status: "cancelled" });
+
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET(makeRequest("/api/reservations?date=2026-04-01"));
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body).toHaveLength(1);
+    expect(body[0].status).toBe("confirmed");
   });
 
   it("returns empty array for date with no reservations", async () => {
@@ -171,5 +193,25 @@ describe("GET /api/reservations/week", () => {
 
     const body = await response.json();
     expect(body).toHaveLength(1);
+    expect(body[0].date).toBe("2026-04-01");
+  });
+
+  it("excludes cancelled reservations from range (G-12)", async () => {
+    const user = await createUser();
+    const table1 = await createTable();
+    const table2 = await createTable();
+    await createReservation({ userId: user._id, tableId: table1._id, date: "2026-04-01" });
+    await createReservation({ userId: user._id, tableId: table2._id, date: "2026-04-02", status: "cancelled" });
+
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET_WEEK(
+      makeRequest("/api/reservations/week?start=2026-04-01&end=2026-04-05")
+    );
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body).toHaveLength(1);
+    expect(body[0].status).toBe("confirmed");
   });
 });

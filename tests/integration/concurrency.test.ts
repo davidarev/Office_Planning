@@ -5,9 +5,19 @@
  * - MongoDB unique partial indexes prevent double bookings
  * - Only one of N competing requests succeeds
  * - The losing requests fail with a conflict error, not a crash
+ *
+ * LIMITATION (G-11): These tests use Promise.allSettled within a single
+ * Node.js event loop against a single mongodb-memory-server connection.
+ * This simulates logical concurrency (interleaved async operations) but
+ * does NOT reproduce true multi-process concurrency as would occur in
+ * production with multiple Vercel instances hitting the same MongoDB.
+ * The tests verify that the unique partial indexes work correctly under
+ * Node.js-level concurrency; real multi-instance behavior depends on
+ * MongoDB's server-side locking, which these tests cannot exercise.
  */
 
 import { describe, it, expect } from "vitest";
+import mongoose from "mongoose";
 import { insertReservation } from "@/lib/db";
 import { normalizeDate } from "@/lib/dates";
 import { createReservation as createResService } from "@/services/reservation.service";
@@ -58,7 +68,7 @@ describe("concurrent reservation attempts", () => {
     expect(error.code).toBe(11000);
   });
 
-  it("service layer handles concurrent race for same table gracefully", async () => {
+  it("service layer handles concurrent race for same table gracefully (G-11)", async () => {
     const user1 = await createUser();
     const user2 = await createUser();
     const table = await createTable({ type: "flexible" });
@@ -85,6 +95,16 @@ describe("concurrent reservation attempts", () => {
     if (!failures[0].ok) {
       expect(failures[0].code).toBe("conflict");
     }
+
+    // Verify final DB state: exactly one confirmed reservation for this table+date
+    const confirmed = await mongoose.connection
+      .collection("reservations")
+      .countDocuments({
+        tableId: table._id,
+        date: normalizeDate("2026-04-11"),
+        status: "confirmed",
+      });
+    expect(confirmed).toBe(1);
   });
 
   it("service layer handles concurrent race for same user gracefully", async () => {
@@ -114,7 +134,7 @@ describe("concurrent reservation attempts", () => {
     }
   });
 
-  it("three-way race: only one wins", async () => {
+  it("three-way race: only one wins, two fail (G-11)", async () => {
     const user1 = await createUser();
     const user2 = await createUser();
     const user3 = await createUser();
@@ -131,7 +151,19 @@ describe("concurrent reservation attempts", () => {
     );
 
     const successes = values.filter((v) => v.ok);
+    const failures = values.filter((v) => !v.ok);
     expect(successes).toHaveLength(1);
+    expect(failures).toHaveLength(2);
+
+    // Verify final DB state: exactly one confirmed reservation for this table+date
+    const confirmed = await mongoose.connection
+      .collection("reservations")
+      .countDocuments({
+        tableId: table._id,
+        date: normalizeDate("2026-04-13"),
+        status: "confirmed",
+      });
+    expect(confirmed).toBe(1);
   });
 
   it("concurrent inserts on different tables + different days all succeed", async () => {

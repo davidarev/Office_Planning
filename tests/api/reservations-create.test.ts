@@ -131,6 +131,8 @@ describe("POST /api/reservations", () => {
       date: "2026-04-01",
     }));
     expect(response.status).toBe(409);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
   });
 
   it("returns 409 when user already has reservation that day", async () => {
@@ -146,6 +148,8 @@ describe("POST /api/reservations", () => {
       date: "2026-04-01",
     }));
     expect(response.status).toBe(409);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
   });
 
   it("returns 201 on successful reservation", async () => {
@@ -201,5 +205,22 @@ describe("POST /api/reservations", () => {
       date: "2026-04-01",
     }));
     expect(response.status).toBe(400);
+  });
+
+  it("ignores userId in body and uses session userId (G-14)", async () => {
+    const sessionUser = await createUser();
+    const otherUser = await createUser();
+    const table = await createTable({ type: "flexible" });
+    mockAuthenticated(mockSession({ id: sessionUser._id.toString() }));
+
+    const response = await POST(makePostRequest({
+      tableId: table._id.toString(),
+      date: "2026-04-01",
+      userId: otherUser._id.toString(), // malicious field — must be ignored
+    }));
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.userId).toBe(sessionUser._id.toString());
+    expect(body.userId).not.toBe(otherUser._id.toString());
   });
 });

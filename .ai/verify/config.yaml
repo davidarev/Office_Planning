@@ -595,6 +595,38 @@ suites:
           - path: .ai/reports/OP-140-findings.md
             must_exist: true
 
+  OP-156_documentar_hallazgos_OP-150:
+    description: 'Verificación del informe consolidado de auditoría OP-150 (tests: unitarios, integración y API)'
+    enabled: true
+    related_spec: '.ai/specs/OP-156-spec.md'
+    verifications:
+      - id: OP-156-STRUCT-1
+        name: 'Informe OP-150-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-150-findings.md
+            must_exist: true
+      - id: OP-156-STRUCT-2
+        name: 'Spec OP-156 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-156-spec.md
+            must_exist: true
+      - id: OP-156-STRUCT-3
+        name: 'Tests de integración siguen en verde (incluye compute-status reubicado)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-156-STRUCT-4
+        name: 'Tests unitarios siguen en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:

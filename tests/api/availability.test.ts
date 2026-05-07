@@ -42,6 +42,8 @@ describe("GET /api/availability", () => {
 
     const response = await GET(makeRequest("/api/availability"));
     expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
   });
 
   it("returns 400 with invalid date", async () => {
@@ -50,6 +52,8 @@ describe("GET /api/availability", () => {
 
     const response = await GET(makeRequest("/api/availability?date=bad-date"));
     expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
   });
 
   it("returns availability for valid date", async () => {
@@ -97,7 +101,7 @@ describe("GET /api/availability", () => {
   it("reflects reservation in availability", async () => {
     const user = await createUser({ name: "Test User" });
     const table = await createTable({ type: "flexible" });
-    await createReservation({ userId: user._id, tableId: table._id, date: "2026-04-01" });
+    const reservation = await createReservation({ userId: user._id, tableId: table._id, date: "2026-04-01" });
 
     mockAuthenticated(mockSession({ id: user._id.toString() }));
 
@@ -105,8 +109,12 @@ describe("GET /api/availability", () => {
     const body = await response.json();
 
     expect(body[0].status).toBe("red");
-    expect(body[0].reservation).toBeDefined();
-    expect(body[0].reservation.userName).toBe("Test User");
+    // Verify complete reservation structure (G-15)
+    expect(body[0].reservation).toMatchObject({
+      _id: reservation._id.toString(),
+      userId: user._id.toString(),
+      userName: "Test User",
+    });
   });
 });
 
