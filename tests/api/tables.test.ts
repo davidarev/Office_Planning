@@ -1,0 +1,104 @@
+/**
+ * API tests for GET /api/tables.
+ *
+ * Tests the HTTP layer: auth, response shape, status codes.
+ */
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createUser, createTable } from "../helpers";
+import { mockSession, mockAuthenticated, mockUnauthenticated } from "../helpers/auth-mock";
+
+// Must mock before importing the route handler
+vi.mock("@/lib/api-auth", () => ({
+  requireSession: vi.fn(),
+}));
+
+import { GET } from "@/app/api/tables/route";
+
+describe("GET /api/tables", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 401 without session", async () => {
+    mockUnauthenticated();
+    const response = await GET();
+    expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body.error).toBeDefined();
+  });
+
+  it("returns active tables with valid session", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    await createTable({ label: "A-01", type: "flexible" });
+    await createTable({ label: "A-02", type: "preferential" });
+    await createTable({ label: "Inactive", isActive: false });
+
+    const response = await GET();
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body).toHaveLength(2);
+    expect(body[0].label).toBe("A-01");
+    expect(body[1].label).toBe("A-02");
+  });
+
+  it("returns correct shape for each table", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    await createTable({
+      label: "A-01",
+      type: "flexible",
+      position: { x: 10, y: 20, width: 100, height: 60 },
+    });
+
+    const response = await GET();
+    const body = await response.json();
+
+    // isActive removed from TablePublic (AC-4, OP-163) — always true, redundant
+    // assignedTo replaced by hasAssignedUser boolean (AC-5, OP-163)
+    expect(body[0]).toMatchObject({
+      _id: expect.any(String),
+      label: "A-01",
+      type: "flexible",
+      position: { x: 10, y: 20, width: 100, height: 60 },
+      hasAssignedUser: false,
+    });
+  });
+
+  it("returns empty array when no active tables exist", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET();
+    const body = await response.json();
+    expect(body).toEqual([]);
+  });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json (smoke)", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET();
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("returns hasAssignedUser: true for table with assigned user", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    await createTable({ label: "Assigned", type: "preferential", assignedTo: user._id });
+    await createTable({ label: "Free", type: "flexible" });
+
+    const response = await GET();
+    const body = await response.json();
+
+    const byLabel = new Map(body.map((t: { label: string }) => [t.label, t]));
+    expect(byLabel.get("Assigned").hasAssignedUser).toBe(true);
+    expect(byLabel.get("Free").hasAssignedUser).toBe(false);
+  });
+});

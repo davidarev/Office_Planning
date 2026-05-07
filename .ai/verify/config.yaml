@@ -1,0 +1,881 @@
+# Configuración de verificación automática — Office Desk Booking
+# Ref: AGENTS.md § 9, § 10
+#
+# Cada suite corresponde a un ticket/tarea y define los checks
+# que deben pasar antes de considerar la tarea completada.
+#
+# Tipos soportados: filesystem, npm_script, json_check, api, playwright, performance, custom
+
+defaults:
+  timeout: 120
+  exit_code: 0
+
+suites:
+  # === Verificaciones globales del proyecto ===
+
+  global_build:
+    description: 'Verifica que el proyecto compila correctamente'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  global_lint:
+    description: 'Verifica que el código pasa el linter'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  global_tests:
+    description: 'Ejecuta todos los tests del proyecto'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: TEST-1
+        name: 'Tests unitarios'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: TEST-2
+        name: 'Tests de integración'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: TEST-3
+        name: 'Tests de API'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  global_structure:
+    description: 'Verifica que la estructura del proyecto cumple el estándar corporativo'
+    enabled: true
+    related_spec: null
+    verifications:
+      - id: STRUCT-1
+        name: 'AGENTS.md existe'
+        type: filesystem
+        checks:
+          - path: AGENTS.md
+            must_exist: true
+      - id: STRUCT-2
+        name: 'CLAUDE.md existe'
+        type: filesystem
+        checks:
+          - path: CLAUDE.md
+            must_exist: true
+      - id: STRUCT-3
+        name: 'Directorio de specs existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs
+            must_exist: true
+      - id: STRUCT-4
+        name: 'Config de verify existe'
+        type: filesystem
+        checks:
+          - path: .ai/verify/config.yaml
+            must_exist: true
+      - id: STRUCT-5
+        name: 'Directorio de skills existe'
+        type: filesystem
+        checks:
+          - path: .ai/skills
+            must_exist: true
+      - id: STRUCT-6
+        name: 'Canvas del proyecto existe'
+        type: filesystem
+        checks:
+          - path: office_planning.canvas
+            must_exist: true
+
+  OP-113_revisar_schema_reservation:
+    description: 'Auditoría de ReservationSchema — índices únicos parciales, normalización de fechas y coherencia con IReservation'
+    enabled: true
+    related_spec: '.ai/specs/OP-113-spec.md'
+    verifications:
+      - id: OP-113-STRUCT-1
+        name: 'reservation.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/reservation.model.ts
+            must_exist: true
+      - id: OP-113-STRUCT-2
+        name: 'domain/types/reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/reservation.ts
+            must_exist: true
+      - id: OP-113-STRUCT-3
+        name: 'lib/dates.ts (normalización) existe'
+        type: filesystem
+        checks:
+          - path: src/lib/dates.ts
+            must_exist: true
+      - id: OP-113-STRUCT-4
+        name: 'Informe de hallazgos OP-110 existe con sección Reservation'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
+
+  OP-114_revisar_tipos_dominio:
+    description: 'Auditoría de tipos de dominio — coherencia con schemas, exposición de datos y next-auth.d.ts'
+    enabled: true
+    related_spec: '.ai/specs/OP-114-spec.md'
+    verifications:
+      - id: OP-114-STRUCT-1
+        name: 'domain/types/user.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/user.ts
+            must_exist: true
+      - id: OP-114-STRUCT-2
+        name: 'domain/types/service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/service.ts
+            must_exist: true
+      - id: OP-114-STRUCT-3
+        name: 'domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-114-STRUCT-4
+        name: 'domain/types/index.ts existe y re-exporta todos los tipos'
+        type: filesystem
+        checks:
+          - path: src/domain/types/index.ts
+            must_exist: true
+
+  OP-115_documentar_hallazgos:
+    description: 'Verificación del informe consolidado de auditoría OP-110'
+    enabled: true
+    related_spec: '.ai/specs/OP-115-spec.md'
+    verifications:
+      - id: OP-115-STRUCT-1
+        name: 'Informe OP-110-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
+      - id: OP-115-STRUCT-2
+        name: 'Spec OP-110 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-110-spec.md
+            must_exist: true
+
+  OP-123_revisar_reservation_service:
+    description: 'Auditoría de reservation.service.ts — reglas de negocio, concurrencia, serialización y helpers'
+    enabled: true
+    related_spec: '.ai/specs/OP-123-spec.md'
+    verifications:
+      - id: OP-123-STRUCT-1
+        name: 'reservation.service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/services/reservation.service.ts
+            must_exist: true
+      - id: OP-123-STRUCT-2
+        name: 'lib/dates.ts existe (normalizeDate, isValidDateString)'
+        type: filesystem
+        checks:
+          - path: src/lib/dates.ts
+            must_exist: true
+      - id: OP-123-STRUCT-3
+        name: 'domain/types/reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/reservation.ts
+            must_exist: true
+      - id: OP-123-STRUCT-4
+        name: 'Informe OP-120-findings.md existe con sección reservation.service.ts'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-120-findings.md
+            must_exist: true
+
+  OP-127_documentar_hallazgos_OP-120:
+    description: 'Verificación del informe consolidado de auditoría OP-120 (repositorios y servicios)'
+    enabled: true
+    related_spec: '.ai/specs/OP-127-spec.md'
+    verifications:
+      - id: OP-127-STRUCT-1
+        name: 'Informe OP-120-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-120-findings.md
+            must_exist: true
+      - id: OP-127-STRUCT-2
+        name: 'Spec OP-127 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-127-spec.md
+            must_exist: true
+
+  # === Suites por ticket (añadir conforme se implementen) ===
+
+  OP-112_revisar_schema_table:
+    description: 'Auditoría de TableSchema y PositionSchema — solo verificaciones de estructura (sin cambios de código)'
+    enabled: true
+    related_spec: '.ai/specs/OP-112-spec.md'
+    verifications:
+      - id: OP-112-STRUCT-1
+        name: 'table.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/table.model.ts
+            must_exist: true
+      - id: OP-112-STRUCT-2
+        name: 'domain/types/table.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-112-STRUCT-3
+        name: 'Informe de hallazgos OP-110 existe y tiene sección Table'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-110-findings.md
+            must_exist: true
+  OP-131_revisar_endpoints_reservas:
+    description: 'Auditoría de los cuatro endpoints de reservas — autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-131-spec.md'
+    verifications:
+      - id: OP-131-STRUCT-1
+        name: 'api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-2
+        name: 'api/reservations/[id]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/[id]/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-3
+        name: 'api/reservations/week/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/week/route.ts
+            must_exist: true
+      - id: OP-131-STRUCT-4
+        name: 'lib/api-auth.ts existe (requireSession)'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-131-STRUCT-5
+        name: 'domain/types/service.ts existe (ServiceErrorCode)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/service.ts
+            must_exist: true
+
+  OP-136_documentar_hallazgos_OP-130:
+    description: 'Verificación del informe consolidado de auditoría OP-130 (API routes y middleware)'
+    enabled: true
+    related_spec: '.ai/specs/OP-136-spec.md'
+    verifications:
+      - id: OP-136-STRUCT-1
+        name: 'Informe OP-130-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+      - id: OP-136-STRUCT-2
+        name: 'Spec OP-136 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-136-spec.md
+            must_exist: true
+
+  OP-135_verificar_exposicion_datos_internos:
+    description: 'Auditoría transversal de bloques catch, mensajes de error y logging — verificar que no se exponen datos internos'
+    enabled: true
+    related_spec: '.ai/specs/OP-135-spec.md'
+    verifications:
+      - id: OP-135-STRUCT-1
+        name: 'src/app/api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-135-STRUCT-2
+        name: 'src/services/reservation.service.ts existe'
+        type: filesystem
+        checks:
+          - path: src/services/reservation.service.ts
+            must_exist: true
+      - id: OP-135-STRUCT-3
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-135'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
+  OP-134_revisar_proxy_middleware:
+    description: 'Auditoría de proxy.ts — matcher, reglas de redirección, rol admin y open redirect'
+    enabled: true
+    related_spec: '.ai/specs/OP-134-spec.md'
+    verifications:
+      - id: OP-134-STRUCT-1
+        name: 'src/proxy.ts existe'
+        type: filesystem
+        checks:
+          - path: src/proxy.ts
+            must_exist: true
+      - id: OP-134-STRUCT-2
+        name: 'src/lib/auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-134-STRUCT-3
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-134'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
+  OP-133_revisar_endpoint_mesas:
+    description: 'Auditoría de GET /api/tables — autenticación, estructura de respuesta, campos expuestos y manejo de errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-133-spec.md'
+    verifications:
+      - id: OP-133-STRUCT-1
+        name: 'api/tables/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/tables/route.ts
+            must_exist: true
+      - id: OP-133-STRUCT-2
+        name: 'lib/api-auth.ts existe (requireSession)'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-133-STRUCT-3
+        name: 'services/table.service.ts existe (getTablesWithBasicInfo)'
+        type: filesystem
+        checks:
+          - path: src/services/table.service.ts
+            must_exist: true
+      - id: OP-133-STRUCT-4
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-133'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
+  OP-132_revisar_endpoints_disponibilidad:
+    description: 'Auditoría de los dos endpoints de disponibilidad — autenticación, validación de fechas, límite de rango y manejo de errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-132-spec.md'
+    verifications:
+      - id: OP-132-STRUCT-1
+        name: 'api/availability/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/availability/route.ts
+            must_exist: true
+      - id: OP-132-STRUCT-2
+        name: 'api/availability/week/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/availability/week/route.ts
+            must_exist: true
+      - id: OP-132-STRUCT-3
+        name: 'lib/api-auth.ts existe (requireSession)'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-132-STRUCT-4
+        name: 'lib/dates.ts existe (isValidDateString, normalizeDate)'
+        type: filesystem
+        checks:
+          - path: src/lib/dates.ts
+            must_exist: true
+      - id: OP-132-STRUCT-5
+        name: 'domain/types/table.ts existe (TableAvailability)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-132-STRUCT-6
+        name: 'Informe OP-130-findings.md existe con hallazgos de OP-132'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-130-findings.md
+            must_exist: true
+
+  OP-145_documentar_hallazgos_OP-140:
+    description: 'Verificación del informe consolidado de auditoría OP-140 (autenticación y sesiones)'
+    enabled: true
+    related_spec: '.ai/specs/OP-145-spec.md'
+    verifications:
+      - id: OP-145-STRUCT-1
+        name: 'Informe OP-140-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+      - id: OP-145-STRUCT-2
+        name: 'Spec OP-140 existe con sección Informe de hallazgos'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-140-spec.md
+            must_exist: true
+      - id: OP-145-STRUCT-3
+        name: 'Spec OP-145 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-145-spec.md
+            must_exist: true
+
+  OP-144_revisar_paginas_auth:
+    description: 'Auditoría de páginas de auth (login, verify, error, layout) y handler de NextAuth'
+    enabled: true
+    related_spec: '.ai/specs/OP-144-spec.md'
+    verifications:
+      - id: OP-144-STRUCT-1
+        name: 'src/app/(auth)/login/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-2
+        name: 'src/app/(auth)/login/verify/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/verify/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-3
+        name: 'src/app/(auth)/login/error/page.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/error/page.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-4
+        name: 'src/app/(auth)/layout.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/layout.tsx
+            must_exist: true
+      - id: OP-144-STRUCT-5
+        name: 'src/app/api/auth/[...nextauth]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/auth/[...nextauth]/route.ts
+            must_exist: true
+      - id: OP-144-STRUCT-6
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-144'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
+  OP-143_revisar_auth_mongodb_client_y_api_auth:
+    description: 'Auditoría de auth-mongodb-client.ts (singleton MongoClient) y api-auth.ts (requireSession helper)'
+    enabled: true
+    related_spec: '.ai/specs/OP-143-spec.md'
+    verifications:
+      - id: OP-143-STRUCT-1
+        name: 'src/lib/auth-mongodb-client.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth-mongodb-client.ts
+            must_exist: true
+      - id: OP-143-STRUCT-2
+        name: 'src/lib/api-auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-143-STRUCT-3
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-143'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
+  OP-142_revisar_callbacks_signin_session:
+    description: 'Auditoría de callbacks signIn y session en src/lib/auth.ts — autorización, isActive, enriquecimiento de sesión y coherencia de tipos'
+    enabled: true
+    related_spec: '.ai/specs/OP-142-spec.md'
+    verifications:
+      - id: OP-142-STRUCT-1
+        name: 'src/lib/auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-142-STRUCT-2
+        name: 'src/domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-142-STRUCT-3
+        name: 'src/lib/models/user.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/user.model.ts
+            must_exist: true
+      - id: OP-142-STRUCT-4
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-142'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
+  OP-141_revisar_config_nextauth:
+    description: 'Auditoría de src/lib/auth.ts — adapter, provider, session strategy y páginas personalizadas'
+    enabled: true
+    related_spec: '.ai/specs/OP-141-spec.md'
+    verifications:
+      - id: OP-141-STRUCT-1
+        name: 'src/lib/auth.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-141-STRUCT-2
+        name: 'src/lib/auth-mongodb-client.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/auth-mongodb-client.ts
+            must_exist: true
+      - id: OP-141-STRUCT-3
+        name: 'Página /login existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login
+            must_exist: true
+      - id: OP-141-STRUCT-4
+        name: 'Página /login/verify existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/verify
+            must_exist: true
+      - id: OP-141-STRUCT-5
+        name: 'Página /login/error existe'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/error
+            must_exist: true
+      - id: OP-141-STRUCT-6
+        name: 'Informe OP-140-findings.md existe con hallazgos de OP-141'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-140-findings.md
+            must_exist: true
+
+  OP-156_documentar_hallazgos_OP-150:
+    description: 'Verificación del informe consolidado de auditoría OP-150 (tests: unitarios, integración y API)'
+    enabled: true
+    related_spec: '.ai/specs/OP-156-spec.md'
+    verifications:
+      - id: OP-156-STRUCT-1
+        name: 'Informe OP-150-findings.md existe'
+        type: filesystem
+        checks:
+          - path: .ai/reports/OP-150-findings.md
+            must_exist: true
+      - id: OP-156-STRUCT-2
+        name: 'Spec OP-156 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-156-spec.md
+            must_exist: true
+      - id: OP-156-STRUCT-3
+        name: 'Tests de integración siguen en verde (incluye compute-status reubicado)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-156-STRUCT-4
+        name: 'Tests unitarios siguen en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-163_correcciones_api_routes_y_middleware:
+    description: 'Correcciones a API routes y middleware — hallazgos H-131-x, H-132-x, H-133-x de OP-130'
+    enabled: true
+    related_spec: '.ai/specs/OP-163-spec.md'
+    verifications:
+      - id: OP-163-STRUCT-1
+        name: 'src/lib/constants.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-163-STRUCT-2
+        name: 'api/reservations/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-163-STRUCT-3
+        name: 'api/reservations/[id]/route.ts existe'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/[id]/route.ts
+            must_exist: true
+      - id: OP-163-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-162_correcciones_repositorios_y_servicios:
+    description: 'Correcciones a repositorios y servicios — hallazgos H-121-x, H-122-x, H-123-x, H-124-x, H-125-x, H-126-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-162-spec.md'
+    verifications:
+      - id: OP-162-STRUCT-1
+        name: 'reservation.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/reservation.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-2
+        name: 'user.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/user.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-3
+        name: 'table.repository.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/db/table.repository.ts
+            must_exist: true
+      - id: OP-162-STRUCT-4
+        name: 'TablePublic en domain/types/table.ts'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-162-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-161_correcciones_modelos_y_tipos:
+    description: 'Correcciones a modelos Mongoose y tipos TypeScript — hallazgos H-111-x, H-112-x, H-113-x, H-114-x'
+    enabled: true
+    related_spec: '.ai/specs/OP-161-spec.md'
+    verifications:
+      - id: OP-161-STRUCT-1
+        name: 'user.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/user.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-2
+        name: 'table.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/table.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-3
+        name: 'reservation.model.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/models/reservation.model.ts
+            must_exist: true
+      - id: OP-161-STRUCT-4
+        name: 'domain/types/table.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-161-STRUCT-5
+        name: 'domain/types/next-auth.d.ts existe'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+      - id: OP-161-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-160_correccion_deuda_tecnica:
+    description: 'Verifica que todas las correcciones de OP-160 (OP-161 a OP-165) están aplicadas y la suite pasa en verde'
+    enabled: true
+    related_spec: '.ai/specs/OP-160-spec.md'
+    verifications:
+      - id: OP-160-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-TEST-2
+        name: 'Tests de integración en verde'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-TEST-3
+        name: 'Tests de API en verde'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-160-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-160-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-160-STRUCT-1
+        name: 'src/lib/constants.ts existe (extraído de OP-163)'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-160-STRUCT-2
+        name: 'TablePublic definida en src/domain/types/table.ts (movida de OP-162)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/table.ts
+            must_exist: true
+      - id: OP-160-STRUCT-3
+        name: 'next-auth.d.ts existe con extensión de User (OP-161)'
+        type: filesystem
+        checks:
+          - path: src/domain/types/next-auth.d.ts
+            must_exist: true
+
+  OP-165_correcciones_y_nuevos_tests:
+    description: 'Correcciones y nuevos tests — H-150-18 smoke Content-Type, actualización de contratos OP-161/163'
+    enabled: true
+    related_spec: '.ai/specs/OP-165-spec.md'
+    verifications:
+      - id: OP-165-STRUCT-1
+        name: 'tests/api/tables.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/tables.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-2
+        name: 'tests/api/availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/availability.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-3
+        name: 'tests/api/auth-security.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/auth-security.test.ts
+            must_exist: true
+      - id: OP-165-TEST-1
+        name: 'Suite completa pasa sin regresiones (249/249)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-164_correcciones_autenticacion:
+    description: 'Correcciones a autenticación — hallazgos H-140-1, H-140-2, H-140-3, H-140-5, H-140-7'
+    enabled: true
+    related_spec: '.ai/specs/OP-164-spec.md'
+    verifications:
+      - id: OP-164-STRUCT-1
+        name: 'src/lib/auth.ts existe con isActive en session callback'
+        type: filesystem
+        checks:
+          - path: src/lib/auth.ts
+            must_exist: true
+      - id: OP-164-STRUCT-2
+        name: 'src/lib/api-auth.ts existe con try/catch en requireSession'
+        type: filesystem
+        checks:
+          - path: src/lib/api-auth.ts
+            must_exist: true
+      - id: OP-164-STRUCT-3
+        name: 'src/app/(auth)/login/page.tsx existe con validación callbackUrl'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/login/page.tsx
+            must_exist: true
+      - id: OP-164-STRUCT-4
+        name: 'src/app/(auth)/layout.tsx existe con Suspense fallback'
+        type: filesystem
+        checks:
+          - path: src/app/(auth)/layout.tsx
+            must_exist: true
+      - id: OP-164-TEST-1
+        name: 'Tests pasan sin regresiones (242/242)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  # Ejemplo:
+  #
+  # ODP-001_auth_magic_link:
+  #   description: 'Verifica la autenticación por magic link'
+  #   enabled: true
+  #   related_spec: '.ai/specs/ODP-001-spec.md'
+  #   verifications:
+  #     - id: AC-1
+  #       name: 'Usuario autorizado recibe magic link'
+  #       type: npm_script
+  #       command: npm run test:integration -- --grep "magic link"
+  #       expected_result: PASS
+  #       exit_code: 0
+  #       timeout: 120

@@ -4,9 +4,13 @@
 
 Este archivo define cómo debe trabajar Claude Code dentro de este proyecto.
 
+> **Contrato principal**: `AGENTS.md` es el contrato operativo del proyecto. Este fichero (`CLAUDE.md`) complementa a `AGENTS.md` con configuración específica para Claude Code. En caso de conflicto, prevalece `AGENTS.md` y la guía corporativa (`docs/`).
+
 Claude debe actuar como asistente de implementación técnica del producto, respetando el alcance definido en `README.md` y manteniendo un enfoque pragmático, seguro y mantenible.
 
 El objetivo no es sobreingenierizar la solución, sino construir una aplicación interna sencilla, robusta, clara y fácil de evolucionar.
+
+Claude debe leer siempre `AGENTS.md` como contexto base al iniciar una sesión de trabajo. Cuando trabaje en una tarea específica, debe incluir también la spec correspondiente (`.ai/specs/<KEY>-spec.md`).
 
 ---
 
