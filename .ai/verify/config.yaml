@@ -1064,6 +1064,31 @@ suites:
         exit_code: 0
         timeout: 60
 
+  OP-214_estado_contexto_fecha:
+    description: 'Verifica que DateSelectionProvider y el contexto de fecha existen y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-214-spec.md'
+    verifications:
+      - id: OP-214-STRUCT-1
+        name: 'src/context/date-selection.context.ts existe'
+        type: filesystem
+        checks:
+          - path: src/context/date-selection.context.ts
+            must_exist: true
+      - id: OP-214-STRUCT-2
+        name: 'src/components/booking/DateSelectionProvider.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DateSelectionProvider.tsx
+            must_exist: true
+      - id: OP-214-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
