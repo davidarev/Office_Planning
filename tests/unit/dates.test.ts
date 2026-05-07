@@ -5,7 +5,7 @@
  * all date comparisons and storage depend on correct UTC normalization.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   normalizeDate,
   isSameDay,
@@ -112,6 +112,18 @@ describe("isSameDay", () => {
     const date = new Date("2026-03-20T00:00:00Z");
     expect(isSameDay(date, "2026-03-19")).toBe(false);
   });
+
+  it("returns false for dates at the day boundary (23:59:59.999Z vs 00:00:00.000Z next day)", () => {
+    expect(isSameDay("2026-03-19T23:59:59.999Z", "2026-03-20T00:00:00.000Z")).toBe(false);
+  });
+
+  it("throws when first argument is an invalid Date (NaN)", () => {
+    expect(() => isSameDay(new Date("invalid"), "2026-04-01")).toThrow();
+  });
+
+  it("throws when second argument is an invalid Date (NaN)", () => {
+    expect(() => isSameDay("2026-04-01", new Date("invalid"))).toThrow();
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -128,11 +140,17 @@ describe("today", () => {
   });
 
   it("returns today's date (same calendar day)", () => {
-    const now = new Date();
-    const result = today();
-    expect(result.getUTCFullYear()).toBe(now.getUTCFullYear());
-    expect(result.getUTCMonth()).toBe(now.getUTCMonth());
-    expect(result.getUTCDate()).toBe(now.getUTCDate());
+    // Use fake timers to avoid flakiness if the test runs exactly at UTC midnight.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-07T12:00:00.000Z"));
+    try {
+      const result = today();
+      expect(result.getUTCFullYear()).toBe(2026);
+      expect(result.getUTCMonth()).toBe(4); // May = 4 (0-indexed)
+      expect(result.getUTCDate()).toBe(7);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
@@ -244,6 +262,14 @@ describe("isValidDateString", () => {
   it("rejects June 31st", () => {
     expect(isValidDateString("2026-06-31")).toBe(false);
   });
+
+  it("rejects string with leading space", () => {
+    expect(isValidDateString(" 2026-03-19")).toBe(false);
+  });
+
+  it("rejects string with trailing space", () => {
+    expect(isValidDateString("2026-03-19 ")).toBe(false);
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -325,5 +351,29 @@ describe("getWeekRange", () => {
     // 2026-03-19 is a Thursday
     const { end } = getWeekRange("2026-03-19");
     expect(toDateString(end)).toBe("2026-03-20");
+  });
+
+  it("end - start is always exactly 4 days (structural invariant)", () => {
+    const inputs = [
+      "2026-03-16", // Monday
+      "2026-03-18", // Wednesday
+      "2026-03-20", // Friday
+      "2026-03-21", // Saturday
+      "2025-12-31", // Year boundary
+      "2026-04-01", // Month boundary
+    ];
+    for (const input of inputs) {
+      const { start, end } = getWeekRange(input);
+      expect(end.getTime() - start.getTime()).toBe(4 * 24 * 60 * 60 * 1000);
+    }
+  });
+
+  it("start is always <= end", () => {
+    const { start, end } = getWeekRange("2026-03-18");
+    expect(start.getTime()).toBeLessThanOrEqual(end.getTime());
+  });
+
+  it("throws on invalid Date input", () => {
+    expect(() => getWeekRange(new Date("invalid"))).toThrow();
   });
 });

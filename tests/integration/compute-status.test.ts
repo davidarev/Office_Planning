@@ -1,15 +1,18 @@
 /**
- * Unit tests for availability status computation logic.
+ * Integration tests for availability status computation logic.
  *
  * computeStatus is a private function in availability.service.ts.
  * We test it through getTableAvailabilityForDate, which exercises
  * every status rule in the priority chain:
- *   1. inactive → gray
+ *   1. inactive → excluded from results
  *   2. blocked type → gray
  *   3. confirmed reservation → red
  *   4. fixed type → red
  *   5. preferential type → yellow
  *   6. default → green
+ *
+ * NOTE: This file uses mongodb-memory-server and is an integration test,
+ * not a unit test. It lives in tests/integration/ accordingly.
  */
 
 import { describe, it, expect } from "vitest";
@@ -19,10 +22,8 @@ import { createUser, createTable, createReservation } from "../helpers";
 describe("computeStatus (via getTableAvailabilityForDate)", () => {
   const DATE = "2026-04-01";
 
-  it("inactive table → gray", async () => {
+  it("inactive tables are excluded from results", async () => {
     await createTable({ isActive: false, label: "Inactive" });
-    // Note: inactive tables are excluded by listActiveTables
-    // so an inactive table won't appear in the result at all.
     const activeTable = await createTable({ type: "flexible", label: "Active" });
     const result = await getTableAvailabilityForDate(DATE);
     expect(result).toHaveLength(1);
@@ -32,6 +33,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
   it("blocked type → gray", async () => {
     await createTable({ type: "blocked", label: "Blocked" });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("gray");
   });
 
@@ -44,6 +46,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
       date: DATE,
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("red");
   });
 
@@ -51,6 +54,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
     const user = await createUser();
     await createTable({ type: "fixed", assignedTo: user._id });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("red");
   });
 
@@ -58,18 +62,18 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
     const user = await createUser();
     await createTable({ type: "preferential", assignedTo: user._id });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("yellow");
   });
 
   it("flexible type without reservation → green", async () => {
     await createTable({ type: "flexible" });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("green");
   });
 
-  it("reservation on blocked table is still gray (inactive takes priority)", async () => {
-    // Blocked tables can't have reservations through the service,
-    // but if data exists, blocked status still wins
+  it("reservation on blocked table is still gray (blocked type takes priority)", async () => {
     const user = await createUser();
     const table = await createTable({ type: "blocked" });
     await createReservation({
@@ -78,6 +82,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
       date: DATE,
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("gray");
   });
 
@@ -90,6 +95,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
       date: DATE,
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("red");
   });
 
@@ -103,6 +109,7 @@ describe("computeStatus (via getTableAvailabilityForDate)", () => {
       status: "cancelled",
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].status).toBe("green");
   });
 });
@@ -119,6 +126,7 @@ describe("availability enrichment", () => {
       date: DATE,
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].reservation).toEqual({
       _id: reservation._id.toString(),
       userId: user._id.toString(),
@@ -129,6 +137,7 @@ describe("availability enrichment", () => {
   it("reservation is null when table is not reserved", async () => {
     await createTable({ type: "flexible" });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].reservation).toBeNull();
   });
 
@@ -136,6 +145,7 @@ describe("availability enrichment", () => {
     const user = await createUser({ name: "Carlos García" });
     await createTable({ type: "fixed", assignedTo: user._id });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].assignedUser).toEqual({
       _id: user._id.toString(),
       name: "Carlos García",
@@ -145,6 +155,7 @@ describe("availability enrichment", () => {
   it("assignedUser is null for tables without assignment", async () => {
     await createTable({ type: "flexible" });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].assignedUser).toBeNull();
   });
 
@@ -152,6 +163,7 @@ describe("availability enrichment", () => {
     const fakeUserId = "000000000000000000000000";
     await createTable({ type: "fixed", assignedTo: fakeUserId });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].assignedUser?.name).toBe("Usuario desconocido");
   });
 
@@ -162,6 +174,7 @@ describe("availability enrichment", () => {
       position: { x: 10, y: 20, width: 100, height: 60 },
     });
     const result = await getTableAvailabilityForDate(DATE);
+    expect(result).toHaveLength(1);
     expect(result[0].tableId).toBe(table._id.toString());
     expect(result[0].label).toBe("A-01");
     expect(result[0].type).toBe("flexible");

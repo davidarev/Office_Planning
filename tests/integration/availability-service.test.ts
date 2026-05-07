@@ -136,4 +136,10 @@ describe("getTableAvailabilityForRange", () => {
     expect(day7.get("T-01")!.status).toBe("green");
     expect(day7.get("T-02")!.status).toBe("red");
   });
+
+  it("returns empty map when start > end (inverted range) (G-10)", async () => {
+    await createTable({ type: "flexible" });
+    const result = await getTableAvailabilityForRange("2026-04-08", "2026-04-06");
+    expect(Object.keys(result)).toHaveLength(0);
+  });
 });

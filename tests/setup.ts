@@ -10,6 +10,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { beforeAll, afterAll, afterEach } from "vitest";
+import { resetCounters } from "./helpers";
 
 let mongoServer: MongoMemoryServer;
 
@@ -31,6 +32,8 @@ afterEach(async () => {
       await collections[key].deleteMany({});
     }
   }
+  // Reset factory counters so labels start from 1 in each test
+  resetCounters();
 });
 
 afterAll(async () => {

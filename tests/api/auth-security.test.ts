@@ -6,6 +6,11 @@
  * - Authorization rules are enforced correctly
  * - Invalid/malicious inputs are handled safely
  * - Error responses don't leak internal details
+ *
+ * STRUCTURAL LIMITATION (G-19): These tests invoke Next.js route handlers
+ * directly without an HTTP server. This means Next.js middleware, CORS
+ * headers, global response headers, and any Vercel runtime behaviour are
+ * NOT exercised. The tests cover handler logic only.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -114,7 +119,7 @@ describe("cancellation authorization", () => {
   });
 
   it("user cannot cancel another user's reservation", async () => {
-    const owner = await createUser();
+    const owner = await createUser({ name: "Owner Name", email: "owner@example.com" });
     const attacker = await createUser();
     const table = await createTable({ type: "flexible" });
     const reservation = await createReservation({
@@ -129,9 +134,12 @@ describe("cancellation authorization", () => {
     const response = await DELETE(makeDeleteRequest(resId), makeParams(resId));
     expect(response.status).toBe(403);
 
-    // Verify the error doesn't leak who owns the reservation
+    // Verify the error doesn't leak owner identity (G-18)
     const body = await response.json();
-    expect(body.error).not.toContain(owner._id.toString());
+    const bodyStr = JSON.stringify(body);
+    expect(bodyStr).not.toContain(owner._id.toString());
+    expect(bodyStr).not.toContain("owner@example.com");
+    expect(bodyStr).not.toContain("Owner Name");
   });
 
   it("admin can cancel any user's reservation", async () => {
@@ -274,6 +282,33 @@ describe("error responses don't leak internal details", () => {
 /* -------------------------------------------------------------------------- */
 /*  Repeated operations                                                        */
 /* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*  IDOR: userId in body must be ignored (G-14)                               */
+/* -------------------------------------------------------------------------- */
+
+describe("IDOR protection — userId in POST body is ignored", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("POST /api/reservations ignores userId in body and uses session userId", async () => {
+    const sessionUser = await createUser();
+    const otherUser = await createUser();
+    const table = await createTable({ type: "flexible" });
+    mockAuthenticated(mockSession({ id: sessionUser._id.toString() }));
+
+    const response = await POST(makePostRequest({
+      tableId: table._id.toString(),
+      date: "2026-04-01",
+      userId: otherUser._id.toString(), // malicious — must be ignored
+    }));
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.userId).toBe(sessionUser._id.toString());
+    expect(body.userId).not.toBe(otherUser._id.toString());
+  });
+});
 
 describe("repeated operations", () => {
   beforeEach(() => {

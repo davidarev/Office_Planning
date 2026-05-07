@@ -337,6 +337,18 @@ describe("getReservationsForDay", () => {
     expect(results[0].date).toBe("2026-04-01");
     expect(results[0].status).toBe("confirmed");
   });
+
+  it("excludes cancelled reservations (G-10)", async () => {
+    const user = await createUser();
+    const table1 = await createTable();
+    const table2 = await createTable();
+    await createReservation({ userId: user._id, tableId: table1._id, date: "2026-04-01" });
+    await createReservation({ userId: user._id, tableId: table2._id, date: "2026-04-01", status: "cancelled" });
+
+    const results = await getReservationsForDay("2026-04-01");
+    expect(results).toHaveLength(1);
+    expect(results[0].status).toBe("confirmed");
+  });
 });
 
 describe("getReservationsForRange", () => {
@@ -352,5 +364,17 @@ describe("getReservationsForRange", () => {
     expect(results).toHaveLength(2);
     expect(results[0].date).toBe("2026-04-01");
     expect(results[1].date).toBe("2026-04-03");
+  });
+
+  it("excludes cancelled reservations (G-10)", async () => {
+    const user = await createUser();
+    const table1 = await createTable();
+    const table2 = await createTable();
+    await createReservation({ userId: user._id, tableId: table1._id, date: "2026-04-01" });
+    await createReservation({ userId: user._id, tableId: table2._id, date: "2026-04-02", status: "cancelled" });
+
+    const results = await getReservationsForRange("2026-04-01", "2026-04-05");
+    expect(results).toHaveLength(1);
+    expect(results[0].status).toBe("confirmed");
   });
 });
