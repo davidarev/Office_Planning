@@ -77,4 +77,28 @@ describe("GET /api/tables", () => {
     const body = await response.json();
     expect(body).toEqual([]);
   });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json (smoke)", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET();
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("returns hasAssignedUser: true for table with assigned user", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    await createTable({ label: "Assigned", type: "preferential", assignedTo: user._id });
+    await createTable({ label: "Free", type: "flexible" });
+
+    const response = await GET();
+    const body = await response.json();
+
+    const byLabel = new Map(body.map((t: { label: string }) => [t.label, t]));
+    expect(byLabel.get("Assigned").hasAssignedUser).toBe(true);
+    expect(byLabel.get("Free").hasAssignedUser).toBe(false);
+  });
 });

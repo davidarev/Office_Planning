@@ -115,6 +115,15 @@ describe("GET /api/availability", () => {
       userName: "Test User",
     });
   });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json (smoke)", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET(makeRequest("/api/availability?date=2026-04-01"));
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
 });
 
 /* -------------------------------------------------------------------------- */

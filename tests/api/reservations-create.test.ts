@@ -223,4 +223,18 @@ describe("POST /api/reservations", () => {
     expect(body.userId).toBe(sessionUser._id.toString());
     expect(body.userId).not.toBe(otherUser._id.toString());
   });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json on 201 (smoke)", async () => {
+    const user = await createUser();
+    const table = await createTable({ type: "flexible" });
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await POST(makePostRequest({
+      tableId: table._id.toString(),
+      date: "2026-04-01",
+    }));
+    expect(response.status).toBe(201);
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
 });

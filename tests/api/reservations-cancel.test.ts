@@ -160,4 +160,22 @@ describe("DELETE /api/reservations/:id", () => {
     const body = await response.json();
     expect(body.error).toBeDefined();
   });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json on 200 cancel (smoke)", async () => {
+    const user = await createUser();
+    const table = await createTable({ type: "flexible" });
+    const reservation = await createReservation({
+      userId: user._id,
+      tableId: table._id,
+      date: "2026-04-01",
+    });
+    const resId = reservation._id.toString();
+
+    mockAuthenticated(mockSession({ id: user._id.toString(), role: "user" }));
+
+    const response = await DELETE(makeDeleteRequest(resId), makeParams(resId));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
 });

@@ -108,6 +108,15 @@ describe("GET /api/reservations", () => {
     const body = await response.json();
     expect(body).toEqual([]);
   });
+
+  // H-150-18: smoke test Content-Type
+  it("returns Content-Type: application/json (smoke)", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    const response = await GET(makeRequest("/api/reservations?date=2026-04-01"));
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
 });
 
 /* -------------------------------------------------------------------------- */
