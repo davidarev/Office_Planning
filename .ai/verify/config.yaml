@@ -738,6 +738,37 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-165_correcciones_y_nuevos_tests:
+    description: 'Correcciones y nuevos tests — H-150-18 smoke Content-Type, actualización de contratos OP-161/163'
+    enabled: true
+    related_spec: '.ai/specs/OP-165-spec.md'
+    verifications:
+      - id: OP-165-STRUCT-1
+        name: 'tests/api/tables.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/tables.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-2
+        name: 'tests/api/availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/availability.test.ts
+            must_exist: true
+      - id: OP-165-STRUCT-3
+        name: 'tests/api/auth-security.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/api/auth-security.test.ts
+            must_exist: true
+      - id: OP-165-TEST-1
+        name: 'Suite completa pasa sin regresiones (249/249)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   OP-164_correcciones_autenticacion:
     description: 'Correcciones a autenticación — hallazgos H-140-1, H-140-2, H-140-3, H-140-5, H-140-7'
     enabled: true
