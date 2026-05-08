@@ -103,3 +103,38 @@ Crear el componente `DeskItem` en `src/components/floor-plan/DeskItem.tsx` que:
 - Todos los AC en PASS
 - verify en verde
 - Spec actualizada con ## Execution Result
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-08 22:13 (CET)
+- Rama: feature/OP-220-componente-plano-mesas
+- Commit base: 22a1ad7
+- Herramienta IA: Claude Code claude-opus-4-7
+- Estado de AC:
+  - AC-1: PASS – `DeskItem` creado en `src/components/floor-plan/DeskItem.tsx` y exportado desde `index.ts`.
+  - AC-2: PASS – props `table: TableAvailability` y `onClick?: (table) => void`.
+  - AC-3: PASS – posicionamiento absoluto con `left/top/width/height` en píxeles vía `style` inline.
+  - AC-4: PASS – `transform: rotate(Ndeg)` se aplica solo cuando `rotation !== 0`.
+  - AC-5: PASS – etiqueta centrada con `overflow-hidden text-ellipsis whitespace-nowrap`.
+  - AC-6: PASS – `onClick` invocado con la `TableAvailability` completa; sin handler, sin `cursor-pointer` ni `role/tabIndex`.
+  - AC-7: PASS – `FloorPlan` sustituye el placeholder por `<DeskItem>` y propaga `onDeskClick`.
+  - AC-8: PASS – cuando `position.cornerExtension` no es null, se renderiza un segundo rectángulo con su propio posicionamiento y rotación, compartiendo el mismo handler de click.
+  - AC-9: PASS – sin `cornerExtension`, el DOM contiene un único nodo por mesa (el fragmento solo emite el rectángulo principal).
+- Ficheros creados o modificados:
+  - `src/components/floor-plan/DeskItem.tsx` (nuevo)
+  - `src/components/floor-plan/index.ts`
+  - `src/components/floor-plan/FloorPlan.tsx`
+  - `tests/setup.ts` (define `DB_NAME` para alinear con el cambio reciente en `src/lib/mongodb.ts`)
+  - `.ai/verify/config.yaml` (suite OP-222)
+- verify:
+  - Comando ejecutado: `npm run lint` → PASS (0 errores, 4 warnings preexistentes)
+  - Comando ejecutado: `npm run test` → PASS (282/282)
+  - Comando ejecutado: `npm run build` → PASS
+- AI-assisted:
+  - Herramienta(s): Claude Code (claude-opus-4-7)
+  - Alcance: implementación íntegra del componente, integración en `FloorPlan`, suite de verify y arreglo de `tests/setup.ts`.
+- Decisiones técnicas:
+  - El campo `cornerExtension` vive en `table.position.cornerExtension: TableRect | null` (no en `table.cornerExtension` como sugería el texto de la spec). Se usa la fuente real de los tipos en `src/domain/types/table.ts`, ya consolidada por OP-221, para no duplicar el modelo.
+  - Tamaño mínimo visible (`MIN_DESK_SIZE_PX = 40`) aplicado tanto al rectángulo principal como a la extensión esquinada, según el caso límite de la spec.
+  - Color de fondo neutro (`bg-gray-100` con `border-gray-400`) hasta que OP-223 introduzca los colores por estado.
+  - `tests/setup.ts` ahora inyecta `DB_NAME = "office_planning_test"` (etiqueta lógica para `mongodb-memory-server`) para acompañar el cambio previo en `src/lib/mongodb.ts` que exigía la variable; sin esto la suite estaba en rojo por motivo ajeno a OP-222.

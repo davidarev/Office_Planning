@@ -1161,6 +1161,45 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-222_componente_desk_item:
+    description: 'Verifica el componente DeskItem (mesa individual) y su integración en FloorPlan'
+    enabled: true
+    related_spec: '.ai/specs/OP-222-spec.md'
+    verifications:
+      - id: OP-222-STRUCT-1
+        name: 'src/components/floor-plan/DeskItem.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskItem.tsx
+            must_exist: true
+      - id: OP-222-STRUCT-2
+        name: 'src/components/floor-plan/index.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/index.ts
+            must_exist: true
+      - id: OP-222-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-222-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-222-TEST-1
+        name: 'Suite completa pasa sin regresiones'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
