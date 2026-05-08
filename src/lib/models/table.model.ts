@@ -2,8 +2,26 @@ import mongoose, { Schema, Model } from "mongoose";
 import type { ITable } from "@/domain/types";
 
 /**
- * Sub-schema for desk position on the floor plan.
- * Stored as a nested object (not a separate collection).
+ * Sub-schema base de un rectángulo posicionado.
+ * Reutilizado tanto por la posición principal como por cornerExtension
+ * (mesas esquinadas en L).
+ */
+const RectSchema = new Schema(
+  {
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+    rotation: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+/**
+ * Sub-schema para la posición de la mesa en el plano.
+ * Incluye `cornerExtension` opcional: un segundo rectángulo solidario al
+ * principal para representar mesas en L (MESA 4 y MESA 6 en la disposición
+ * real de la oficina). Default `null` cuando la mesa es un rectángulo simple.
  */
 const PositionSchema = new Schema(
   {
@@ -12,6 +30,7 @@ const PositionSchema = new Schema(
     width: { type: Number, required: true },
     height: { type: Number, required: true },
     rotation: { type: Number, default: 0 },
+    cornerExtension: { type: RectSchema, default: null },
   },
   { _id: false }
 );

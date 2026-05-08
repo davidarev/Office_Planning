@@ -123,3 +123,45 @@ solo se introduce el campo y se utiliza en el seed.
 - Todos los AC en PASS
 - verify en verde
 - Spec actualizada con ## Execution Result
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-08 21:55 (CET)
+- Rama: feature/OP-220-componente-plano-mesas
+- Commit base: 370acb66 (commit de implementación se añadirá tras `git commit`)
+- Herramienta IA: Claude Code claude-opus-4-7
+- Estado de AC:
+  - AC-1: PASS – `cornerExtension?: TableRect | null` añadido a `TablePosition` (heredado por `ITable`, `TablePublic`, `TableAvailability`). Se introduce el alias `TableRect` (misma forma `{x,y,width,height,rotation}`) para evitar recursividad sin duplicar la noción de rectángulo.
+  - AC-2: PASS – `RectSchema` compartido y `cornerExtension` opcional con default `null` añadido a `PositionSchema` en `table.model.ts`.
+  - AC-3: PASS – `scripts/seed-tables.ts` idempotente (upsert por `label`, no toca reservas) con las 7 mesas reales y `cornerExtension` para MESA 4 y MESA 6. Script `npm run seed:tables` añadido a `package.json` (carga `.env.local` vía `tsx --env-file`).
+  - AC-4: PASS – `src/components/floor-plan/FloorPlan.tsx` y `src/components/floor-plan/index.ts` creados.
+  - AC-5: PASS – Props `tables`, `width?`, `height?` con defaults `DEFAULT_FLOOR_PLAN_WIDTH = 900` y `DEFAULT_FLOOR_PLAN_HEIGHT = 600` exportados desde el módulo.
+  - AC-6: PASS – Contenedor con `position: relative` (clase Tailwind `relative`) actuando como lienzo de posicionamiento.
+  - AC-7: PASS – Itera sobre `tables` y renderiza un `<div>` placeholder por mesa con `position: absolute` (clase `absolute`) usando `position.x` / `position.y` en píxeles. El render real con `cornerExtension` se delega a `DeskItem` (OP-222).
+  - AC-8: PASS – Cuando `tables` está vacío, muestra un mensaje "No hay mesas configuradas" con `role="status"`.
+  - AC-9: PASS – `useDateSelection()` se invoca dentro del componente para forzar suscripción al contexto.
+  - AC-10: PASS – `src/app/(main)/page.tsx` envuelve `FloorPlan` en `DateSelectionProvider`. El placeholder original ha sido sustituido.
+  - AC-11: PASS – `mapa_oficina.png` movido de `public/` a `.ai/assets/`. La entrada genérica del `.gitignore` (`mapa_oficina.png`) sigue cubriendo la nueva ubicación.
+- Ficheros creados o modificados:
+  - `src/domain/types/table.ts` (añade `cornerExtension` y `TableRect`)
+  - `src/domain/types/index.ts` (re-exporta `TableRect`)
+  - `src/lib/models/table.model.ts` (añade `RectSchema` y `cornerExtension` opcional)
+  - `src/components/floor-plan/FloorPlan.tsx` (nuevo)
+  - `src/components/floor-plan/index.ts` (nuevo)
+  - `src/app/(main)/page.tsx` (integra `FloorPlan` dentro de `DateSelectionProvider`)
+  - `scripts/seed-tables.ts` (nuevo, seed idempotente)
+  - `package.json` (script `seed:tables`, dep `tsx`)
+  - `package-lock.json` (instalación de `tsx`)
+  - `.ai/assets/mapa_oficina.png` (movido desde `public/`)
+  - `.ai/verify/config.yaml` (nueva suite `OP-221_componente_floor_plan`)
+- verify:
+  - Comando ejecutado: `npm run lint`, `npm run test`, `npm run build`
+  - Resultado: PASS – Lint 0 errores (solo warnings preexistentes ajenos al ticket); 282/282 tests; build de Next.js correcto.
+- AI-assisted:
+  - Herramienta(s): Claude Code (claude-opus-4-7)
+  - Alcance: extensión de tipos y schema, componente `FloorPlan`, script de seed, integración en `page.tsx`, suite de verify.
+- Decisiones técnicas:
+  - `cornerExtension` se modela con un nuevo tipo plano `TableRect` (mismos campos que `TablePosition` salvo el propio `cornerExtension`) para evitar recursividad innecesaria. La spec pedía "reutilizar la forma `{x,y,width,height,rotation}` para no duplicar tipos": se reutiliza la forma vía `TableRect`, sin duplicar literales en cada interfaz que contiene posición.
+  - El componente `FloorPlan` no realiza fetching: la página le pasa `tables=[]` por ahora y el estado vacío sirve como placeholder funcional hasta OP-222/OP-230, donde se cableará el endpoint de disponibilidad.
+  - Para ejecutar el seed se añade `tsx` como devDependency. Se usa la flag nativa `--env-file=.env.local` (Node ≥20.6) para no introducir `dotenv` solo para el seed.
+  - Coordenadas del seed son aproximadas a un lienzo lógico de 900×600 px; se ajustarán visualmente al integrar `DeskItem`.
