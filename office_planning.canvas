@@ -1,992 +1,950 @@
 {
-  "nodes": [
-    {
-      "id": "group-fase3",
-      "type": "group",
-      "x": -20,
-      "y": 1480,
-      "width": 2280,
-      "height": 1560,
-      "label": "Fase 3 — Panel de administración (OP-300)"
-    },
-    {
-      "id": "group-fase1",
-      "type": "group",
-      "x": -20,
-      "y": 0,
-      "width": 2280,
-      "height": 1400,
-      "label": "Fase 1 — Consolidación y auditoría (OP-100)"
-    },
-    {
-      "id": "group-fase2",
-      "type": "group",
-      "x": 2480,
-      "y": 0,
-      "width": 1960,
-      "height": 1400,
-      "label": "Fase 2 — Plano interactivo y flujo de reservas (OP-200)"
-    },
-    {
-      "id": "group-fase4",
-      "type": "group",
-      "x": 2480,
-      "y": 1480,
-      "width": 1960,
-      "height": 910,
-      "label": "Fase 4 — Pulido, UX y producción (OP-400)"
-    },
-    {
-      "id": "node-op120",
-      "type": "text",
-      "text": "## OP-120 Auditoría de repositorios y servicios\nValidar capa de acceso a datos y lógica de negocio en servicios",
-      "x": 340,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op130",
-      "type": "text",
-      "text": "## OP-130 Auditoría de API routes y seguridad\nRevisar endpoints, validaciones de entrada, autorización y respuestas de error",
-      "x": 660,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op140",
-      "type": "text",
-      "text": "## OP-140 Auditoría de autenticación y sesiones\nVerificar flujo de login, protección de rutas y gestión de sesiones",
-      "x": 980,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op170",
-      "type": "text",
-      "text": "## OP-170 Merge develop → main y baseline\nIntegrar rama develop en main y establecer baseline estable del proyecto",
-      "x": 1940,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op310",
-      "type": "text",
-      "text": "## OP-310 API de gestión de usuarios (admin)\nEndpoints CRUD para administrar usuarios desde el panel de admin",
-      "x": 30,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op-126",
-      "type": "text",
-      "text": "## OP-126 Verificar documentación JSDoc de servicios y repositorios\nComprobar que todas las funciones públicas tienen JSDoc completo (qué hace, parámetros, retorno, errores).",
-      "x": 340,
-      "y": 1040,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op-127",
-      "type": "text",
-      "text": "## OP-127 Documentar hallazgos OP-120\nRegistrar inconsistencias, mejoras y decisiones en .ai/reports/OP-120-findings.md.",
-      "x": 340,
-      "y": 1200,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op134",
-      "type": "text",
-      "text": "## OP-134 Revisar proxy.ts (middleware)\nAuditar reglas de redirección para rutas públicas, privadas, admin y usuarios autenticados; matcher, rol admin y open redirect.",
-      "x": 660,
-      "y": 700,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op135",
-      "type": "text",
-      "text": "## OP-135 Verificar que no se exponen datos internos en errores\nRevisar transversalmente todos los catch genéricos y mensajes de error para garantizar que no se filtran stack traces, detalles de MongoDB ni datos de infraestructura.",
-      "x": 660,
-      "y": 860,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op136",
-      "type": "text",
-      "text": "## OP-136 Documentar hallazgos OP-130\nConsolidar hallazgos de OP-131 a OP-135 en .ai/reports/OP-130-findings.md con severidad, descripción y acción sugerida para OP-161.",
-      "x": 660,
-      "y": 1020,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op113",
-      "type": "text",
-      "text": "## OP-113 Revisar schema Reservation\nAuditar ReservationSchema: campos, índices únicos parciales, normalización de fechas y coherencia con IReservation y README.md §8",
-      "x": 30,
-      "y": 560,
-      "width": 250,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op115",
-      "type": "text",
-      "text": "## OP-115 Documentar hallazgos OP-110\nConsolidar hallazgos de OP-111 a OP-114 en informe .ai/reports/OP-110-findings.md con severidad y acciones propuestas para OP-160",
-      "x": 30,
-      "y": 880,
-      "width": 250,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op320",
-      "type": "text",
-      "text": "## OP-320 API de gestión de mesas (admin)\nEndpoints CRUD para crear, editar y desactivar mesas",
-      "x": 360,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op330",
-      "type": "text",
-      "text": "## OP-330 API de gestión de reservas (admin)\nEndpoints para consultar, filtrar y cancelar reservas como administrador",
-      "x": 680,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op340",
-      "type": "text",
-      "text": "## OP-340 UI de gestión de usuarios\nInterfaz de administración para gestionar usuarios del sistema",
-      "x": 1000,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op-123",
-      "type": "text",
-      "text": "## OP-123 Revisar reservation.service\nVerificar reglas de negocio: 1 reserva/usuario/día, 1 reserva/mesa/día, mesa bloqueada no reservable, cancelación por owner o admin, manejo de concurrencia.",
-      "x": 340,
-      "y": 560,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op-125",
-      "type": "text",
-      "text": "## OP-125 Revisar table.service\nVerificar operaciones de lectura, filtrado de mesas activas, estructura de respuesta TablePublic.",
-      "x": 340,
-      "y": 880,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op-124",
-      "type": "text",
-      "text": "## OP-124 Revisar availability.service\nVerificar lógica de cálculo de estados (green/yellow/red/gray), prioridades, resolución batch de nombres de usuario, eficiencia en rangos.",
-      "x": 340,
-      "y": 720,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op114",
-      "type": "text",
-      "text": "## OP-114 Revisar tipos de dominio\nAuditar IUser, ITable, IReservation, tipos públicos, ServiceResult y next-auth.d.ts — coherencia con schemas y exposición de datos",
-      "x": 30,
-      "y": 720,
-      "width": 250,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op110",
-      "type": "text",
-      "text": "## OP-110 Auditoría de modelos y tipos de dominio\nRevisar modelos Mongoose, tipos TypeScript, índices y coherencia con README.md",
-      "x": 30,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op230",
-      "type": "text",
-      "text": "## OP-230 Detalle de mesa y acción de reserva\nMostrar información de mesa seleccionada y permitir reservar desde el plano",
-      "x": 3160,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op240",
-      "type": "text",
-      "text": "## OP-240 Integración con API de disponibilidad\nConectar el plano con los endpoints de disponibilidad del backend",
-      "x": 3480,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op111",
-      "type": "text",
-      "text": "## OP-111 Revisar schema User\nAuditar UserSchema: campos, validaciones, índice unique en email, enum roles y coherencia con IUser y README.md §3",
-      "x": 30,
-      "y": 220,
-      "width": 250,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op350",
-      "type": "text",
-      "text": "## OP-350 UI de gestión de mesas\nInterfaz de administración para gestionar la configuración de mesas",
-      "x": 1320,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op360",
-      "type": "text",
-      "text": "## OP-360 UI de gestión de reservas (admin)\nInterfaz para que el admin consulte y gestione todas las reservas",
-      "x": 1640,
-      "y": 1530,
-      "width": 270,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op-122",
-      "type": "text",
-      "text": "## OP-122 Revisar table.repository y user.repository\nVerificar queries, filtros por isActive, ordenación y completitud de operaciones necesarias.",
-      "x": 340,
-      "y": 390,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op-121",
-      "type": "text",
-      "text": "## OP-121 Revisar reservation.repository\nVerificar queries, filtros por status=confirmed, uso de lean(), manejo de errores E11000 y coherencia con el schema.",
-      "x": 340,
-      "y": 220,
-      "width": 270,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op112",
-      "type": "text",
-      "text": "## OP-112 Revisar schema Table\nAuditar TableSchema y PositionSchema: campos, tipos, índices y coherencia con ITable, TablePosition y README.md §6",
-      "x": 30,
-      "y": 390,
-      "width": 250,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op250",
-      "type": "text",
-      "text": "## OP-250 Flujo de reserva y cancelación en UI\nImplementar flujo completo de reservar y cancelar mesa desde la interfaz",
-      "x": 3800,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op260",
-      "type": "text",
-      "text": "## OP-260 Polling periódico y actualización\nRefrescar estado de mesas periódicamente y gestionar actualizaciones optimistas",
-      "x": 4120,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op430",
-      "type": "text",
-      "text": "## OP-430 Configuración de email para producción\nConfigurar proveedor de email y plantillas para notificaciones en producción",
-      "x": 3160,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op440",
-      "type": "text",
-      "text": "## OP-440 Variables de entorno y despliegue Vercel\nPreparar variables de entorno y configuración de despliegue en Vercel",
-      "x": 3480,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op450",
-      "type": "text",
-      "text": "## OP-450 Tests E2E del flujo crítico\nTests end-to-end del flujo principal: login, reserva, cancelación",
-      "x": 3800,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op460",
-      "type": "text",
-      "text": "## OP-460 Revisión final de seguridad\nAuditoría final de seguridad antes del despliegue a producción",
-      "x": 4120,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op410",
-      "type": "text",
-      "text": "## OP-410 Estados de carga, error y vacíos\nImplementar esqueletos de carga, mensajes de error y estados vacíos en toda la UI",
-      "x": 2520,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op420",
-      "type": "text",
-      "text": "## OP-420 Responsive y adaptación móvil\nAdaptar la interfaz para dispositivos móviles y tablets",
-      "x": 2840,
-      "y": 1530,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op150",
-      "type": "text",
-      "text": "## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas",
-      "x": 1300,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op160",
-      "type": "text",
-      "text": "## OP-160 Corrección de deficiencias y deuda técnica\nCorregir problemas detectados en auditorías y resolver deuda técnica pendiente",
-      "x": 1620,
-      "y": 50,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op210",
-      "type": "text",
-      "text": "## OP-210 Selector de semana y día\nComponente para navegar entre semanas y seleccionar el día activo",
-      "x": 2520,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op220",
-      "type": "text",
-      "text": "## OP-220 Componente de plano de mesas\nRenderizar plano interactivo con las mesas y su estado de disponibilidad",
-      "x": 2840,
-      "y": 50,
-      "width": 261,
-      "height": 120,
-      "color": "6"
-    },
-    {
-      "id": "node-op131",
-      "type": "text",
-      "text": "## OP-131 Revisar endpoints de reservas\nAuditar GET/POST /api/reservations, DELETE /api/reservations/[id] y GET /api/reservations/week: autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores.",
-      "x": 660,
-      "y": 220,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op132",
-      "type": "text",
-      "text": "## OP-132 Revisar endpoints de disponibilidad\nAuditar GET /api/availability y GET /api/availability/week: autenticación, validación de fechas, límite de rango y manejo de errores.",
-      "x": 660,
-      "y": 380,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "node-op133",
-      "type": "text",
-      "text": "## OP-133 Revisar endpoint de mesas\nAuditar GET /api/tables: autenticación, estructura de respuesta, campos expuestos y manejo de errores.",
-      "x": 660,
-      "y": 540,
-      "width": 280,
-      "height": 140,
-      "color": "4"
-    },
-    {
-      "id": "11a51b92",
-      "type": "text",
-      "text": "## OP-141 Revisar configuración de NextAuth\nAuditar adapter, provider, session strategy, maxAge, updateAge y páginas personalizadas en src/lib/auth.ts",
-      "x": 975,
-      "y": 220,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "10c4b283",
-      "type": "text",
-      "text": "## OP-165 Aplicar correcciones y nuevos tests\nCorregir H-150-18 (smoke tests Content-Type), actualizar assertions por cambios de contrato de OP-161/163 (TablePublic sin isActive/assignedTo, TableAvailability.reservation sin userId), verificar impacto en tests de integración",
-      "x": 1620,
-      "y": 940,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "dc8d2dd8",
-      "type": "text",
-      "text": "## OP-166 Ejecutar suite completa y verificar verde\nVerificación final de OP-160: ejecutar npm run test, lint y build tras aplicar OP-161 a OP-165, confirmar cero regresiones, añadir suite OP-160 en config.yaml y cerrar Execution Results de todas las subtareas",
-      "x": 1620,
-      "y": 1120,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "d57e4023",
-      "type": "text",
-      "text": "## OP-154 Identificar gaps de cobertura\nConsolidar lista de escenarios críticos no cubiertos en toda la suite de tests",
-      "x": 1290,
-      "y": 750,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "25f45718",
-      "type": "text",
-      "text": "## OP-155 Corregir tests frágiles o incompletos\nAplicar correcciones a tests dependientes de orden, timing o estado compartido identificados en OP-151 a OP-153",
-      "x": 1290,
-      "y": 930,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "4362ff35",
-      "type": "text",
-      "text": "## OP-161 Aplicar correcciones a modelos y tipos\nCorregir hallazgos H-111-x, H-112-x, H-113-x y H-114-x: validaciones de schema, alineación de tipos (assignedTo null/undefined, rotation, TableWithStatus), normalización de fecha en ReservationSchema, extensión NextAuth y limpieza de TableAvailability",
-      "x": 1620,
-      "y": 220,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "d9f1f9d7",
-      "type": "text",
-      "text": "## OP-162 Aplicar correcciones a repositorios y servicios\nCorregir hallazgos H-121-x, H-122-x, H-123-x, H-124-x, H-125-x y H-126-x: normalizeDate en insertReservation, fix returnDocument, doble normalización en getUserByEmail, JSDoc incompleto en helpers y repositorios, mover TablePublic al dominio",
-      "x": 1615,
-      "y": 400,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "24cce9da",
-      "type": "text",
-      "text": "## OP-163 Aplicar correcciones a API routes y middleware\nCorregir hallazgos H-131-x, H-132-x, H-133-x: validación isValidDateString en POST reservations, extraer HTTP_STATUS y MAX_RANGE_DAYS a constants.ts, eliminar isActive de TablePublic, sustituir assignedTo por hasAssignedUser",
-      "x": 1620,
-      "y": 580,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "3ee04304",
-      "type": "text",
-      "text": "## OP-164 Aplicar correcciones a autenticación\nCorregir hallazgos H-140-1 a H-140-7: isActive en session callback, validación de env vars de email en arranque, try/catch en requireSession, validación de callbackUrl y fallback en Suspense de auth layout",
-      "x": 1620,
-      "y": 760,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "node-op172",
-      "type": "text",
-      "text": "## OP-172 Merge develop → main\nMerge --no-ff de develop a main conservando el código auditado y publicando el resultado en remoto",
-      "x": 1940,
-      "y": 360,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op173",
-      "type": "text",
-      "text": "## OP-173 Verificación post-merge\nEjecutar suite completa (tests, lint, build) sobre main tras el merge para confirmar ausencia de regresiones",
-      "x": 1940,
-      "y": 500,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op174",
-      "type": "text",
-      "text": "## OP-174 Etiquetar baseline\nCrear tag anotado v0.1.0 sobre el merge commit de main y publicarlo en remoto",
-      "x": 1940,
-      "y": 640,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "node-op171",
-      "type": "text",
-      "text": "## OP-171 Verificación pre-merge\nEjecutar suite completa (tests, lint, build) en develop como condición de entrada al merge",
-      "x": 1940,
-      "y": 220,
-      "width": 270,
-      "height": 120,
-      "color": "4"
-    },
-    {
-      "id": "e4e47246",
-      "type": "text",
-      "text": "## OP-142 Revisar callbacks signIn y session\nAuditar lógica de autorización, acceso a datos, manejo de errores y coherencia de tipos en los callbacks signIn y session de NextAuth",
-      "x": 975,
-      "y": 400,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "4051a4cf",
-      "type": "text",
-      "text": "## OP-143 Revisar auth-mongodb-client y api-auth\nAuditar el singleton MongoClient del adapter y el helper requireSession de API routes",
-      "x": 975,
-      "y": 580,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "ad5db9ef",
-      "type": "text",
-      "text": "## OP-144 Revisar páginas de auth\nAuditar flujo de UI de autenticación: login, verify, error, layout y handler de NextAuth",
-      "x": 975,
-      "y": 760,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "c4b8332f",
-      "type": "text",
-      "text": "## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160",
-      "x": 975,
-      "y": 940,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "491d5ba0",
-      "type": "text",
-      "text": "## OP-156 Documentar hallazgos OP-150\nConsolidar hallazgos de OP-151 a OP-155 en informe clasificado por severidad",
-      "x": 1290,
-      "y": 1110,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "7ec5d49c",
-      "type": "text",
-      "text": "## OP-151 Revisar tests unitarios\nRevisar calidad, cobertura y assertions de los tests unitarios existentes (dates.test.ts, compute-status.test.ts)",
-      "x": 1300,
-      "y": 220,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "267fb76b",
-      "type": "text",
-      "text": "## OP-153 Revisar tests de API\nRevisar cobertura de escenarios, mocks de sesión y assertions HTTP de los tests de API",
-      "x": 1295,
-      "y": 570,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "d62b2444",
-      "type": "text",
-      "text": "## OP-152 Revisar tests de integración\nRevisar calidad, cobertura y robustez de los tests de integración de servicios y repositorios",
-      "x": 1295,
-      "y": 390,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "df582e1f",
-      "type": "text",
-      "text": "## OP-211 Lógica de cálculo de semanas\nCrear utilidad week-selector.ts con cálculo de semana actual y siguiente, días laborables y día por defecto",
-      "x": 2510,
-      "y": 190,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "7b45f524",
-      "type": "text",
-      "text": "## OP-212 Componente WeekSelector\nImplementar componente WeekSelector con navegación entre semana actual y siguiente",
-      "x": 2510,
-      "y": 370,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "083cfcbd",
-      "type": "text",
-      "text": "## OP-213 Componente DaySelector\nImplementar componente DaySelector con días laborables y día activo destacado",
-      "x": 2510,
-      "y": 550,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "d74ba8b6",
-      "type": "text",
-      "text": "## OP-214 Estado y contexto de fecha seleccionada\nGestionar estado de fecha seleccionada y exponer vía contexto para otros componentes",
-      "x": 2500,
-      "y": 730,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "916df6c5",
-      "type": "text",
-      "text": "## OP-215 Tests del selector de semana y día\nTests unitarios de lógica de semanas y tests de componente para WeekSelector y DaySelector",
-      "x": 2500,
-      "y": 910,
-      "width": 280,
-      "height": 160,
-      "color": "4"
-    },
-    {
-      "id": "node-op221",
-      "type": "text",
-      "text": "## OP-221 Componente FloorPlan (contenedor)\nContenedor SVG o div con posicionamiento relativo, dimensiones configurables y estado vacío cuando no hay mesas",
-      "x": 2840,
-      "y": 210,
-      "width": 280,
-      "height": 160,
-      "color": "6"
-    },
-    {
-      "id": "node-op222",
-      "type": "text",
-      "text": "## OP-222 Componente DeskItem (mesa individual)\nMesa posicionada absolutamente según coordenadas del modelo (x, y, width, height, rotation). Muestra etiqueta identificativa.",
-      "x": 2840,
-      "y": 410,
-      "width": 280,
-      "height": 160,
-      "color": "6"
-    },
-    {
-      "id": "node-op223",
-      "type": "text",
-      "text": "## OP-223 Colores por estado de mesa\nAplicar colores según TableStatus: verde (libre), amarillo (preferente sin reserva), rojo (ocupada/fija), gris (bloqueada). Consistente con README.md §7.",
-      "x": 2540,
-      "y": 610,
-      "width": 280,
-      "height": 160,
-      "color": "6"
-    },
-    {
-      "id": "node-op224",
-      "type": "text",
-      "text": "## OP-224 Tooltip o indicador de ocupante\nMuestra nombre del ocupante o usuario asociado en mesas ocupadas o preferentes. Visible en hover.",
-      "x": 3140,
-      "y": 610,
-      "width": 280,
-      "height": 160,
-      "color": "6"
-    },
-    {
-      "id": "node-op225",
-      "type": "text",
-      "text": "## OP-225 Tests del componente de plano\nTests que verifican posicionamiento, colores por estado y etiquetas. Cubre casos límite: sin mesas, mesas fuera de límites.",
-      "x": 2840,
-      "y": 810,
-      "width": 280,
-      "height": 160,
-      "color": "6"
-    }
-  ],
-  "edges": [
-    {
-      "id": "edge-110-120",
-      "fromNode": "node-op110",
-      "fromSide": "bottom",
-      "toNode": "node-op120",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-120-130",
-      "fromNode": "node-op120",
-      "fromSide": "bottom",
-      "toNode": "node-op130",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-120-150",
-      "fromNode": "node-op120",
-      "fromSide": "bottom",
-      "toNode": "node-op150",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-130-150",
-      "fromNode": "node-op130",
-      "fromSide": "bottom",
-      "toNode": "node-op150",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-110-160",
-      "fromNode": "node-op110",
-      "fromSide": "bottom",
-      "toNode": "node-op160",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-120-160",
-      "fromNode": "node-op120",
-      "fromSide": "bottom",
-      "toNode": "node-op160",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-130-160",
-      "fromNode": "node-op130",
-      "fromSide": "bottom",
-      "toNode": "node-op160",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-140-160",
-      "fromNode": "node-op140",
-      "fromSide": "bottom",
-      "toNode": "node-op160",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-150-160",
-      "fromNode": "node-op150",
-      "fromSide": "bottom",
-      "toNode": "node-op160",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-160-170",
-      "fromNode": "node-op160",
-      "fromSide": "bottom",
-      "toNode": "node-op170",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-210-220",
-      "fromNode": "node-op210",
-      "fromSide": "bottom",
-      "toNode": "node-op220",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-220-230",
-      "fromNode": "node-op220",
-      "fromSide": "bottom",
-      "toNode": "node-op230",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-220-240",
-      "fromNode": "node-op220",
-      "fromSide": "bottom",
-      "toNode": "node-op240",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-230-250",
-      "fromNode": "node-op230",
-      "fromSide": "bottom",
-      "toNode": "node-op250",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-240-250",
-      "fromNode": "node-op240",
-      "fromSide": "bottom",
-      "toNode": "node-op250",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-240-260",
-      "fromNode": "node-op240",
-      "fromSide": "bottom",
-      "toNode": "node-op260",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-310-340",
-      "fromNode": "node-op310",
-      "fromSide": "bottom",
-      "toNode": "node-op340",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-320-350",
-      "fromNode": "node-op320",
-      "fromSide": "bottom",
-      "toNode": "node-op350",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-330-360",
-      "fromNode": "node-op330",
-      "fromSide": "bottom",
-      "toNode": "node-op360",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-430-440",
-      "fromNode": "node-op430",
-      "fromSide": "bottom",
-      "toNode": "node-op440",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-250-410",
-      "fromNode": "node-op250",
-      "fromSide": "bottom",
-      "toNode": "node-op410",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-250-420",
-      "fromNode": "node-op250",
-      "fromSide": "bottom",
-      "toNode": "node-op420",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-250-450",
-      "fromNode": "node-op250",
-      "fromSide": "bottom",
-      "toNode": "node-op450",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-250-460",
-      "fromNode": "node-op250",
-      "fromSide": "bottom",
-      "toNode": "node-op460",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op220-op221",
-      "fromNode": "node-op220",
-      "fromSide": "bottom",
-      "toNode": "node-op221",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op221-op222",
-      "fromNode": "node-op221",
-      "fromSide": "bottom",
-      "toNode": "node-op222",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op222-op223",
-      "fromNode": "node-op222",
-      "fromSide": "bottom",
-      "toNode": "node-op223",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op222-op224",
-      "fromNode": "node-op222",
-      "fromSide": "bottom",
-      "toNode": "node-op224",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op223-op225",
-      "fromNode": "node-op223",
-      "fromSide": "bottom",
-      "toNode": "node-op225",
-      "toSide": "top"
-    },
-    {
-      "id": "edge-op224-op225",
-      "fromNode": "node-op224",
-      "fromSide": "bottom",
-      "toNode": "node-op225",
-      "toSide": "top"
-    }
-  ]
+	"nodes": [
+		{
+			"id": "group-fase3",
+			"type": "group",
+			"x": -20,
+			"y": 1480,
+			"width": 2280,
+			"height": 1560,
+			"label": "Fase 3 — Panel de administración (OP-300)"
+		},
+		{
+			"id": "group-fase1",
+			"type": "group",
+			"x": -20,
+			"y": 0,
+			"width": 2280,
+			"height": 1400,
+			"label": "Fase 1 — Consolidación y auditoría (OP-100)"
+		},
+		{
+			"id": "group-fase2",
+			"type": "group",
+			"x": 2480,
+			"y": 0,
+			"width": 1960,
+			"height": 1400,
+			"label": "Fase 2 — Plano interactivo y flujo de reservas (OP-200)"
+		},
+		{
+			"id": "group-fase4",
+			"type": "group",
+			"x": 2480,
+			"y": 1480,
+			"width": 1960,
+			"height": 910,
+			"label": "Fase 4 — Pulido, UX y producción (OP-400)"
+		},
+		{
+			"id": "node-op120",
+			"type": "text",
+			"text": "## OP-120 Auditoría de repositorios y servicios\nValidar capa de acceso a datos y lógica de negocio en servicios",
+			"x": 340,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op130",
+			"type": "text",
+			"text": "## OP-130 Auditoría de API routes y seguridad\nRevisar endpoints, validaciones de entrada, autorización y respuestas de error",
+			"x": 660,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op140",
+			"type": "text",
+			"text": "## OP-140 Auditoría de autenticación y sesiones\nVerificar flujo de login, protección de rutas y gestión de sesiones",
+			"x": 980,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op170",
+			"type": "text",
+			"text": "## OP-170 Merge develop → main y baseline\nIntegrar rama develop en main y establecer baseline estable del proyecto",
+			"x": 1940,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op310",
+			"type": "text",
+			"text": "## OP-310 API de gestión de usuarios (admin)\nEndpoints CRUD para administrar usuarios desde el panel de admin",
+			"x": 30,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op-126",
+			"type": "text",
+			"text": "## OP-126 Verificar documentación JSDoc de servicios y repositorios\nComprobar que todas las funciones públicas tienen JSDoc completo (qué hace, parámetros, retorno, errores).",
+			"x": 340,
+			"y": 1040,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op-127",
+			"type": "text",
+			"text": "## OP-127 Documentar hallazgos OP-120\nRegistrar inconsistencias, mejoras y decisiones en .ai/reports/OP-120-findings.md.",
+			"x": 340,
+			"y": 1200,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op134",
+			"type": "text",
+			"text": "## OP-134 Revisar proxy.ts (middleware)\nAuditar reglas de redirección para rutas públicas, privadas, admin y usuarios autenticados; matcher, rol admin y open redirect.",
+			"x": 660,
+			"y": 700,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op135",
+			"type": "text",
+			"text": "## OP-135 Verificar que no se exponen datos internos en errores\nRevisar transversalmente todos los catch genéricos y mensajes de error para garantizar que no se filtran stack traces, detalles de MongoDB ni datos de infraestructura.",
+			"x": 660,
+			"y": 860,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op136",
+			"type": "text",
+			"text": "## OP-136 Documentar hallazgos OP-130\nConsolidar hallazgos de OP-131 a OP-135 en .ai/reports/OP-130-findings.md con severidad, descripción y acción sugerida para OP-161.",
+			"x": 660,
+			"y": 1020,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op113",
+			"type": "text",
+			"text": "## OP-113 Revisar schema Reservation\nAuditar ReservationSchema: campos, índices únicos parciales, normalización de fechas y coherencia con IReservation y README.md §8",
+			"x": 30,
+			"y": 560,
+			"width": 250,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op115",
+			"type": "text",
+			"text": "## OP-115 Documentar hallazgos OP-110\nConsolidar hallazgos de OP-111 a OP-114 en informe .ai/reports/OP-110-findings.md con severidad y acciones propuestas para OP-160",
+			"x": 30,
+			"y": 880,
+			"width": 250,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op320",
+			"type": "text",
+			"text": "## OP-320 API de gestión de mesas (admin)\nEndpoints CRUD para crear, editar y desactivar mesas",
+			"x": 360,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op330",
+			"type": "text",
+			"text": "## OP-330 API de gestión de reservas (admin)\nEndpoints para consultar, filtrar y cancelar reservas como administrador",
+			"x": 680,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op340",
+			"type": "text",
+			"text": "## OP-340 UI de gestión de usuarios\nInterfaz de administración para gestionar usuarios del sistema",
+			"x": 1000,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op-123",
+			"type": "text",
+			"text": "## OP-123 Revisar reservation.service\nVerificar reglas de negocio: 1 reserva/usuario/día, 1 reserva/mesa/día, mesa bloqueada no reservable, cancelación por owner o admin, manejo de concurrencia.",
+			"x": 340,
+			"y": 560,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op-125",
+			"type": "text",
+			"text": "## OP-125 Revisar table.service\nVerificar operaciones de lectura, filtrado de mesas activas, estructura de respuesta TablePublic.",
+			"x": 340,
+			"y": 880,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op-124",
+			"type": "text",
+			"text": "## OP-124 Revisar availability.service\nVerificar lógica de cálculo de estados (green/yellow/red/gray), prioridades, resolución batch de nombres de usuario, eficiencia en rangos.",
+			"x": 340,
+			"y": 720,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op114",
+			"type": "text",
+			"text": "## OP-114 Revisar tipos de dominio\nAuditar IUser, ITable, IReservation, tipos públicos, ServiceResult y next-auth.d.ts — coherencia con schemas y exposición de datos",
+			"x": 30,
+			"y": 720,
+			"width": 250,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op110",
+			"type": "text",
+			"text": "## OP-110 Auditoría de modelos y tipos de dominio\nRevisar modelos Mongoose, tipos TypeScript, índices y coherencia con README.md",
+			"x": 30,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op230",
+			"type": "text",
+			"text": "## OP-230 Detalle de mesa y acción de reserva\nMostrar información de mesa seleccionada y permitir reservar desde el plano",
+			"x": 3160,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op240",
+			"type": "text",
+			"text": "## OP-240 Integración con API de disponibilidad\nConectar el plano con los endpoints de disponibilidad del backend",
+			"x": 3480,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op111",
+			"type": "text",
+			"text": "## OP-111 Revisar schema User\nAuditar UserSchema: campos, validaciones, índice unique en email, enum roles y coherencia con IUser y README.md §3",
+			"x": 30,
+			"y": 220,
+			"width": 250,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op350",
+			"type": "text",
+			"text": "## OP-350 UI de gestión de mesas\nInterfaz de administración para gestionar la configuración de mesas",
+			"x": 1320,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op360",
+			"type": "text",
+			"text": "## OP-360 UI de gestión de reservas (admin)\nInterfaz para que el admin consulte y gestione todas las reservas",
+			"x": 1640,
+			"y": 1530,
+			"width": 270,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op-122",
+			"type": "text",
+			"text": "## OP-122 Revisar table.repository y user.repository\nVerificar queries, filtros por isActive, ordenación y completitud de operaciones necesarias.",
+			"x": 340,
+			"y": 390,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op-121",
+			"type": "text",
+			"text": "## OP-121 Revisar reservation.repository\nVerificar queries, filtros por status=confirmed, uso de lean(), manejo de errores E11000 y coherencia con el schema.",
+			"x": 340,
+			"y": 220,
+			"width": 270,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op112",
+			"type": "text",
+			"text": "## OP-112 Revisar schema Table\nAuditar TableSchema y PositionSchema: campos, tipos, índices y coherencia con ITable, TablePosition y README.md §6",
+			"x": 30,
+			"y": 390,
+			"width": 250,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op250",
+			"type": "text",
+			"text": "## OP-250 Flujo de reserva y cancelación en UI\nImplementar flujo completo de reservar y cancelar mesa desde la interfaz",
+			"x": 3800,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op260",
+			"type": "text",
+			"text": "## OP-260 Polling periódico y actualización\nRefrescar estado de mesas periódicamente y gestionar actualizaciones optimistas",
+			"x": 4120,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op430",
+			"type": "text",
+			"text": "## OP-430 Configuración de email para producción\nConfigurar proveedor de email y plantillas para notificaciones en producción",
+			"x": 3160,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op440",
+			"type": "text",
+			"text": "## OP-440 Variables de entorno y despliegue Vercel\nPreparar variables de entorno y configuración de despliegue en Vercel",
+			"x": 3480,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op450",
+			"type": "text",
+			"text": "## OP-450 Tests E2E del flujo crítico\nTests end-to-end del flujo principal: login, reserva, cancelación",
+			"x": 3800,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op460",
+			"type": "text",
+			"text": "## OP-460 Revisión final de seguridad\nAuditoría final de seguridad antes del despliegue a producción",
+			"x": 4120,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op410",
+			"type": "text",
+			"text": "## OP-410 Estados de carga, error y vacíos\nImplementar esqueletos de carga, mensajes de error y estados vacíos en toda la UI",
+			"x": 2520,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op420",
+			"type": "text",
+			"text": "## OP-420 Responsive y adaptación móvil\nAdaptar la interfaz para dispositivos móviles y tablets",
+			"x": 2840,
+			"y": 1530,
+			"width": 261,
+			"height": 120,
+			"color": "6"
+		},
+		{
+			"id": "node-op150",
+			"type": "text",
+			"text": "## OP-150 Auditoría y refuerzo de tests\nAmpliar cobertura de tests unitarios e integración en áreas críticas",
+			"x": 1300,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op160",
+			"type": "text",
+			"text": "## OP-160 Corrección de deficiencias y deuda técnica\nCorregir problemas detectados en auditorías y resolver deuda técnica pendiente",
+			"x": 1620,
+			"y": 50,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op210",
+			"type": "text",
+			"text": "## OP-210 Selector de semana y día\nComponente para navegar entre semanas y seleccionar el día activo",
+			"x": 2520,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op220",
+			"type": "text",
+			"text": "## OP-220 Componente de plano de mesas\nRenderizar plano interactivo con las mesas y su estado de disponibilidad",
+			"x": 2840,
+			"y": 50,
+			"width": 261,
+			"height": 120,
+			"color": "1"
+		},
+		{
+			"id": "node-op131",
+			"type": "text",
+			"text": "## OP-131 Revisar endpoints de reservas\nAuditar GET/POST /api/reservations, DELETE /api/reservations/[id] y GET /api/reservations/week: autenticación, validación de entrada, autorización, mapeo HTTP y manejo de errores.",
+			"x": 660,
+			"y": 220,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op132",
+			"type": "text",
+			"text": "## OP-132 Revisar endpoints de disponibilidad\nAuditar GET /api/availability y GET /api/availability/week: autenticación, validación de fechas, límite de rango y manejo de errores.",
+			"x": 660,
+			"y": 380,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "node-op133",
+			"type": "text",
+			"text": "## OP-133 Revisar endpoint de mesas\nAuditar GET /api/tables: autenticación, estructura de respuesta, campos expuestos y manejo de errores.",
+			"x": 660,
+			"y": 540,
+			"width": 280,
+			"height": 140,
+			"color": "4"
+		},
+		{
+			"id": "11a51b92",
+			"type": "text",
+			"text": "## OP-141 Revisar configuración de NextAuth\nAuditar adapter, provider, session strategy, maxAge, updateAge y páginas personalizadas en src/lib/auth.ts",
+			"x": 975,
+			"y": 220,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "10c4b283",
+			"type": "text",
+			"text": "## OP-165 Aplicar correcciones y nuevos tests\nCorregir H-150-18 (smoke tests Content-Type), actualizar assertions por cambios de contrato de OP-161/163 (TablePublic sin isActive/assignedTo, TableAvailability.reservation sin userId), verificar impacto en tests de integración",
+			"x": 1620,
+			"y": 940,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "dc8d2dd8",
+			"type": "text",
+			"text": "## OP-166 Ejecutar suite completa y verificar verde\nVerificación final de OP-160: ejecutar npm run test, lint y build tras aplicar OP-161 a OP-165, confirmar cero regresiones, añadir suite OP-160 en config.yaml y cerrar Execution Results de todas las subtareas",
+			"x": 1620,
+			"y": 1120,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "d57e4023",
+			"type": "text",
+			"text": "## OP-154 Identificar gaps de cobertura\nConsolidar lista de escenarios críticos no cubiertos en toda la suite de tests",
+			"x": 1290,
+			"y": 750,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "25f45718",
+			"type": "text",
+			"text": "## OP-155 Corregir tests frágiles o incompletos\nAplicar correcciones a tests dependientes de orden, timing o estado compartido identificados en OP-151 a OP-153",
+			"x": 1290,
+			"y": 930,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "4362ff35",
+			"type": "text",
+			"text": "## OP-161 Aplicar correcciones a modelos y tipos\nCorregir hallazgos H-111-x, H-112-x, H-113-x y H-114-x: validaciones de schema, alineación de tipos (assignedTo null/undefined, rotation, TableWithStatus), normalización de fecha en ReservationSchema, extensión NextAuth y limpieza de TableAvailability",
+			"x": 1620,
+			"y": 220,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "d9f1f9d7",
+			"type": "text",
+			"text": "## OP-162 Aplicar correcciones a repositorios y servicios\nCorregir hallazgos H-121-x, H-122-x, H-123-x, H-124-x, H-125-x y H-126-x: normalizeDate en insertReservation, fix returnDocument, doble normalización en getUserByEmail, JSDoc incompleto en helpers y repositorios, mover TablePublic al dominio",
+			"x": 1615,
+			"y": 400,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "24cce9da",
+			"type": "text",
+			"text": "## OP-163 Aplicar correcciones a API routes y middleware\nCorregir hallazgos H-131-x, H-132-x, H-133-x: validación isValidDateString en POST reservations, extraer HTTP_STATUS y MAX_RANGE_DAYS a constants.ts, eliminar isActive de TablePublic, sustituir assignedTo por hasAssignedUser",
+			"x": 1620,
+			"y": 580,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "3ee04304",
+			"type": "text",
+			"text": "## OP-164 Aplicar correcciones a autenticación\nCorregir hallazgos H-140-1 a H-140-7: isActive en session callback, validación de env vars de email en arranque, try/catch en requireSession, validación de callbackUrl y fallback en Suspense de auth layout",
+			"x": 1620,
+			"y": 760,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "node-op172",
+			"type": "text",
+			"text": "## OP-172 Merge develop → main\nMerge --no-ff de develop a main conservando el código auditado y publicando el resultado en remoto",
+			"x": 1940,
+			"y": 360,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op173",
+			"type": "text",
+			"text": "## OP-173 Verificación post-merge\nEjecutar suite completa (tests, lint, build) sobre main tras el merge para confirmar ausencia de regresiones",
+			"x": 1940,
+			"y": 500,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op174",
+			"type": "text",
+			"text": "## OP-174 Etiquetar baseline\nCrear tag anotado v0.1.0 sobre el merge commit de main y publicarlo en remoto",
+			"x": 1940,
+			"y": 640,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "node-op171",
+			"type": "text",
+			"text": "## OP-171 Verificación pre-merge\nEjecutar suite completa (tests, lint, build) en develop como condición de entrada al merge",
+			"x": 1940,
+			"y": 220,
+			"width": 270,
+			"height": 120,
+			"color": "4"
+		},
+		{
+			"id": "e4e47246",
+			"type": "text",
+			"text": "## OP-142 Revisar callbacks signIn y session\nAuditar lógica de autorización, acceso a datos, manejo de errores y coherencia de tipos en los callbacks signIn y session de NextAuth",
+			"x": 975,
+			"y": 400,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "4051a4cf",
+			"type": "text",
+			"text": "## OP-143 Revisar auth-mongodb-client y api-auth\nAuditar el singleton MongoClient del adapter y el helper requireSession de API routes",
+			"x": 975,
+			"y": 580,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "ad5db9ef",
+			"type": "text",
+			"text": "## OP-144 Revisar páginas de auth\nAuditar flujo de UI de autenticación: login, verify, error, layout y handler de NextAuth",
+			"x": 975,
+			"y": 760,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "c4b8332f",
+			"type": "text",
+			"text": "## OP-145 Documentar hallazgos OP-140\nConsolidar hallazgos de OP-141 a OP-144 en informe clasificado por severidad para alimentar OP-160",
+			"x": 975,
+			"y": 940,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "491d5ba0",
+			"type": "text",
+			"text": "## OP-156 Documentar hallazgos OP-150\nConsolidar hallazgos de OP-151 a OP-155 en informe clasificado por severidad",
+			"x": 1290,
+			"y": 1110,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "7ec5d49c",
+			"type": "text",
+			"text": "## OP-151 Revisar tests unitarios\nRevisar calidad, cobertura y assertions de los tests unitarios existentes (dates.test.ts, compute-status.test.ts)",
+			"x": 1300,
+			"y": 220,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "267fb76b",
+			"type": "text",
+			"text": "## OP-153 Revisar tests de API\nRevisar cobertura de escenarios, mocks de sesión y assertions HTTP de los tests de API",
+			"x": 1295,
+			"y": 570,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "d62b2444",
+			"type": "text",
+			"text": "## OP-152 Revisar tests de integración\nRevisar calidad, cobertura y robustez de los tests de integración de servicios y repositorios",
+			"x": 1295,
+			"y": 390,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "df582e1f",
+			"type": "text",
+			"text": "## OP-211 Lógica de cálculo de semanas\nCrear utilidad week-selector.ts con cálculo de semana actual y siguiente, días laborables y día por defecto",
+			"x": 2510,
+			"y": 190,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "7b45f524",
+			"type": "text",
+			"text": "## OP-212 Componente WeekSelector\nImplementar componente WeekSelector con navegación entre semana actual y siguiente",
+			"x": 2510,
+			"y": 370,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "083cfcbd",
+			"type": "text",
+			"text": "## OP-213 Componente DaySelector\nImplementar componente DaySelector con días laborables y día activo destacado",
+			"x": 2510,
+			"y": 550,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "d74ba8b6",
+			"type": "text",
+			"text": "## OP-214 Estado y contexto de fecha seleccionada\nGestionar estado de fecha seleccionada y exponer vía contexto para otros componentes",
+			"x": 2500,
+			"y": 730,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "916df6c5",
+			"type": "text",
+			"text": "## OP-215 Tests del selector de semana y día\nTests unitarios de lógica de semanas y tests de componente para WeekSelector y DaySelector",
+			"x": 2500,
+			"y": 910,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "node-op225",
+			"type": "text",
+			"text": "## OP-225 Tests del componente de plano\nTests que verifican posicionamiento, colores por estado y etiquetas. Cubre casos límite: sin mesas, mesas fuera de límites.",
+			"x": 2840,
+			"y": 910,
+			"width": 280,
+			"height": 160,
+			"color": "6"
+		},
+		{
+			"id": "node-op221",
+			"type": "text",
+			"text": "## OP-221 Componente FloorPlan (contenedor)\nContenedor SVG o div con posicionamiento relativo, dimensiones configurables y estado vacío cuando no hay mesas",
+			"x": 2840,
+			"y": 190,
+			"width": 280,
+			"height": 160,
+			"color": "4"
+		},
+		{
+			"id": "node-op222",
+			"type": "text",
+			"text": "## OP-222 Componente DeskItem (mesa individual)\nMesa posicionada absolutamente según coordenadas del modelo (x, y, width, height, rotation). Muestra etiqueta identificativa.",
+			"x": 2840,
+			"y": 370,
+			"width": 280,
+			"height": 160,
+			"color": "2"
+		},
+		{
+			"id": "node-op223",
+			"type": "text",
+			"text": "## OP-223 Colores por estado de mesa\nAplicar colores según TableStatus: verde (libre), amarillo (preferente sin reserva), rojo (ocupada/fija), gris (bloqueada). Consistente con README.md §7.",
+			"x": 2840,
+			"y": 550,
+			"width": 280,
+			"height": 160,
+			"color": "6"
+		},
+		{
+			"id": "node-op224",
+			"type": "text",
+			"text": "## OP-224 Tooltip o indicador de ocupante\nMuestra nombre del ocupante o usuario asociado en mesas ocupadas o preferentes. Visible en hover.",
+			"x": 2840,
+			"y": 730,
+			"width": 280,
+			"height": 160,
+			"color": "6"
+		}
+	],
+	"edges": [
+		{
+			"id": "edge-110-120",
+			"fromNode": "node-op110",
+			"fromSide": "bottom",
+			"toNode": "node-op120",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-120-130",
+			"fromNode": "node-op120",
+			"fromSide": "bottom",
+			"toNode": "node-op130",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-120-150",
+			"fromNode": "node-op120",
+			"fromSide": "bottom",
+			"toNode": "node-op150",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-130-150",
+			"fromNode": "node-op130",
+			"fromSide": "bottom",
+			"toNode": "node-op150",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-110-160",
+			"fromNode": "node-op110",
+			"fromSide": "bottom",
+			"toNode": "node-op160",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-120-160",
+			"fromNode": "node-op120",
+			"fromSide": "bottom",
+			"toNode": "node-op160",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-130-160",
+			"fromNode": "node-op130",
+			"fromSide": "bottom",
+			"toNode": "node-op160",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-140-160",
+			"fromNode": "node-op140",
+			"fromSide": "bottom",
+			"toNode": "node-op160",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-150-160",
+			"fromNode": "node-op150",
+			"fromSide": "bottom",
+			"toNode": "node-op160",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-160-170",
+			"fromNode": "node-op160",
+			"fromSide": "bottom",
+			"toNode": "node-op170",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-210-220",
+			"fromNode": "node-op210",
+			"fromSide": "bottom",
+			"toNode": "node-op220",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-220-230",
+			"fromNode": "node-op220",
+			"fromSide": "bottom",
+			"toNode": "node-op230",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-220-240",
+			"fromNode": "node-op220",
+			"fromSide": "bottom",
+			"toNode": "node-op240",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-230-250",
+			"fromNode": "node-op230",
+			"fromSide": "bottom",
+			"toNode": "node-op250",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-240-250",
+			"fromNode": "node-op240",
+			"fromSide": "bottom",
+			"toNode": "node-op250",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-240-260",
+			"fromNode": "node-op240",
+			"fromSide": "bottom",
+			"toNode": "node-op260",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-310-340",
+			"fromNode": "node-op310",
+			"fromSide": "bottom",
+			"toNode": "node-op340",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-320-350",
+			"fromNode": "node-op320",
+			"fromSide": "bottom",
+			"toNode": "node-op350",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-330-360",
+			"fromNode": "node-op330",
+			"fromSide": "bottom",
+			"toNode": "node-op360",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-430-440",
+			"fromNode": "node-op430",
+			"fromSide": "bottom",
+			"toNode": "node-op440",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-250-410",
+			"fromNode": "node-op250",
+			"fromSide": "bottom",
+			"toNode": "node-op410",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-250-420",
+			"fromNode": "node-op250",
+			"fromSide": "bottom",
+			"toNode": "node-op420",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-250-450",
+			"fromNode": "node-op250",
+			"fromSide": "bottom",
+			"toNode": "node-op450",
+			"toSide": "top"
+		},
+		{
+			"id": "edge-250-460",
+			"fromNode": "node-op250",
+			"fromSide": "bottom",
+			"toNode": "node-op460",
+			"toSide": "top"
+		}
+	]
 }

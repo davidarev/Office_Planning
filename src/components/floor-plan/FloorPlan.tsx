@@ -2,6 +2,7 @@
 
 import { useDateSelection } from "@/context/date-selection.context";
 import type { TableAvailability } from "@/domain/types";
+import { DeskItem } from "./DeskItem";
 
 /** Ancho por defecto del lienzo del plano, en píxeles. */
 export const DEFAULT_FLOOR_PLAN_WIDTH = 900;
@@ -15,6 +16,8 @@ interface FloorPlanProps {
   width?: number;
   /** Alto del lienzo en píxeles. Valores ≤ 0 caen al default. */
   height?: number;
+  /** Handler opcional propagado a cada `DeskItem` cuando se pulsa la mesa. */
+  onDeskClick?: (table: TableAvailability) => void;
 }
 
 /**
@@ -36,6 +39,7 @@ export function FloorPlan({
   tables,
   width,
   height,
+  onDeskClick,
 }: FloorPlanProps) {
   // Suscribe al contexto de fecha para que el árbol disponga de selectedDay,
   // aunque este componente aún no lo use directamente (preparación para OP-222+).
@@ -67,16 +71,10 @@ export function FloorPlan({
       aria-label="Plano de la oficina"
     >
       {tables.map((table) => (
-        <div
+        <DeskItem
           key={table.tableId}
-          data-testid={`floor-plan-desk-${table.label}`}
-          className="absolute"
-          style={{
-            left: table.position.x,
-            top: table.position.y,
-            width: table.position.width,
-            height: table.position.height,
-          }}
+          table={table}
+          onClick={onDeskClick}
         />
       ))}
     </div>
