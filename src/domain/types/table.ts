@@ -24,8 +24,26 @@ export type TableStatus = "green" | "yellow" | "red" | "gray";
  * Position and dimensions of a desk on the floor plan.
  * Coordinates and sizes are expressed in abstract units
  * that the front-end maps to pixels or percentages.
+ *
+ * `cornerExtension` is an optional second rectangle solidario al principal
+ * usado para representar mesas en L (esquinadas). Reutiliza la misma forma
+ * para no duplicar tipos. Si en el futuro hicieran falta polígonos genéricos,
+ * se reevalúa el modelo (CLAUDE.md §15).
  */
 export interface TablePosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  cornerExtension?: TableRect | null;
+}
+
+/**
+ * Sub-rectángulo plano (sin recursión) usado para describir el saliente
+ * de una mesa esquinada. Mismas unidades y semántica que TablePosition.
+ */
+export interface TableRect {
   x: number;
   y: number;
   width: number;
