@@ -78,3 +78,34 @@ reutilizarlo sin duplicar la lógica.
 - Todos los AC en PASS
 - verify en verde
 - Spec actualizada con ## Execution Result
+
+## Execution Result
+
+**Fecha:** 2026-05-09
+**Estado:** DONE
+
+### Archivos creados / modificados
+
+- `src/components/floor-plan/desk-status.ts` — nuevo archivo con `statusColorMap` y `getStatusColorClasses`
+- `src/components/floor-plan/DeskItem.tsx` — importa y aplica `getStatusColorClasses(table.status)` sobre el elemento raíz
+- `src/components/floor-plan/index.ts` — exporta `statusColorMap` y `getStatusColorClasses`
+
+### Criterios de aceptación
+
+- AC-1 ✅ `statusColorMap` en `src/components/floor-plan/desk-status.ts` mapea cada `TableStatus` a clases Tailwind completas
+- AC-2 ✅ `DeskItem` importa y aplica `getStatusColorClasses(table.status)` como clases sobre el elemento raíz
+- AC-3 ✅ `green` → `bg-green-500 text-white`
+- AC-4 ✅ `yellow` → `bg-yellow-400 text-gray-900`
+- AC-5 ✅ `red` → `bg-red-500 text-white`
+- AC-6 ✅ `gray` → `bg-gray-400 text-gray-700`
+- AC-7 ✅ `desk-status.ts` exportado desde `index.ts`
+
+### Verificaciones
+
+| Check | Resultado |
+|---|---|
+| Lint | PASS (0 errores, 4 warnings preexistentes) |
+| Tests unitarios | PASS (95/95) |
+| Tests integración | PASS (102/102) |
+| Tests API | PASS (85/85) |
+| Build | PASS |

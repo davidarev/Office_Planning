@@ -4,3 +4,4 @@ export {
   DEFAULT_FLOOR_PLAN_HEIGHT,
 } from "./FloorPlan";
 export { DeskItem } from "./DeskItem";
+export { statusColorMap, getStatusColorClasses, getOccupantName } from "./desk-status";

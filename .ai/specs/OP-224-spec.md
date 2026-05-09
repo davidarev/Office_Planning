@@ -77,3 +77,32 @@ etiqueta ya existente.
 - Todos los AC en PASS
 - verify en verde
 - Spec actualizada con ## Execution Result
+
+## Execution Result
+
+**Fecha:** 2026-05-09
+**Estado:** DONE
+
+### Archivos modificados
+
+- `src/components/floor-plan/DeskItem.tsx` — añadida función `getOccupantName`, indicador de ocupante bajo la etiqueta y atributo `title` nativo
+
+### Criterios de aceptación
+
+- AC-1 ✅ Muestra `reservation.userName` debajo de la etiqueta cuando hay reserva
+- AC-2 ✅ Muestra `assignedUser.name` cuando no hay reserva pero sí `assignedUser` y estado `red`/`yellow`
+- AC-3 ✅ No muestra indicador en mesas `green` ni `gray` (guard `showOccupant`)
+- AC-4 ✅ Nombre truncado con `overflow-hidden text-ellipsis whitespace-nowrap`
+- AC-5 ✅ Atributo `title` con nombre completo del ocupante en el elemento raíz
+- AC-6 ✅ Indicador visualmente secundario: `text-[10px] opacity-75 leading-none`
+- AC-7 ✅ Firma de props sin cambios: `table: TableAvailability` y `onClick?`
+
+### Verificaciones
+
+| Check | Resultado |
+|---|---|
+| Lint | PASS (0 errores, 4 warnings preexistentes) |
+| Tests unitarios | PASS (95/95) |
+| Tests integración | PASS (102/102) |
+| Tests API | PASS (85/85) |
+| Build | PASS |

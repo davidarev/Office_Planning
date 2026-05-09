@@ -1,100 +1,106 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import type { TableAvailability, TableRect } from "@/domain/types";
+import { getStatusColorClasses, getOccupantName } from "./desk-status";
+import "./desk-item.css";
 
-/** Tamaño mínimo visible de una mesa en píxeles para evitar que desaparezca. */
+/** Minimum visible desk size in pixels to avoid disappearing elements. */
 const MIN_DESK_SIZE_PX = 40;
 
 interface DeskItemProps {
-  /** Datos completos de la mesa para el día activo. */
+  /** Full desk data for the active day. */
   table: TableAvailability;
   /**
-   * Handler opcional disparado al pulsar la mesa (rectángulo principal o
-   * extensión esquinada). Si se omite, la mesa no es interactiva.
+   * Optional handler fired when the desk is clicked (main rect or corner
+   * extension). If omitted, the desk is non-interactive.
    */
   onClick?: (table: TableAvailability) => void;
 }
 
 /**
- * Construye el `style` inline de un rectángulo (principal o extensión).
- * Devuelve coordenadas y tamaño en píxeles, aplicando un mínimo visual
- * y omitiendo `transform` cuando la rotación es 0.
+ * Builds the CSS custom-property object for a rectangle (main or extension).
+ * Properties are consumed by `.desk-item` in `desk-item.css`, keeping the
+ * `style` attribute free of direct presentation values (no-inline-styles).
  */
-function buildRectStyle(rect: {
+function buildRectVars(rect: {
   x: number;
   y: number;
   width: number;
   height: number;
   rotation: number;
-}): CSSProperties {
-  const style: CSSProperties = {
-    left: rect.x,
-    top: rect.y,
-    width: Math.max(rect.width, MIN_DESK_SIZE_PX),
-    height: Math.max(rect.height, MIN_DESK_SIZE_PX),
-  };
-  if (rect.rotation !== 0) {
-    style.transform = `rotate(${rect.rotation}deg)`;
-  }
-  return style;
+}): React.CSSProperties {
+  return {
+    "--desk-x": `${rect.x}px`,
+    "--desk-y": `${rect.y}px`,
+    "--desk-w": `${Math.max(rect.width, MIN_DESK_SIZE_PX)}px`,
+    "--desk-h": `${Math.max(rect.height, MIN_DESK_SIZE_PX)}px`,
+    "--desk-rotate": rect.rotation !== 0 ? `${rect.rotation}deg` : "0deg",
+  } as React.CSSProperties;
 }
 
 /**
- * Componente visual de una mesa individual sobre el plano de la oficina.
+ * Visual component for a single desk on the office floor plan.
  *
- * Posiciona el rectángulo principal de forma absoluta dentro del contenedor
- * del `FloorPlan`, derivando `left/top/width/height` de `table.position`.
- * Si la mesa es esquinada (`table.position.cornerExtension` no es null),
- * renderiza un segundo rectángulo solidario que comparte el mismo handler
- * de click. La etiqueta y el indicador de ocupante (OP-224) se muestran
- * solo en el rectángulo principal para evitar duplicidad visual.
+ * Positions the main rectangle absolutely inside the `FloorPlan` container,
+ * deriving coordinates from `table.position` via CSS custom properties.
+ * For corner desks (`table.position.cornerExtension` non-null), renders a
+ * second rectangle sharing the same click handler. Label and occupant
+ * indicator are shown only on the main rectangle.
  *
- * No contiene lógica de negocio: el cálculo de estado y disponibilidad
- * se realiza aguas arriba (servicios). El color por estado se aplica en
- * OP-223 y el tooltip de ocupante en OP-224; aquí solo se exponen los
- * puntos de extensión (prop `status` accesible vía `table.status`,
- * `reservation`, `assignedUser`).
- *
- * @param props.table - Datos de la mesa con su disponibilidad.
- * @param props.onClick - Handler opcional al pulsar la mesa.
+ * @param props.table - Desk data with availability for the active day.
+ * @param props.onClick - Optional handler when the desk is clicked.
  */
 export function DeskItem({ table, onClick }: DeskItemProps) {
   const isInteractive = typeof onClick === "function";
   const handleClick = isInteractive ? () => onClick(table) : undefined;
 
-  const baseClassName = [
-    "absolute flex items-center justify-center border border-gray-400 bg-gray-100 text-xs font-medium text-gray-800 select-none",
+  const statusClasses = getStatusColorClasses(table.status);
+  const sharedClasses = [
+    "desk-item flex flex-col items-center justify-center border border-gray-400 text-xs font-medium select-none",
+    statusClasses,
     isInteractive ? "cursor-pointer" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
+  const showOccupant = table.status === "red" || table.status === "yellow";
+  const occupantName = showOccupant ? getOccupantName(table) : null;
+
   const cornerExtension: TableRect | null | undefined =
     table.position.cornerExtension;
 
+  const MainEl = isInteractive ? "button" : "div";
+  const CornerEl = isInteractive ? "button" : "div";
+
   return (
     <>
-      <div
+      <MainEl
         data-testid={`desk-item-${table.label}`}
-        className={baseClassName}
-        style={buildRectStyle(table.position)}
+        className={sharedClasses}
+        style={buildRectVars(table.position)}
         onClick={handleClick}
-        role={isInteractive ? "button" : undefined}
         tabIndex={isInteractive ? 0 : undefined}
         aria-label={`Mesa ${table.label}`}
+        title={occupantName ?? undefined}
       >
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap px-1">
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap px-1 w-full text-center">
           {table.label}
         </span>
-      </div>
+        {occupantName ? (
+          <span
+            data-testid={`desk-item-${table.label}-occupant`}
+            className="overflow-hidden text-ellipsis whitespace-nowrap px-1 w-full text-center text-[10px] opacity-75 leading-none"
+          >
+            {occupantName}
+          </span>
+        ) : null}
+      </MainEl>
       {cornerExtension ? (
-        <div
+        <CornerEl
           data-testid={`desk-item-${table.label}-corner`}
-          className={baseClassName}
-          style={buildRectStyle(cornerExtension)}
+          className={sharedClasses}
+          style={buildRectVars(cornerExtension)}
           onClick={handleClick}
-          role={isInteractive ? "button" : undefined}
           tabIndex={isInteractive ? 0 : undefined}
           aria-hidden
         />
