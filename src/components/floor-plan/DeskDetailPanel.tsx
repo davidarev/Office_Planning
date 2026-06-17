@@ -22,6 +22,10 @@ interface DeskDetailPanelProps {
   isOwnReservation: boolean;
   /** Callback de cancelación — el padre ejecuta DELETE /api/reservations/:id. */
   onCancelReservation: (reservationId: string) => Promise<void>;
+  /** true si hay una reserva en curso en el padre (deshabilita acciones). */
+  isReserving?: boolean;
+  /** true si hay una cancelación en curso en el padre (deshabilita acciones). */
+  isCancelling?: boolean;
 }
 
 const typeLabels: Record<TableType, string> = {
@@ -69,13 +73,21 @@ export function DeskDetailPanel({
   onReserve,
   isOwnReservation,
   onCancelReservation,
+  isReserving: isReservingExternal = false,
+  isCancelling: isCancellingExternal = false,
 }: DeskDetailPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
-  const [isReserving, setIsReserving] = useState(false);
+  const [isReservingLocal, setIsReservingLocal] = useState(false);
   const [reserveError, setReserveError] = useState<string | null>(null);
-  const [isCancelling, setIsCancelling] = useState(false);
+  const [isCancellingLocal, setIsCancellingLocal] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+
+  // Una operación está en curso si la dispara este panel o si el padre la
+  // reporta en curso (evita doble-click y acciones concurrentes — OP-254 AC-6).
+  const isReserving = isReservingLocal || isReservingExternal;
+  const isCancelling = isCancellingLocal || isCancellingExternal;
+  const isBusy = isReserving || isCancelling;
 
   // Limpiar errores al cambiar de mesa o fecha
   useEffect(() => {
@@ -124,8 +136,8 @@ export function DeskDetailPanel({
   });
 
   async function handleReserve() {
-    if (!table || isReserving) return;
-    setIsReserving(true);
+    if (!table || isBusy) return;
+    setIsReservingLocal(true);
     setReserveError(null);
     try {
       await onReserve(table.tableId, selectedDate);
@@ -134,13 +146,13 @@ export function DeskDetailPanel({
         err instanceof Error ? err.message : "Error al realizar la reserva"
       );
     } finally {
-      setIsReserving(false);
+      setIsReservingLocal(false);
     }
   }
 
   async function handleCancel() {
-    if (!table?.reservation || isCancelling) return;
-    setIsCancelling(true);
+    if (!table?.reservation || isBusy) return;
+    setIsCancellingLocal(true);
     setCancelError(null);
     try {
       await onCancelReservation(table.reservation._id);
@@ -149,7 +161,7 @@ export function DeskDetailPanel({
         err instanceof Error ? err.message : "Error al cancelar la reserva"
       );
     } finally {
-      setIsCancelling(false);
+      setIsCancellingLocal(false);
     }
   }
 
@@ -258,7 +270,7 @@ export function DeskDetailPanel({
             <button
               type="button"
               onClick={handleReserve}
-              disabled={isReserving}
+              disabled={isBusy}
               className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isReserving ? "Reservando…" : "Reservar"}
@@ -271,7 +283,7 @@ export function DeskDetailPanel({
             <button
               type="button"
               onClick={handleCancel}
-              disabled={isCancelling}
+              disabled={isBusy}
               className="w-full rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isCancelling ? "Cancelando…" : "Cancelar reserva"}
