@@ -1540,6 +1540,51 @@ suites:
         exit_code: 0
         timeout: 180
 
+  OP-260_polling_periodico:
+    description: 'Polling periódico — usePolling, integración en FloorPlanSection, pausa por visibilidad y reconciliación de overrides'
+    enabled: true
+    related_spec: '.ai/specs/OP-260-spec.md'
+    verifications:
+      - id: OP-260-STRUCT-1
+        name: 'src/hooks/use-polling.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-polling.ts
+            must_exist: true
+      - id: OP-260-STRUCT-2
+        name: 'tests/unit/use-polling.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/use-polling.test.ts
+            must_exist: true
+      - id: OP-260-STRUCT-3
+        name: 'tests/unit/floor-plan-section-polling.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/floor-plan-section-polling.test.ts
+            must_exist: true
+      - id: OP-260-TEST-1
+        name: 'Suite completa pasa sin regresiones (435+ tests)'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-260-LINT-1
+        name: 'ESLint sin errores (0 errores, ≤5 warnings preexistentes)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-260-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
