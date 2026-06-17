@@ -8,4 +8,9 @@ export { statusColorMap, getStatusColorClasses, getOccupantName } from "./desk-s
 export { DeskDetailPanel } from "./DeskDetailPanel";
 export { FloorPlanClient } from "./FloorPlanClient";
 export { FloorPlanSection } from "./FloorPlanSection";
-export { useReserve } from "./use-reserve";
+export {
+  applyOverrides,
+  applyRollback,
+  type OptimisticOverride,
+  type OptimisticOverrides,
+} from "./optimistic-overrides";
