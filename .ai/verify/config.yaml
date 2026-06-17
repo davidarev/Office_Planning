@@ -1245,6 +1245,45 @@ suites:
         exit_code: 0
         timeout: 180
 
+  OP-233_boton_cancelar:
+    description: 'Botón de cancelar reserva propia en DeskDetailPanel — lógica de visibilidad, hook useCancelReservation y tipado de props'
+    enabled: true
+    related_spec: '.ai/specs/OP-233-spec.md'
+    verifications:
+      - id: OP-233-STRUCT-1
+        name: 'src/components/floor-plan/use-cancel-reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/use-cancel-reservation.ts
+            must_exist: true
+      - id: OP-233-STRUCT-2
+        name: 'src/components/floor-plan/DeskDetailPanel.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskDetailPanel.tsx
+            must_exist: true
+      - id: OP-233-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-233-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-233-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
