@@ -1316,6 +1316,38 @@ suites:
         exit_code: 0
         timeout: 60
 
+  OP-242_carga_datos_cambio_dia:
+    description: 'Verifica que FloorPlanSection conecta el selector de día con useAvailability y FloorPlanClient'
+    enabled: true
+    related_spec: '.ai/specs/OP-242-spec.md'
+    verifications:
+      - id: OP-242-STRUCT-1
+        name: 'src/components/floor-plan/FloorPlanSection.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlanSection.tsx
+            must_exist: true
+      - id: OP-242-STRUCT-2
+        name: 'src/hooks/use-availability.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-availability.ts
+            must_exist: true
+      - id: OP-242-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-242-BUILD-1
+        name: 'Build de Next.js sin errores TypeScript'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
