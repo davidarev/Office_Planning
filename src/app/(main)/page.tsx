@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DateSelectionProvider } from "@/components/booking/DateSelectionProvider";
-import { FloorPlan } from "@/components/floor-plan";
+import { FloorPlanClient } from "@/components/floor-plan";
 
 /**
  * Página principal — punto de entrada tras autenticarse.
@@ -28,7 +28,8 @@ export default async function HomePage() {
       </div>
 
       <DateSelectionProvider>
-        <FloorPlan tables={[]} />
+        {/* userHasReservationToday se integrará con la API en OP-240 */}
+        <FloorPlanClient tables={[]} userHasReservationToday={false} />
       </DateSelectionProvider>
     </main>
   );
