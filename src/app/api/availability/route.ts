@@ -17,7 +17,7 @@ import { isValidDateString } from "@/lib/dates";
  * @returns 500 on internal error
  */
 export async function GET(request: NextRequest) {
-  const { error } = await requireSession();
+  const { error, session } = await requireSession();
   if (error) return error;
 
   const date = request.nextUrl.searchParams.get("date");
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const availability = await getTableAvailabilityForDate(date);
+    const availability = await getTableAvailabilityForDate(date, session.user.id);
     return NextResponse.json(availability);
   } catch {
     return NextResponse.json(

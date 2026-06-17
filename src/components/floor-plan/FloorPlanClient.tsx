@@ -41,8 +41,7 @@ export function FloorPlanClient({
   const { reserve } = useReserve();
   const { cancelReservation } = useCancelReservation();
 
-  const isOwnReservation =
-    selectedTable?.reservation?.userId === currentUserId;
+  const isOwnReservation = selectedTable?.reservation?.isOwner === true;
 
   const handleReserve = useCallback(
     async (tableId: string, date: string) => {

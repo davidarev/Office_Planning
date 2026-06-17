@@ -107,8 +107,9 @@ export interface TableAvailability {
   status: TableStatus;
   reservation: {
     _id: string;
-    userId: string;
     userName: string;
+    /** True when the currently authenticated user owns this reservation. */
+    isOwner: boolean;
   } | null;
   assignedUser: {
     _id: string;
