@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import type { TableAvailability, TableStatus } from "@/domain/types";
 import { useDateSelection } from "@/context/date-selection.context";
 import { useAvailability } from "@/hooks/use-availability";
+import { usePolling, POLLING_INTERVAL_MS } from "@/hooks/use-polling";
 import { useReservation } from "@/hooks/use-reservation";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -59,6 +60,11 @@ export function FloorPlanSection({ currentUserId }: FloorPlanSectionProps) {
   );
   const { reserve, cancelReservation, isReserving, isCancelling } =
     useReservation();
+
+  // Pause polling while a mutation is in-flight to avoid a refetch racing
+  // with the optimistic override (AC-3, OP-260).
+  const isOperationInProgress = isReserving || isCancelling;
+  usePolling(refetch, POLLING_INTERVAL_MS, !isOperationInProgress);
 
   // Track overrides together with the day they belong to.
   // When selectedDay changes, the stored day won't match so we treat the
