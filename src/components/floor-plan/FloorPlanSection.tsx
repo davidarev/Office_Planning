@@ -43,7 +43,7 @@ export function FloorPlanSection({ currentUserId }: FloorPlanSectionProps) {
   }
 
   const userHasReservationToday =
-    data?.some((t) => t.reservation?.userId === currentUserId) ?? false;
+    data?.some((t) => t.reservation?.isOwner === true) ?? false;
 
   return (
     <FloorPlanClient

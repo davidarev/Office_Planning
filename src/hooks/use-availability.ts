@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import type { TableAvailability } from "@/domain/types/table";
 
 export interface UseAvailabilityResult {
@@ -9,6 +9,35 @@ export interface UseAvailabilityResult {
   error: string | null;
   refetch: () => void;
 }
+
+type State = {
+  data: TableAvailability[] | null;
+  loading: boolean;
+  error: string | null;
+};
+
+type Action =
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; payload: TableAvailability[] }
+  | { type: "FETCH_ERROR"; payload: string }
+  | { type: "RESET" };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "FETCH_START":
+      return { data: null, loading: true, error: null };
+    case "FETCH_SUCCESS":
+      return { data: action.payload, loading: false, error: null };
+    case "FETCH_ERROR":
+      return { data: null, loading: false, error: action.payload };
+    case "RESET":
+      return { data: null, loading: false, error: null };
+    default:
+      return state;
+  }
+}
+
+const initialState: State = { data: null, loading: false, error: null };
 
 /**
  * Fetches desk availability for a given date from GET /api/availability.
@@ -19,25 +48,19 @@ export interface UseAvailabilityResult {
  * Aborts in-flight requests when date changes or the component unmounts.
  */
 export function useAvailability(date: string): UseAvailabilityResult {
-  const [data, setData] = useState<TableAvailability[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [fetchCounter, setFetchCounter] = useState<number>(0);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [fetchCounter, incrementFetch] = useReducer((c: number) => c + 1, 0);
 
   useEffect(() => {
     if (!date) {
-      setData(null);
-      setLoading(false);
-      setError(null);
+      dispatch({ type: "RESET" });
       return;
     }
 
     const controller = new AbortController();
     const { signal } = controller;
 
-    setLoading(true);
-    setData(null);
-    setError(null);
+    dispatch({ type: "FETCH_START" });
 
     fetch(`/api/availability?date=${date}`, { signal })
       .then(async (response) => {
@@ -51,13 +74,11 @@ export function useAvailability(date: string): UseAvailabilityResult {
           } catch {
             // use generic message
           }
-          setError(message);
-          setData(null);
+          dispatch({ type: "FETCH_ERROR", payload: message });
           return;
         }
         const json: TableAvailability[] = await response.json();
-        setData(json);
-        setError(null);
+        dispatch({ type: "FETCH_SUCCESS", payload: json });
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -66,13 +87,7 @@ export function useAvailability(date: string): UseAvailabilityResult {
         }
         const message =
           err instanceof Error ? err.message : "Error de red desconocido";
-        setError(message);
-        setData(null);
-      })
-      .finally(() => {
-        if (!signal.aborted) {
-          setLoading(false);
-        }
+        dispatch({ type: "FETCH_ERROR", payload: message });
       });
 
     return () => {
@@ -81,8 +96,8 @@ export function useAvailability(date: string): UseAvailabilityResult {
   }, [date, fetchCounter]);
 
   const refetch = useCallback(() => {
-    setFetchCounter((c) => c + 1);
+    incrementFetch();
   }, []);
 
-  return { data, loading, error, refetch };
+  return { data: state.data, loading: state.loading, error: state.error, refetch };
 }

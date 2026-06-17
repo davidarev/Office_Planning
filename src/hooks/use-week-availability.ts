@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import type { TableAvailability } from "@/domain/types/table";
 
 export interface UseWeekAvailabilityResult {
@@ -10,6 +10,35 @@ export interface UseWeekAvailabilityResult {
   getDay: (date: string) => TableAvailability[] | null;
   refetch: () => void;
 }
+
+type State = {
+  weekData: Record<string, TableAvailability[]> | null;
+  loading: boolean;
+  error: string | null;
+};
+
+type Action =
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; payload: Record<string, TableAvailability[]> }
+  | { type: "FETCH_ERROR"; payload: string }
+  | { type: "RESET" };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "FETCH_START":
+      return { weekData: null, loading: true, error: null };
+    case "FETCH_SUCCESS":
+      return { weekData: action.payload, loading: false, error: null };
+    case "FETCH_ERROR":
+      return { weekData: null, loading: false, error: action.payload };
+    case "RESET":
+      return { weekData: null, loading: false, error: null };
+    default:
+      return state;
+  }
+}
+
+const initialState: State = { weekData: null, loading: false, error: null };
 
 /**
  * Fetches desk availability for a full week from GET /api/availability/week.
@@ -28,28 +57,19 @@ export function useWeekAvailability(
   start: string,
   end: string,
 ): UseWeekAvailabilityResult {
-  const [weekData, setWeekData] = useState<Record<
-    string,
-    TableAvailability[]
-  > | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [fetchCounter, setFetchCounter] = useState<number>(0);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [fetchCounter, incrementFetch] = useReducer((c: number) => c + 1, 0);
 
   useEffect(() => {
     if (!start || !end) {
-      setWeekData(null);
-      setLoading(false);
-      setError(null);
+      dispatch({ type: "RESET" });
       return;
     }
 
     const controller = new AbortController();
     const { signal } = controller;
 
-    setLoading(true);
-    setWeekData(null);
-    setError(null);
+    dispatch({ type: "FETCH_START" });
 
     fetch(`/api/availability/week?start=${start}&end=${end}`, { signal })
       .then(async (response) => {
@@ -63,13 +83,11 @@ export function useWeekAvailability(
           } catch {
             // use generic message
           }
-          setError(message);
-          setWeekData(null);
+          dispatch({ type: "FETCH_ERROR", payload: message });
           return;
         }
         const json: Record<string, TableAvailability[]> = await response.json();
-        setWeekData(json);
-        setError(null);
+        dispatch({ type: "FETCH_SUCCESS", payload: json });
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -77,13 +95,7 @@ export function useWeekAvailability(
         }
         const message =
           err instanceof Error ? err.message : "Error de red desconocido";
-        setError(message);
-        setWeekData(null);
-      })
-      .finally(() => {
-        if (!signal.aborted) {
-          setLoading(false);
-        }
+        dispatch({ type: "FETCH_ERROR", payload: message });
       });
 
     return () => {
@@ -93,14 +105,14 @@ export function useWeekAvailability(
 
   const getDay = useCallback(
     (date: string): TableAvailability[] | null => {
-      return weekData?.[date] ?? null;
+      return state.weekData?.[date] ?? null;
     },
-    [weekData],
+    [state.weekData],
   );
 
   const refetch = useCallback(() => {
-    setFetchCounter((c) => c + 1);
+    incrementFetch();
   }, []);
 
-  return { weekData, loading, error, getDay, refetch };
+  return { weekData: state.weekData, loading: state.loading, error: state.error, getDay, refetch };
 }
