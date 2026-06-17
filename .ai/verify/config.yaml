@@ -1206,10 +1206,10 @@ suites:
     related_spec: '.ai/specs/OP-232-spec.md'
     verifications:
       - id: OP-232-STRUCT-1
-        name: 'src/components/floor-plan/use-reserve.ts existe'
+        name: 'src/hooks/use-reservation.ts existe (unificado, reemplaza use-reserve.ts en OP-251/OP-253)'
         type: filesystem
         checks:
-          - path: src/components/floor-plan/use-reserve.ts
+          - path: src/hooks/use-reservation.ts
             must_exist: true
       - id: OP-232-STRUCT-2
         name: 'src/components/floor-plan/DeskDetailPanel.tsx existe'
@@ -1251,10 +1251,10 @@ suites:
     related_spec: '.ai/specs/OP-233-spec.md'
     verifications:
       - id: OP-233-STRUCT-1
-        name: 'src/components/floor-plan/use-cancel-reservation.ts existe'
+        name: 'src/hooks/use-reservation.ts existe (unificado, reemplaza use-cancel-reservation.ts en OP-253)'
         type: filesystem
         checks:
-          - path: src/components/floor-plan/use-cancel-reservation.ts
+          - path: src/hooks/use-reservation.ts
             must_exist: true
       - id: OP-233-STRUCT-2
         name: 'src/components/floor-plan/DeskDetailPanel.tsx existe'
@@ -1427,6 +1427,115 @@ suites:
         name: 'Build de Next.js sin errores TypeScript'
         type: npm_script
         command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-253_cancelacion_optimista:
+    description: 'Actualización optimista al cancelar — override green/yellow + reservation null en FloorPlanSection, vía módulo optimistic-overrides'
+    enabled: true
+    related_spec: '.ai/specs/OP-253-spec.md'
+    verifications:
+      - id: OP-253-STRUCT-1
+        name: 'src/components/floor-plan/optimistic-overrides.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/optimistic-overrides.ts
+            must_exist: true
+      - id: OP-253-STRUCT-2
+        name: 'src/components/floor-plan/FloorPlanSection.tsx existe (cancelación optimista)'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlanSection.tsx
+            must_exist: true
+      - id: OP-253-TEST-1
+        name: 'Tests unitarios en verde (incluye apply-overrides y optimistic-flow)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-253-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-253-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-254_rollback_error:
+    description: 'Rollback del override optimista al fallar el backend + mensaje de error en panel + botones deshabilitados durante operación'
+    enabled: true
+    related_spec: '.ai/specs/OP-254-spec.md'
+    verifications:
+      - id: OP-254-STRUCT-1
+        name: 'src/components/floor-plan/optimistic-overrides.ts existe (applyRollback)'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/optimistic-overrides.ts
+            must_exist: true
+      - id: OP-254-STRUCT-2
+        name: 'src/components/floor-plan/DeskDetailPanel.tsx existe (errores + disabled)'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskDetailPanel.tsx
+            must_exist: true
+      - id: OP-254-TEST-1
+        name: 'Tests unitarios en verde (incluye optimistic-flow rollback)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-254-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-254-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-255_tests_flujo_reserva:
+    description: 'Suite de tests del flujo optimista: applyOverrides, useReservation y flujo reserva/cancelación con rollback'
+    enabled: true
+    related_spec: '.ai/specs/OP-255-spec.md'
+    verifications:
+      - id: OP-255-STRUCT-1
+        name: 'tests/unit/apply-overrides.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/apply-overrides.test.ts
+            must_exist: true
+      - id: OP-255-STRUCT-2
+        name: 'tests/unit/use-reservation.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/use-reservation.test.ts
+            must_exist: true
+      - id: OP-255-STRUCT-3
+        name: 'tests/unit/optimistic-flow.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/optimistic-flow.test.ts
+            must_exist: true
+      - id: OP-255-TEST-1
+        name: 'Suite completa pasa sin regresiones'
+        type: npm_script
+        command: npm run test
         expected_result: PASS
         exit_code: 0
         timeout: 180
