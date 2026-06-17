@@ -1380,6 +1380,57 @@ suites:
         exit_code: 0
         timeout: 60
 
+  OP-244_estados_carga_error:
+    description: 'Verifica los indicadores visuales de carga y error en el plano — LoadingOverlay, ErrorMessage y FloorPlanSection'
+    enabled: true
+    related_spec: '.ai/specs/OP-244-spec.md'
+    verifications:
+      - id: OP-244-STRUCT-1
+        name: 'src/components/ui/LoadingOverlay.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/ui/LoadingOverlay.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-2
+        name: 'src/components/ui/ErrorMessage.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/ui/ErrorMessage.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-3
+        name: 'src/components/floor-plan/FloorPlanSection.tsx existe (modificado con loading/error)'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlanSection.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-4
+        name: 'tests/unit/floor-plan-loading-error.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/floor-plan-loading-error.test.ts
+            must_exist: true
+      - id: OP-244-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-244)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-244-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-244-BUILD-1
+        name: 'Build de Next.js sin errores TypeScript'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
