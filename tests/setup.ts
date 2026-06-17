@@ -18,6 +18,9 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   process.env.MONGODB_URI = uri;
+  // mongodb-memory-server crea la BD on-the-fly al conectar; este nombre es
+  // solo una etiqueta lógica que se descarta al terminar la suite.
+  process.env.DB_NAME = "office_planning_test";
 
   // Stub auth-related env vars to prevent module-level throws
   process.env.AUTH_SECRET = "test-secret";

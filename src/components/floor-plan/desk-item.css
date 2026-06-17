@@ -1,0 +1,8 @@
+.desk-item {
+  position: absolute;
+  left: var(--desk-x);
+  top: var(--desk-y);
+  width: var(--desk-w);
+  height: var(--desk-h);
+  transform: rotate(var(--desk-rotate, 0deg));
+}

@@ -865,6 +865,572 @@ suites:
         exit_code: 0
         timeout: 120
 
+  OP-171_verificacion_pre_merge:
+    description: 'Verifica que develop pasa la suite completa antes del merge a main'
+    enabled: true
+    related_spec: '.ai/specs/OP-171-spec.md'
+    verifications:
+      - id: OP-171-TEST-1
+        name: 'Tests unitarios en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-2
+        name: 'Tests de integración en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-TEST-3
+        name: 'Tests de API en verde (pre-merge)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-171-LINT-1
+        name: 'ESLint sin errores (pre-merge)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-171-BUILD-1
+        name: 'Build de Next.js sin errores (pre-merge)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-172_merge_develop_main:
+    description: 'Verifica que el merge develop → main se realizó correctamente'
+    enabled: true
+    related_spec: '.ai/specs/OP-172-spec.md'
+    verifications:
+      - id: OP-172-STRUCT-1
+        name: 'src/app/api/reservations/route.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/app/api/reservations/route.ts
+            must_exist: true
+      - id: OP-172-STRUCT-2
+        name: 'src/lib/constants.ts existe en main'
+        type: filesystem
+        checks:
+          - path: src/lib/constants.ts
+            must_exist: true
+      - id: OP-172-STRUCT-3
+        name: 'tests/unit/dates.test.ts existe en main'
+        type: filesystem
+        checks:
+          - path: tests/unit/dates.test.ts
+            must_exist: true
+      - id: OP-172-STRUCT-4
+        name: 'AGENTS.md existe en main'
+        type: filesystem
+        checks:
+          - path: AGENTS.md
+            must_exist: true
+
+  OP-173_verificacion_post_merge:
+    description: 'Verifica que main pasa la suite completa tras el merge desde develop'
+    enabled: true
+    related_spec: '.ai/specs/OP-173-spec.md'
+    verifications:
+      - id: OP-173-TEST-1
+        name: 'Tests unitarios en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-2
+        name: 'Tests de integración en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:integration
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-TEST-3
+        name: 'Tests de API en verde (post-merge, main)'
+        type: npm_script
+        command: npm run test:api
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-173-LINT-1
+        name: 'ESLint sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-173-BUILD-1
+        name: 'Build de Next.js sin errores (post-merge, main)'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-173-STRUCT-1
+        name: 'node_modules instalado en main'
+        type: filesystem
+        checks:
+          - path: node_modules
+            must_exist: true
+
+  OP-174_etiquetar_baseline:
+    description: 'Verifica que el tag v0.1.0 existe y apunta al merge commit de main'
+    enabled: true
+    related_spec: '.ai/specs/OP-174-spec.md'
+    verifications:
+      - id: OP-174-STRUCT-1
+        name: 'Spec OP-174 existe con Execution Result'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-174-spec.md
+            must_exist: true
+      - id: OP-174-STRUCT-2
+        name: 'Spec OP-170 existe'
+        type: filesystem
+        checks:
+          - path: .ai/specs/OP-170-spec.md
+            must_exist: true
+
+  OP-211_logica_calculo_semanas:
+    description: 'Verifica la lógica de cálculo de semanas laborables — getWorkWeeks y getDefaultWorkDay'
+    enabled: true
+    related_spec: '.ai/specs/OP-211-spec.md'
+    verifications:
+      - id: OP-211-STRUCT-1
+        name: 'src/lib/week-selector.ts existe'
+        type: filesystem
+        checks:
+          - path: src/lib/week-selector.ts
+            must_exist: true
+      - id: OP-211-STRUCT-2
+        name: 'tests/unit/week-selector.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/week-selector.test.ts
+            must_exist: true
+      - id: OP-211-TEST-1
+        name: 'Tests unitarios de week-selector en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-212_componente_week_selector:
+    description: 'Verifica que el componente WeekSelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-212-spec.md'
+    verifications:
+      - id: OP-212-STRUCT-1
+        name: 'src/components/booking/WeekSelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/WeekSelector.tsx
+            must_exist: true
+      - id: OP-212-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-213_componente_day_selector:
+    description: 'Verifica que el componente DaySelector existe y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-213-spec.md'
+    verifications:
+      - id: OP-213-STRUCT-1
+        name: 'src/components/booking/DaySelector.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DaySelector.tsx
+            must_exist: true
+      - id: OP-213-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-214_estado_contexto_fecha:
+    description: 'Verifica que DateSelectionProvider y el contexto de fecha existen y el proyecto compila sin errores'
+    enabled: true
+    related_spec: '.ai/specs/OP-214-spec.md'
+    verifications:
+      - id: OP-214-STRUCT-1
+        name: 'src/context/date-selection.context.ts existe'
+        type: filesystem
+        checks:
+          - path: src/context/date-selection.context.ts
+            must_exist: true
+      - id: OP-214-STRUCT-2
+        name: 'src/components/booking/DateSelectionProvider.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/booking/DateSelectionProvider.tsx
+            must_exist: true
+      - id: OP-214-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-215_tests_selector_semana_dia:
+    description: 'Verifica cobertura de tests unitarios de week-selector — getWorkWeeks y getDefaultWorkDay'
+    enabled: true
+    related_spec: '.ai/specs/OP-215-spec.md'
+    verifications:
+      - id: OP-215-STRUCT-1
+        name: 'tests/unit/week-selector.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/week-selector.test.ts
+            must_exist: true
+      - id: OP-215-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-221_componente_floor_plan:
+    description: 'Verifica FloorPlan, seed de mesas y extensión cornerExtension del modelo'
+    enabled: true
+    related_spec: '.ai/specs/OP-221-spec.md'
+    verifications:
+      - id: OP-221-STRUCT-1
+        name: 'src/components/floor-plan/FloorPlan.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlan.tsx
+            must_exist: true
+      - id: OP-221-STRUCT-2
+        name: 'src/components/floor-plan/index.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/index.ts
+            must_exist: true
+      - id: OP-221-STRUCT-3
+        name: 'scripts/seed-tables.ts existe'
+        type: filesystem
+        checks:
+          - path: scripts/seed-tables.ts
+            must_exist: true
+      - id: OP-221-STRUCT-4
+        name: 'mapa_oficina.png movido a .ai/assets/'
+        type: filesystem
+        checks:
+          - path: .ai/assets/mapa_oficina.png
+            must_exist: true
+          - path: public/mapa_oficina.png
+            must_exist: false
+      - id: OP-221-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-221-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-221-TEST-1
+        name: 'Suite completa pasa sin regresiones'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-222_componente_desk_item:
+    description: 'Verifica el componente DeskItem (mesa individual) y su integración en FloorPlan'
+    enabled: true
+    related_spec: '.ai/specs/OP-222-spec.md'
+    verifications:
+      - id: OP-222-STRUCT-1
+        name: 'src/components/floor-plan/DeskItem.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskItem.tsx
+            must_exist: true
+      - id: OP-222-STRUCT-2
+        name: 'src/components/floor-plan/index.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/index.ts
+            must_exist: true
+      - id: OP-222-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-222-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+      - id: OP-222-TEST-1
+        name: 'Suite completa pasa sin regresiones'
+        type: npm_script
+        command: npm run test
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+
+  OP-232_boton_reservar:
+    description: 'Botón de reservar en DeskDetailPanel — lógica de visibilidad, hook useReserve y tipado de props'
+    enabled: true
+    related_spec: '.ai/specs/OP-232-spec.md'
+    verifications:
+      - id: OP-232-STRUCT-1
+        name: 'src/components/floor-plan/use-reserve.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/use-reserve.ts
+            must_exist: true
+      - id: OP-232-STRUCT-2
+        name: 'src/components/floor-plan/DeskDetailPanel.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskDetailPanel.tsx
+            must_exist: true
+      - id: OP-232-STRUCT-3
+        name: 'tests/unit/desk-detail-panel-reserve.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/desk-detail-panel-reserve.test.ts
+            must_exist: true
+      - id: OP-232-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-232)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-232-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-232-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-233_boton_cancelar:
+    description: 'Botón de cancelar reserva propia en DeskDetailPanel — lógica de visibilidad, hook useCancelReservation y tipado de props'
+    enabled: true
+    related_spec: '.ai/specs/OP-233-spec.md'
+    verifications:
+      - id: OP-233-STRUCT-1
+        name: 'src/components/floor-plan/use-cancel-reservation.ts existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/use-cancel-reservation.ts
+            must_exist: true
+      - id: OP-233-STRUCT-2
+        name: 'src/components/floor-plan/DeskDetailPanel.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/DeskDetailPanel.tsx
+            must_exist: true
+      - id: OP-233-TEST-1
+        name: 'Tests unitarios en verde'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-233-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-233-BUILD-1
+        name: 'Build de Next.js sin errores'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-241_hook_use_availability:
+    description: 'Verifica el hook useAvailability — fetch, AbortController, refetch, date vacío'
+    enabled: true
+    related_spec: '.ai/specs/OP-241-spec.md'
+    verifications:
+      - id: OP-241-STRUCT-1
+        name: 'src/hooks/use-availability.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-availability.ts
+            must_exist: true
+      - id: OP-241-STRUCT-2
+        name: 'tests/unit/use-availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/use-availability.test.ts
+            must_exist: true
+      - id: OP-241-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-241)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-241-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-242_carga_datos_cambio_dia:
+    description: 'Verifica que FloorPlanSection conecta el selector de día con useAvailability y FloorPlanClient'
+    enabled: true
+    related_spec: '.ai/specs/OP-242-spec.md'
+    verifications:
+      - id: OP-242-STRUCT-1
+        name: 'src/components/floor-plan/FloorPlanSection.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlanSection.tsx
+            must_exist: true
+      - id: OP-242-STRUCT-2
+        name: 'src/hooks/use-availability.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-availability.ts
+            must_exist: true
+      - id: OP-242-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-242-BUILD-1
+        name: 'Build de Next.js sin errores TypeScript'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
+  OP-243_hook_use_week_availability:
+    description: 'Verifica el hook useWeekAvailability — fetch semanal, getDay, AbortController, refetch, params vacíos'
+    enabled: true
+    related_spec: '.ai/specs/OP-243-spec.md'
+    verifications:
+      - id: OP-243-STRUCT-1
+        name: 'src/hooks/use-week-availability.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-week-availability.ts
+            must_exist: true
+      - id: OP-243-STRUCT-2
+        name: 'tests/unit/use-week-availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/use-week-availability.test.ts
+            must_exist: true
+      - id: OP-243-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-243)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-243-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
+  OP-244_estados_carga_error:
+    description: 'Verifica los indicadores visuales de carga y error en el plano — LoadingOverlay, ErrorMessage y FloorPlanSection'
+    enabled: true
+    related_spec: '.ai/specs/OP-244-spec.md'
+    verifications:
+      - id: OP-244-STRUCT-1
+        name: 'src/components/ui/LoadingOverlay.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/ui/LoadingOverlay.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-2
+        name: 'src/components/ui/ErrorMessage.tsx existe'
+        type: filesystem
+        checks:
+          - path: src/components/ui/ErrorMessage.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-3
+        name: 'src/components/floor-plan/FloorPlanSection.tsx existe (modificado con loading/error)'
+        type: filesystem
+        checks:
+          - path: src/components/floor-plan/FloorPlanSection.tsx
+            must_exist: true
+      - id: OP-244-STRUCT-4
+        name: 'tests/unit/floor-plan-loading-error.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/floor-plan-loading-error.test.ts
+            must_exist: true
+      - id: OP-244-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-244)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-244-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+      - id: OP-244-BUILD-1
+        name: 'Build de Next.js sin errores TypeScript'
+        type: npm_script
+        command: npm run build
+        expected_result: PASS
+        exit_code: 0
+        timeout: 180
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:

@@ -1,8 +1,7 @@
 /**
- * API tests for availability endpoints.
+ * API tests for GET /api/availability?date=YYYY-MM-DD
  *
- * - GET /api/availability?date=YYYY-MM-DD
- * - GET /api/availability/week?start=...&end=...
+ * Week endpoint tests are in availability-week.test.ts.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -15,7 +14,6 @@ vi.mock("@/lib/api-auth", () => ({
 }));
 
 import { GET } from "@/app/api/availability/route";
-import { GET as GET_WEEK } from "@/app/api/availability/week/route";
 
 function makeRequest(url: string): NextRequest {
   return new NextRequest(new URL(url, "http://localhost:3000"));
@@ -116,6 +114,21 @@ describe("GET /api/availability", () => {
     });
   });
 
+  it("preferential table without reservation has status yellow", async () => {
+    const user = await createUser();
+    mockAuthenticated(mockSession({ id: user._id.toString() }));
+
+    await createTable({ type: "preferential", label: "PREF-01" });
+
+    const response = await GET(makeRequest("/api/availability?date=2026-04-01"));
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    const pref = body.find((t: { label: string }) => t.label === "PREF-01");
+    expect(pref).toBeDefined();
+    expect(pref.status).toBe("yellow");
+  });
+
   // H-150-18: smoke test Content-Type
   it("returns Content-Type: application/json (smoke)", async () => {
     const user = await createUser();
@@ -123,103 +136,5 @@ describe("GET /api/availability", () => {
 
     const response = await GET(makeRequest("/api/availability?date=2026-04-01"));
     expect(response.headers.get("content-type")).toContain("application/json");
-  });
-});
-
-/* -------------------------------------------------------------------------- */
-/*  GET /api/availability/week?start=...&end=...                               */
-/* -------------------------------------------------------------------------- */
-
-describe("GET /api/availability/week", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("returns 401 without session", async () => {
-    mockUnauthenticated();
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-01&end=2026-04-05")
-    );
-    expect(response.status).toBe(401);
-  });
-
-  it("returns 400 without start param", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?end=2026-04-05")
-    );
-    expect(response.status).toBe(400);
-  });
-
-  it("returns 400 without end param", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-01")
-    );
-    expect(response.status).toBe(400);
-  });
-
-  it("returns 400 with invalid start date", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=bad&end=2026-04-05")
-    );
-    expect(response.status).toBe(400);
-  });
-
-  it("returns 400 when start > end", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-10&end=2026-04-05")
-    );
-    expect(response.status).toBe(400);
-  });
-
-  it("returns 400 when range exceeds 14 days", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-01&end=2026-04-30")
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toContain("14");
-  });
-
-  it("returns availability map for valid range", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    await createTable({ type: "flexible" });
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-06&end=2026-04-08")
-    );
-    expect(response.status).toBe(200);
-
-    const body = await response.json();
-    expect(Object.keys(body)).toEqual(["2026-04-06", "2026-04-07", "2026-04-08"]);
-    expect(body["2026-04-06"]).toHaveLength(1);
-  });
-
-  it("allows exactly 14-day range", async () => {
-    const user = await createUser();
-    mockAuthenticated(mockSession({ id: user._id.toString() }));
-
-    await createTable({ type: "flexible" });
-
-    const response = await GET_WEEK(
-      makeRequest("/api/availability/week?start=2026-04-01&end=2026-04-15")
-    );
-    expect(response.status).toBe(200);
   });
 });

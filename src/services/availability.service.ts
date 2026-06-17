@@ -122,10 +122,12 @@ function computeStatus(
  * fetched via listActiveTables. Only active tables appear on the floor plan.
  *
  * @param date - The target date (Date or ISO string)
+ * @param currentUserId - The authenticated user's ID, used to set `isOwner` on reservations
  * @returns Array of TableAvailability objects for all active tables
  */
 export async function getTableAvailabilityForDate(
-  date: Date | string
+  date: Date | string,
+  currentUserId?: string
 ): Promise<TableAvailability[]> {
   const normalized = normalizeDate(date);
 
@@ -159,6 +161,7 @@ export async function getTableAvailabilityForDate(
         ? {
             _id: reservation._id.toString(),
             userName: userNames.get(reservation.userId.toString()) ?? "Usuario desconocido",
+            isOwner: currentUserId !== undefined && reservation.userId.toString() === currentUserId,
           }
         : null,
       assignedUser: assignedUserId
@@ -179,11 +182,13 @@ export async function getTableAvailabilityForDate(
  *
  * @param start - Start date of the range (inclusive)
  * @param end - End date of the range (inclusive)
+ * @param currentUserId - The authenticated user's ID, used to set `isOwner` on reservations
  * @returns Map of date strings to availability arrays
  */
 export async function getTableAvailabilityForRange(
   start: Date | string,
-  end: Date | string
+  end: Date | string,
+  currentUserId?: string
 ): Promise<Record<string, TableAvailability[]>> {
   const normalizedStart = normalizeDate(start);
   const normalizedEnd = normalizeDate(end);
@@ -228,6 +233,7 @@ export async function getTableAvailabilityForRange(
           ? {
               _id: reservation._id.toString(),
               userName: userNames.get(reservation.userId.toString()) ?? "Usuario desconocido",
+              isOwner: currentUserId !== undefined && reservation.userId.toString() === currentUserId,
             }
           : null,
         assignedUser: assignedUserId

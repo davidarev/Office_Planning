@@ -19,7 +19,7 @@ import { MAX_RANGE_DAYS } from "@/lib/constants";
  * @returns 500 on internal error
  */
 export async function GET(request: NextRequest) {
-  const { error } = await requireSession();
+  const { error, session } = await requireSession();
   if (error) return error;
 
   const start = request.nextUrl.searchParams.get("start");
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const availability = await getTableAvailabilityForRange(start, end);
+    const availability = await getTableAvailabilityForRange(start, end, session.user.id);
     return NextResponse.json(availability);
   } catch {
     return NextResponse.json(

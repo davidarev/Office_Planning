@@ -47,8 +47,16 @@ export async function connectDB(): Promise<typeof mongoose> {
     );
   }
 
+  const dbName = process.env.DB_NAME;
+  if (!dbName) {
+    throw new Error(
+      "DB_NAME is not defined. Please add it to your environment variables."
+    );
+  }
+
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
+      dbName,
       bufferCommands: false,
     });
   }

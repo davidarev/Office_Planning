@@ -32,10 +32,44 @@ Crear los componentes de UI para seleccionar semana y día laborable. El usuario
 - Spec actualizada con ## Execution Result
 
 ## Subtareas
-| ID | Título |
-|----|--------|
-| OP-211 | Lógica de cálculo de semanas |
-| OP-212 | Componente WeekSelector |
-| OP-213 | Componente DaySelector |
-| OP-214 | Estado y contexto de fecha seleccionada |
-| OP-215 | Tests del selector de semana y día |
+| ID | Título | Estado |
+|----|--------|--------|
+| OP-211 | Lógica de cálculo de semanas | Review |
+| OP-212 | Componente WeekSelector | Review |
+| OP-213 | Componente DaySelector | Review |
+| OP-214 | Estado y contexto de fecha seleccionada | Review |
+| OP-215 | Tests del selector de semana y día | Review |
+
+## Execution Result
+
+- Fecha de implementación: 2026-05-07 21:13 (CET)
+- Rama: feature/OP-210-selector-semana-dia
+- Commits:
+  - `71f25cd` feat(OP-211): crear week-selector.ts con lógica de semanas laborables
+  - `8faa92f` feat(OP-212): implementar componente WeekSelector
+  - `8a83202` feat(OP-213): implementar componente DaySelector
+  - `007d5d3` feat(OP-214): añadir DateSelectionProvider y contexto de fecha seleccionada
+- Herramienta IA: Claude Code claude-sonnet-4-6
+- Estado de AC:
+  - AC-1: PASS — `src/lib/week-selector.ts` con `getWorkWeeks()` y `getDefaultWorkDay()`; tipos `WorkDay` y `WorkWeek`; construido sobre `dates.ts` sin duplicar lógica
+  - AC-2: PASS — `src/components/booking/WeekSelector.tsx` con dos pestañas, `role="tablist"`, `aria-selected`, estilos Tailwind CSS v4
+  - AC-3: PASS — `src/components/booking/DaySelector.tsx` con 5 botones L–V, `aria-pressed`, layout label+número
+  - AC-4: PASS — `src/context/date-selection.context.ts` + `src/components/booking/DateSelectionProvider.tsx`; contexto expone solo `selectedDay` (sin setters); inicializa con `getDefaultWorkDay()`
+  - AC-5: PASS — `tests/unit/week-selector.test.ts` con 55 tests cubriendo todos los casos de la spec (días laborables, fines de semana, cruces de mes y año, invariantes estructurales); tests de componente fuera de alcance por ausencia de jsdom en el proyecto
+- Ficheros creados:
+  - `src/lib/week-selector.ts`
+  - `src/components/booking/WeekSelector.tsx`
+  - `src/components/booking/DaySelector.tsx`
+  - `src/components/booking/DateSelectionProvider.tsx`
+  - `src/context/date-selection.context.ts`
+  - `tests/unit/week-selector.test.ts`
+- verify:
+  - `npm run test:unit`: PASS — 95/95 tests en verde
+  - `npm run lint`: PASS — 0 errores (4 warnings preexistentes, no introducidos)
+- AI-assisted:
+  - Herramienta(s): Claude Code
+  - Alcance: specs de OP-211 a OP-215, implementación completa de todos los artefactos y tests
+- Decisiones técnicas:
+  - `referenceDate` inyectable en `getWorkWeeks` y `getDefaultWorkDay` para testabilidad sin mock global de `Date`
+  - Contexto de solo lectura (`selectedDay`): los setters son internos al provider, los consumidores no pueden mutar el estado
+  - Tests de componente (WeekSelector, DaySelector) no incluidos: requieren jsdom + `@testing-library/react`, ausentes en el proyecto; pendiente de historia de infraestructura de testing
