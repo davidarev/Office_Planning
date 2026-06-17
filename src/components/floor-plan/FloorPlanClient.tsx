@@ -5,8 +5,6 @@ import type { TableAvailability } from "@/domain/types";
 import { useDateSelection } from "@/context/date-selection.context";
 import { FloorPlan } from "./FloorPlan";
 import { DeskDetailPanel } from "./DeskDetailPanel";
-import { useReserve } from "./use-reserve";
-import { useCancelReservation } from "./use-cancel-reservation";
 
 interface FloorPlanClientProps {
   tables: TableAvailability[];
@@ -14,8 +12,28 @@ interface FloorPlanClientProps {
   userHasReservationToday: boolean;
   /** ID del usuario en sesión, usado para determinar si una reserva le pertenece. */
   currentUserId: string;
-  /** Callback para que el padre refresque los datos tras una reserva o cancelación exitosa. */
+  /**
+   * Callback para ejecutar la reserva — la lógica optimista vive en FloorPlanSection,
+   * que implementa este callback y actualiza su estado local antes de la respuesta HTTP.
+   */
+  onReserve: (tableId: string, date: string) => Promise<void>;
+  /**
+   * Callback para ejecutar la cancelación — la lógica optimista vive en
+   * FloorPlanSection. Recibe los datos de la mesa para poder calcular el
+   * estado al que vuelve (green/yellow) y aplicar el override.
+   */
+  onCancel: (
+    reservationId: string,
+    tableId: string,
+    tableType: TableAvailability["type"],
+    date: string,
+  ) => Promise<void>;
+  /** Callback para que el padre refresque los datos tras una cancelación exitosa. */
   onReservationCreated?: () => void;
+  /** true mientras hay una reserva en curso (deshabilita acciones). */
+  isReserving?: boolean;
+  /** true mientras hay una cancelación en curso (deshabilita acciones). */
+  isCancelling?: boolean;
   width?: number;
   height?: number;
 }
@@ -24,49 +42,52 @@ interface FloorPlanClientProps {
  * Wrapper cliente para `FloorPlan` que gestiona la selección de mesa y
  * muestra `DeskDetailPanel` al hacer clic en una mesa.
  *
- * Mantiene `selectedTable` en estado local para no introducir estado global.
- * Coordina las acciones de reserva y cancelación entre el panel y la API
- * vía `useReserve` y `useCancelReservation`.
+ * Tanto la reserva como la cancelación con actualización optimista viven en
+ * FloorPlanSection y se reciben vía `onReserve` / `onCancel`. Este componente
+ * solo orquesta la selección de mesa y propaga los estados de carga.
  */
 export function FloorPlanClient({
   tables,
   userHasReservationToday,
   currentUserId,
+  onReserve,
+  onCancel,
   onReservationCreated,
+  isReserving = false,
+  isCancelling = false,
   width,
   height,
 }: FloorPlanClientProps) {
   const [selectedTable, setSelectedTable] = useState<TableAvailability | null>(null);
   const { selectedDay } = useDateSelection();
-  const { reserve } = useReserve();
-  const { cancelReservation } = useCancelReservation();
 
   const isOwnReservation = selectedTable?.reservation?.isOwner === true;
 
-  const handleReserve = useCallback(
-    async (tableId: string, date: string) => {
-      const errorMsg = await reserve(tableId, date);
-      if (errorMsg === null) {
-        setSelectedTable(null);
-        onReservationCreated?.();
-      } else {
-        throw new Error(errorMsg);
-      }
-    },
-    [reserve, onReservationCreated]
-  );
-
   const handleCancelReservation = useCallback(
     async (reservationId: string) => {
-      const errorMsg = await cancelReservation(reservationId);
-      if (errorMsg === null) {
-        setSelectedTable(null);
-        onReservationCreated?.();
-      } else {
-        throw new Error(errorMsg);
-      }
+      if (!selectedTable) return;
+      await onCancel(
+        reservationId,
+        selectedTable.tableId,
+        selectedTable.type,
+        selectedDay.dateString,
+      );
+      // On success the parent triggers a refetch; on error onCancel throws and
+      // the panel renders the message, so we only reach here on success.
+      setSelectedTable(null);
+      onReservationCreated?.();
     },
-    [cancelReservation, onReservationCreated]
+    [onCancel, onReservationCreated, selectedTable, selectedDay.dateString],
+  );
+
+  const handleReserve = useCallback(
+    async (tableId: string, date: string) => {
+      await onReserve(tableId, date);
+      // On success the parent (FloorPlanSection) already closed the panel
+      // by triggering a refetch; on error it throws, so we don't reach here.
+      setSelectedTable(null);
+    },
+    [onReserve],
   );
 
   return (
@@ -85,6 +106,8 @@ export function FloorPlanClient({
         onReserve={handleReserve}
         isOwnReservation={isOwnReservation}
         onCancelReservation={handleCancelReservation}
+        isReserving={isReserving}
+        isCancelling={isCancelling}
       />
     </div>
   );
