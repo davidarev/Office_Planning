@@ -1,15 +1,14 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DateSelectionProvider } from "@/components/booking/DateSelectionProvider";
-import { FloorPlanClient } from "@/components/floor-plan";
+import { FloorPlanSection } from "@/components/floor-plan";
 
 /**
  * Página principal — punto de entrada tras autenticarse.
  *
- * Muestra el selector de semana/día y el contenedor del plano (FloorPlan).
- * El fetching real de mesas y su renderizado completo se integran en
- * tickets posteriores (OP-222, OP-230). Mientras tanto, FloorPlan recibe
- * un array vacío y renderiza el estado "sin mesas configuradas".
+ * Obtiene la sesión del usuario y delega el fetching de disponibilidad
+ * y el renderizado del plano a FloorPlanSection, que reacciona al día
+ * seleccionado via useDateSelection() y useAvailability().
  */
 export default async function HomePage() {
   const session = await auth();
@@ -28,12 +27,7 @@ export default async function HomePage() {
       </div>
 
       <DateSelectionProvider>
-        {/* userHasReservationToday y tables se integrarán con la API en OP-240 */}
-        <FloorPlanClient
-          tables={[]}
-          userHasReservationToday={false}
-          currentUserId={session.user.id}
-        />
+        <FloorPlanSection currentUserId={session.user.id} />
       </DateSelectionProvider>
     </main>
   );
