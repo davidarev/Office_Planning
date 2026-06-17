@@ -1348,6 +1348,38 @@ suites:
         exit_code: 0
         timeout: 180
 
+  OP-243_hook_use_week_availability:
+    description: 'Verifica el hook useWeekAvailability — fetch semanal, getDay, AbortController, refetch, params vacíos'
+    enabled: true
+    related_spec: '.ai/specs/OP-243-spec.md'
+    verifications:
+      - id: OP-243-STRUCT-1
+        name: 'src/hooks/use-week-availability.ts existe'
+        type: filesystem
+        checks:
+          - path: src/hooks/use-week-availability.ts
+            must_exist: true
+      - id: OP-243-STRUCT-2
+        name: 'tests/unit/use-week-availability.test.ts existe'
+        type: filesystem
+        checks:
+          - path: tests/unit/use-week-availability.test.ts
+            must_exist: true
+      - id: OP-243-TEST-1
+        name: 'Tests unitarios en verde (incluye tests OP-243)'
+        type: npm_script
+        command: npm run test:unit
+        expected_result: PASS
+        exit_code: 0
+        timeout: 120
+      - id: OP-243-LINT-1
+        name: 'ESLint sin errores'
+        type: npm_script
+        command: npm run lint
+        expected_result: PASS
+        exit_code: 0
+        timeout: 60
+
   # Ejemplo:
   #
   # ODP-001_auth_magic_link:
