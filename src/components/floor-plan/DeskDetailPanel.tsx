@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { TableAvailability, TableStatus, TableType } from "@/domain/types";
 import { getOccupantName } from "./desk-status";
+import {
+  shouldShowReserveButton,
+  shouldShowCancelButton,
+  getDetailMessage,
+} from "./desk-detail-utils";
 
 interface DeskDetailPanelProps {
   table: TableAvailability | null;
@@ -39,6 +44,7 @@ const statusBadgeClasses: Record<TableStatus, string> = {
   red: "bg-red-100 text-red-800",
   gray: "bg-gray-100 text-gray-700",
 };
+
 
 /**
  * Panel lateral deslizante que muestra el detalle de una mesa seleccionada.
@@ -101,14 +107,21 @@ export function DeskDetailPanel({
   if (!table) return null;
 
   const occupantName = getOccupantName(table);
-  const canReserve =
-    (table.status === "green" || table.status === "yellow") &&
-    !userHasReservationToday;
-  const canCancel =
-    table.status === "red" &&
-    table.type !== "fixed" &&
-    table.reservation !== null &&
-    isOwnReservation;
+  const canReserve = shouldShowReserveButton(table.status, userHasReservationToday);
+  const canCancel = shouldShowCancelButton(
+    table.status,
+    table.type,
+    table.reservation !== null,
+    isOwnReservation
+  );
+  const detailMessage = getDetailMessage({
+    status: table.status,
+    type: table.type,
+    reservation: table.reservation,
+    assignedUser: table.assignedUser,
+    userHasReservationToday,
+    isOwnReservation,
+  });
 
   async function handleReserve() {
     if (!table || isReserving) return;
@@ -215,6 +228,13 @@ export function DeskDetailPanel({
               </span>
               <p className="mt-1 text-sm text-gray-900">{occupantName}</p>
             </div>
+          ) : null}
+
+          {/* Mensaje informativo contextual */}
+          {detailMessage ? (
+            <p className="rounded bg-gray-50 px-3 py-2 text-sm text-gray-700">
+              {detailMessage}
+            </p>
           ) : null}
 
           {/* Error de reserva */}
