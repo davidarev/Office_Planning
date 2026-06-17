@@ -6,12 +6,15 @@ import { useDateSelection } from "@/context/date-selection.context";
 import { FloorPlan } from "./FloorPlan";
 import { DeskDetailPanel } from "./DeskDetailPanel";
 import { useReserve } from "./use-reserve";
+import { useCancelReservation } from "./use-cancel-reservation";
 
 interface FloorPlanClientProps {
   tables: TableAvailability[];
   /** true si el usuario ya tiene una reserva confirmada para el día seleccionado. */
   userHasReservationToday: boolean;
-  /** Callback para que el padre refresque los datos tras una reserva exitosa. */
+  /** ID del usuario en sesión, usado para determinar si una reserva le pertenece. */
+  currentUserId: string;
+  /** Callback para que el padre refresque los datos tras una reserva o cancelación exitosa. */
   onReservationCreated?: () => void;
   width?: number;
   height?: number;
@@ -22,11 +25,13 @@ interface FloorPlanClientProps {
  * muestra `DeskDetailPanel` al hacer clic en una mesa.
  *
  * Mantiene `selectedTable` en estado local para no introducir estado global.
- * Coordina la acción de reserva entre el panel y la API vía `useReserve`.
+ * Coordina las acciones de reserva y cancelación entre el panel y la API
+ * vía `useReserve` y `useCancelReservation`.
  */
 export function FloorPlanClient({
   tables,
   userHasReservationToday,
+  currentUserId,
   onReservationCreated,
   width,
   height,
@@ -34,6 +39,10 @@ export function FloorPlanClient({
   const [selectedTable, setSelectedTable] = useState<TableAvailability | null>(null);
   const { selectedDay } = useDateSelection();
   const { reserve } = useReserve();
+  const { cancelReservation } = useCancelReservation();
+
+  const isOwnReservation =
+    selectedTable?.reservation?.userId === currentUserId;
 
   const handleReserve = useCallback(
     async (tableId: string, date: string) => {
@@ -46,6 +55,19 @@ export function FloorPlanClient({
       }
     },
     [reserve, onReservationCreated]
+  );
+
+  const handleCancelReservation = useCallback(
+    async (reservationId: string) => {
+      const errorMsg = await cancelReservation(reservationId);
+      if (errorMsg === null) {
+        setSelectedTable(null);
+        onReservationCreated?.();
+      } else {
+        throw new Error(errorMsg);
+      }
+    },
+    [cancelReservation, onReservationCreated]
   );
 
   return (
@@ -62,6 +84,8 @@ export function FloorPlanClient({
         selectedDate={selectedDay.dateString}
         userHasReservationToday={userHasReservationToday}
         onReserve={handleReserve}
+        isOwnReservation={isOwnReservation}
+        onCancelReservation={handleCancelReservation}
       />
     </div>
   );

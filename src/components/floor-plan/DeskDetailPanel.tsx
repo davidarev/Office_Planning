@@ -13,6 +13,10 @@ interface DeskDetailPanelProps {
   userHasReservationToday: boolean;
   /** Callback de reserva — el padre ejecuta la llamada a la API. */
   onReserve: (tableId: string, date: string) => Promise<void>;
+  /** true si la reserva activa de la mesa pertenece al usuario actual. */
+  isOwnReservation: boolean;
+  /** Callback de cancelación — el padre ejecuta DELETE /api/reservations/:id. */
+  onCancelReservation: (reservationId: string) => Promise<void>;
 }
 
 const typeLabels: Record<TableType, string> = {
@@ -48,6 +52,8 @@ const statusBadgeClasses: Record<TableStatus, string> = {
  * @param props.selectedDate - Fecha activa en formato YYYY-MM-DD.
  * @param props.userHasReservationToday - true si el usuario ya tiene reserva ese día.
  * @param props.onReserve - Callback que ejecuta la reserva; rechaza con Error en caso de fallo.
+ * @param props.isOwnReservation - true si la reserva activa pertenece al usuario actual.
+ * @param props.onCancelReservation - Callback que ejecuta la cancelación; rechaza con Error en caso de fallo.
  */
 export function DeskDetailPanel({
   table,
@@ -55,15 +61,20 @@ export function DeskDetailPanel({
   selectedDate,
   userHasReservationToday,
   onReserve,
+  isOwnReservation,
+  onCancelReservation,
 }: DeskDetailPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const [isReserving, setIsReserving] = useState(false);
   const [reserveError, setReserveError] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
-  // Limpiar error de reserva al cambiar de mesa o fecha
+  // Limpiar errores al cambiar de mesa o fecha
   useEffect(() => {
     setReserveError(null);
+    setCancelError(null);
   }, [table, selectedDate]);
 
   // Gestión de foco: al abrirse, enfocar el botón de cierre
@@ -93,6 +104,11 @@ export function DeskDetailPanel({
   const canReserve =
     (table.status === "green" || table.status === "yellow") &&
     !userHasReservationToday;
+  const canCancel =
+    table.status === "red" &&
+    table.type !== "fixed" &&
+    table.reservation !== null &&
+    isOwnReservation;
 
   async function handleReserve() {
     if (!table || isReserving) return;
@@ -106,6 +122,21 @@ export function DeskDetailPanel({
       );
     } finally {
       setIsReserving(false);
+    }
+  }
+
+  async function handleCancel() {
+    if (!table?.reservation || isCancelling) return;
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      await onCancelReservation(table.reservation._id);
+    } catch (err) {
+      setCancelError(
+        err instanceof Error ? err.message : "Error al cancelar la reserva"
+      );
+    } finally {
+      setIsCancelling(false);
     }
   }
 
@@ -192,6 +223,13 @@ export function DeskDetailPanel({
               {reserveError}
             </p>
           ) : null}
+
+          {/* Error de cancelación */}
+          {cancelError ? (
+            <p role="alert" className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">
+              {cancelError}
+            </p>
+          ) : null}
         </div>
 
         {/* Acciones */}
@@ -204,6 +242,19 @@ export function DeskDetailPanel({
               className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isReserving ? "Reservando…" : "Reservar"}
+            </button>
+          </div>
+        ) : null}
+
+        {canCancel ? (
+          <div className="border-t border-gray-200 px-4 py-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isCancelling}
+              className="w-full rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCancelling ? "Cancelando…" : "Cancelar reserva"}
             </button>
           </div>
         ) : null}

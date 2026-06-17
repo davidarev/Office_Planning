@@ -28,8 +28,12 @@ export default async function HomePage() {
       </div>
 
       <DateSelectionProvider>
-        {/* userHasReservationToday se integrará con la API en OP-240 */}
-        <FloorPlanClient tables={[]} userHasReservationToday={false} />
+        {/* userHasReservationToday y tables se integrarán con la API en OP-240 */}
+        <FloorPlanClient
+          tables={[]}
+          userHasReservationToday={false}
+          currentUserId={session.user.id}
+        />
       </DateSelectionProvider>
     </main>
   );

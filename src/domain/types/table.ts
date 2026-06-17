@@ -107,6 +107,7 @@ export interface TableAvailability {
   status: TableStatus;
   reservation: {
     _id: string;
+    userId: string;
     userName: string;
   } | null;
   assignedUser: {
